@@ -10,6 +10,7 @@ public:
   virtual string getSpriteID() = 0;
   sf::Vector2f getPosition() { return rectangle_.getPosition(); }
   void draw(sf::RenderWindow& window){ window.draw(rectangle_); }
+  string tempFun() { return "Hej"; }
 
 protected:
   sf::RectangleShape rectangle_;
@@ -20,6 +21,7 @@ class Player : public DrawableElement
 {
 public:
   Player()
+    : DrawableElement()
     {
       rectangle_.setSize(sf::Vector2f(32,32));
       rectangle_.setFillColor(sf::Color(255, 0, 0));
@@ -39,7 +41,8 @@ class Ground : public DrawableElement
 {
 public:
   
-  Ground(int TILESIZE, int x, int y) 
+  Ground(int TILESIZE, int x, int y)
+    : DrawableElement()
     { 
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
       rectangle_.setSize(sf::Vector2f(32,32));
