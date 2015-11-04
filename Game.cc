@@ -1,5 +1,5 @@
 #include "Game.h"
-
+#include "Graphics.cc"
 using namespace std;
 
 int Game::run()
@@ -8,7 +8,7 @@ int Game::run()
   //INITIERING
   // create the window
   sf::RenderWindow window(sf::VideoMode(768, 576), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
-  
+  Graphics graphics;
   vector<int> level1{
     00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
       00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
@@ -55,8 +55,8 @@ int Game::run()
       // RITA
       // draw everything here...
       // window.draw(...);
-
-      level_vector_.at(0).draw(window);
+      drawLevel(level_vector_.at(0), window);
+      //level_vector_.at(0).draw(window);
       
       // end the current frame
       window.display();
