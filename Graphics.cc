@@ -10,10 +10,9 @@ using namespace std;
 class Graphics
 {
 public:
-  void drawLevel(Level current, sf::RenderWindow& window)
+  void drawLevel(Level & current, sf::RenderWindow& window)
     {
       vector<DrawableElement*> levelVec(current.getLevelDrawableLayout());
-
       sf::RectangleShape rectangle_;
       rectangle_.setSize(sf::Vector2f(32,32));
       for(unsigned int i{}; i < levelVec.size(); i++)
