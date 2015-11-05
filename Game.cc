@@ -15,6 +15,8 @@ public:
 
 int run()
 {
+
+  Action action;
     
   //INITIERING
   // create the window
@@ -56,19 +58,38 @@ int run()
       // TA IN INPUT
       while (window.pollEvent(event))
 	{
-	  // "close requested" event: we close the window
-	  if (event.type == sf::Event::Closed)
-	    window.close();
+	  if (sf::keyboard::isKeyPressed(sf::keyboard::Left || sf::keyboard::A))
+	    {
+	      //Flytta vänster
+	      action = Left;
+	    }
+	  else if (sf::keyboard::isKeyPressed(sf::keyboard::Right ||  sf::keyboard::D))
+	    {
+	      //Flytta höger
+	      action = Right;
+	    }
+	  /*	  else if (sf::keyboard::isKeyPressed(sf::keyboard::Up || sf::keyboard::W || sf::keyboard::Space))
+	    {
+	      //Hoppa
+	      action = Jump;
+	      }*/
+	  else if (event.type == sf::Event::Closed)
+	    {
+	      // "close requested" event: we close the window
+	      window.close();
+	    }
+	  else
+	    {
+	      action = Nothing;
+	    }
 	}
       
       // clear the window with black color
       window.clear(sf::Color(200, 255, 255, 255));
       
       // UPPDATERA LOGIC
-
+      logic_.update(action);
       // RITA
-      // draw everything here...
-      // window.draw(...);
       graphics_.drawLevel((*currLevelPtr_), window);
       //level_vector_.at(0).draw(window);
       
@@ -90,9 +111,7 @@ private:
   ActionResult actionResult_{Nothing};
 //  vector<Level> level_vector_{};
   Level* currLevelPtr_{};
-  /*
-  GameLogic gameLogic_;
-  */
+  Logic logic_;
   Graphics graphics_;
  
 
