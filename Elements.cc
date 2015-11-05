@@ -10,6 +10,7 @@ public:
   virtual string getSpriteID() = 0;
   sf::Vector2f getPosition() { return rectangle_.getPosition(); }
   void draw(sf::RenderWindow& window){ window.draw(rectangle_); }
+  string tempFun() { return "Hej"; }
 
 protected:
   sf::RectangleShape rectangle_;
@@ -20,11 +21,12 @@ class Player : public DrawableElement
 {
 public:
   Player()
+    : DrawableElement()
     {
       rectangle_.setSize(sf::Vector2f(32,32));
       rectangle_.setFillColor(sf::Color(255, 0, 0));
     }
-  virtual ~Player() = default;
+  ~Player() = default;
 
   string getSpriteID() override
     {
@@ -39,13 +41,14 @@ class Ground : public DrawableElement
 {
 public:
   
-  Ground(int TILESIZE, int x, int y) 
+  Ground(int TILESIZE, int x, int y)
+    : DrawableElement()
     { 
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
       rectangle_.setSize(sf::Vector2f(32,32));
       rectangle_.setFillColor(sf::Color(150, 255, 100));
     }
-  virtual ~Ground() = default;
+  ~Ground() = default;
   string getSpriteID() override
     {
       return "Ground";
@@ -58,12 +61,13 @@ class Door : public DrawableElement
 public:
 
   Door()
+    : DrawableElement()
     {
       rectangle_.setSize(sf::Vector2f(32,32));
       rectangle_.setFillColor(sf::Color(150, 80, 20));
     }
 
-  virtual ~Door() = default;
+  ~Door() = default;
   string getSpriteID() override
     {
       return "Door";
@@ -78,12 +82,13 @@ class Block : public DrawableElement
 public:
   
   Block(int TILESIZE, int x, int y) 
+    : DrawableElement()
     { 
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
       rectangle_.setSize(sf::Vector2f(32,32));
       rectangle_.setFillColor(sf::Color(255, 255, 0));
     }
-  virtual ~Block() = default;
+  ~Block() = default;
   string getSpriteID() override
     {
       return "Block";
