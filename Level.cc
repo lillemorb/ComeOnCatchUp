@@ -21,11 +21,11 @@ public:
 	{
 	case 01:
 	  ground_vector_.push_back(Ground(TILESIZE, x, y));
-//	  drawableElement_vector_.push_back(&ground_vector_.back());
+	  drawableElement_vector_.push_back(&ground_vector_.back());
 	  break;
 	case 02:
 	  player_.setPosition(x, y);
-//	  drawableElement_vector_.push_back(&player_);
+	  drawableElement_vector_.push_back(&player_);
 	  //FELSÖKNING: spårutskrift
 /*
 	  cout << "Nu stoppas Player in i vektorn: " << endl;
@@ -37,11 +37,11 @@ public:
 	  break;
 	case 03:
 	  door_.setPosition(x, y);
-//	  drawableElement_vector_.push_back(&door_);
+	  drawableElement_vector_.push_back(&door_);
 	  break;
 	case 04:
 	  block_vector_.push_back(Block(TILESIZE, x, y));
-//	  drawableElement_vector_.push_back(&block_vector_.back());
+	  drawableElement_vector_.push_back(&block_vector_.back());
 	  break;
 	default:
 	  break;
@@ -54,6 +54,7 @@ public:
   vector<DrawableElement*> getLevelDrawableLayout()
   {
     //Stoppar in adresserna till objekten i drawableElement_vector_ eftersom....
+/*
     drawableElement_vector_.clear();
     drawableElement_vector_.push_back(&player_);
     drawableElement_vector_.push_back(&door_);
@@ -64,11 +65,24 @@ public:
 
     //.....player_ inte hade kvar sin adress som hade stoppats in i drawableElements
     // i konstruktorn till Level, player_ hade bytt adress => vektorn pekade fel => seg fault
-
+    */
     //Spårutskrifter
-/*
-    cout << &player_ << endl << drawableElement_vector_.at(0) << endl;
 
+    cout << &player_ << " = players adress" <<  endl
+	 << drawableElement_vector_.at(0)
+	 << " = det som borde peka på player i vektorn: "  << endl;
+
+    bool found{false};
+    for(unsigned int i{}; i < drawableElement_vector_.size(); ++i)
+    {
+      if(drawableElement_vector_.at(i) == &player_)
+	found = true;
+    }
+    if(found)
+      cout << "Players adress fanns i vektorn" << endl;
+    else
+      cout << "Players adress fanns INTE i vektorn" << endl;
+/*
     DrawableElement* tempPtr = &player_;
     cout << tempPtr->getSpriteID() << ": utskrift fungerar" << endl << tempPtr << endl << endl;
     vector<DrawableElement*> tempVec{};
