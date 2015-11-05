@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 //#include "Level.cc"
+#include "Logic.cc"
 #include "Graphics.cc"
 #include "Logic.cc"
 #include <vector>
@@ -11,7 +12,6 @@ using namespace std;
 class Game
 {
 public:
-//  int run();
   ~Game() { delete currLevelPtr_; }
 
 int run()
@@ -20,8 +20,10 @@ int run()
   Action action;
     
   //INITIERING
-  // create the window
+  // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
   sf::RenderWindow window(sf::VideoMode(768, 576), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
+  
+  // Level 1
   vector<int> level1{
     00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
       00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
@@ -59,17 +61,21 @@ int run()
       // TA IN INPUT
       while (window.pollEvent(event))
 	{
-	  if (sf::keyboard::isKeyPressed(sf::keyboard::Left || sf::keyboard::A))
+	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
+	      sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	    {
 	      //Flytta vänster
 	      action = Left;
 	    }
-	  else if (sf::keyboard::isKeyPressed(sf::keyboard::Right ||  sf::keyboard::D))
+	  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || 
+		   sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	    {
 	      //Flytta höger
 	      action = Right;
 	    }
-	  /*	  else if (sf::keyboard::isKeyPressed(sf::keyboard::Up || sf::keyboard::W || sf::keyboard::Space))
+	  /*	  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || 
+		  sf::Keyboard::isKeyPressed(sf::Keyboard::W) || 
+		  sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	    {
 	      //Hoppa
 	      action = Jump;
