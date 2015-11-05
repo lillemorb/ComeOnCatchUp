@@ -2,7 +2,6 @@
 //#include "Level.cc"
 #include "Logic.cc"
 #include "Graphics.cc"
-#include "Logic.cc"
 #include <vector>
 using namespace std;
 
@@ -17,7 +16,7 @@ public:
 int run()
 {
 
-  Action action;
+  Logic::Action action;
     
   //INITIERING
   // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
@@ -48,7 +47,7 @@ int run()
   // Pga problem med att Level deletar sina pekare då ett tillfälligt objekt
   // tas bort, håller vi reda på aktuell Level med en pekare istället
   // Medans vi fortfarande bara har en Level
-  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, TILES_PER_COLUMN, level1);
+  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, level1);
   // level_vector_.push_back(Level(TILESIZE, TILES_PER_ROW, TILES_PER_COLUMN, level1));
   
   //LOOP
@@ -65,13 +64,13 @@ int run()
 	      sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	    {
 	      //Flytta vänster
-	      action = Left;
+	      action = Logic::Left;
 	    }
 	  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || 
 		   sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	    {
 	      //Flytta höger
-	      action = Right;
+	      action = Logic::Right;
 	    }
 	  /*	  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || 
 		  sf::Keyboard::isKeyPressed(sf::Keyboard::W) || 
@@ -87,7 +86,7 @@ int run()
 	    }
 	  else
 	    {
-	      action = Nothing;
+	      action = Logic::Nothing;
 	    }
 	}
       
@@ -95,7 +94,7 @@ int run()
       window.clear(sf::Color(200, 255, 255, 255));
       
       // UPPDATERA LOGIC
-      logic_.update(action);
+      logic_.update((*currLevelPtr_), action);
       // RITA
       graphics_.drawLevel((*currLevelPtr_), window);
       //level_vector_.at(0).draw(window);
@@ -110,7 +109,7 @@ int run()
 private:
   const int TILESIZE{32};
   const int TILES_PER_ROW{24};
-  const int TILES_PER_COLUMN{18};
+//  const int TILES_PER_COLUMN{18};
   unsigned int current_level{0};
   enum GameState{Playing, ShowScreen, Exit};
   enum ActionResult{Nothing, GameCompleted, LevelCompleted, Dead, Reset, Quit};

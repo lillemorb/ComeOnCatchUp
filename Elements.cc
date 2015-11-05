@@ -31,6 +31,8 @@ public:
   //TODO: ska alla ha dessa funktioner, även fasta objekt?
   sf::Vector2f getVelocity() { return velocity_; } 
   void setVelocity(sf::Vector2f vel) { velocity_ = vel; } 
+  void setPosition(sf::Vector2f pos) { rectangle_.setPosition(pos.x, pos.y); }
+  void setPosition(int x, int y) { rectangle_.setPosition(x*32, y*32); }
 
 protected:
   enum PhysicalID_{Player, Door, Block, Ground};
@@ -50,8 +52,6 @@ public:
       rectangle_.setSize(sf::Vector2f(32,32));
     }
   ~Player() = default;
-  
-  void setPosition(int x, int y) { rectangle_.setPosition(x*32, y*32); }
 };
 
 //---------GROUND--------------//
@@ -82,9 +82,6 @@ public:
     }
 
   ~Door() = default;
- 
-  void setPosition(int x, int y) { rectangle_.setPosition(x*32, y*32); }
-
 };
 
 

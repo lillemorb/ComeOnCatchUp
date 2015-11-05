@@ -11,7 +11,7 @@ using namespace std;
 class Level
 {
 public:
-  Level(int TILESIZE, int TILES_PER_ROW, int TILES_PER_COLUMN, vector<int> level_vector)
+  Level(int TILESIZE, int TILES_PER_ROW, vector<int> level_vector)
     {
       for(unsigned int i{}; i < level_vector.size(); i++)
       {

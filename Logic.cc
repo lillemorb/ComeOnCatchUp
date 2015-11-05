@@ -20,7 +20,7 @@ public:
 
       // TODO: leta upp Player i vektorn,  nu antar vi att
       // den ligger på plats 0
-      unsigned int playerIndex{0}; 
+//      unsigned int playerIndex{0}; 
       ActionResult result{Continue};
 
       // Kolla om action är giltig
@@ -40,8 +40,13 @@ public:
       }
 
       // Uppdatera players position
-      levelVec.at(0)->setPosition(
-	levelVec.at(0)->getPosition() + levelVec.at(0)->getVelocity());
+      sf::Vector2f playerPos{levelVec.at(0)->getPosition().x
+	  + levelVec.at(0)->getVelocity().x, levelVec.at(0)->getPosition().y
+	  + levelVec.at(0)->getVelocity().y,};
+//      levelVec.at(0)->setPosition(
+//	levelVec.at(0)->getPosition() + levelVec.at(0)->getVelocity());
+      levelVec.at(0)->setPosition(playerPos);
+      cout << "Players pos: " << playerPos.x << " " << playerPos.y << endl;
 
       // Kollisionshantering
 
