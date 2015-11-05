@@ -28,16 +28,16 @@ public:
   virtual ~PhysicalElement() = default;//=0 i design spec
   //virtual string getPhysicalID()=0; 
 
-  //TODO: ska alla ha dessa funktioner, även fasta objekt?
-  sf::Vector2f getVelocity() { return velocity_; } 
-  void setVelocity(sf::Vector2f vel) { velocity_ = vel; } 
-  void setPosition(sf::Vector2f pos) { rectangle_.setPosition(pos.x, pos.y); }
-  void setPosition(int x, int y) { rectangle_.setPosition(x*32, y*32); }
+  sf::Vector2f getVelocity() { return velocity_; }
+
+  //Följande funktioner implementeras som tomma för de objekt
+  //som de inte berör
+  virtual void setVelocity(sf::Vector2f vel)  = 0;
+  virtual void setPosition(sf::Vector2f pos)  = 0;
+  virtual void setPosition(int x, int y)  = 0;
 
 protected:
   enum PhysicalID_{Player, Door, Block, Ground};
-
-private:
   sf::Vector2f velocity_{};
 
 };
@@ -52,6 +52,26 @@ public:
       rectangle_.setSize(sf::Vector2f(32,32));
     }
   ~Player() = default;
+  void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
+  void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
+  void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
+};
+
+//---------BLOCK--------------//
+class Block : public PhysicalElement
+{
+public:
+  
+  Block(int TILESIZE, int x, int y) 
+    : PhysicalElement("Block")
+    { 
+      rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
+      rectangle_.setSize(sf::Vector2f(32,32));
+    }
+  ~Block() = default;
+  void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
+  void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
+  void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
 };
 
 //---------GROUND--------------//
@@ -66,9 +86,10 @@ public:
       rectangle_.setSize(sf::Vector2f(32,32));
     }
   ~Ground() = default;
- 
+  void setVelocity(sf::Vector2f) override { velocity_ = sf::Vector2f(0,0); } 
+  void setPosition(sf::Vector2f) override { }
+  void setPosition(int, int) override { } 
 };
-
 
 //---------DOOR--------------//
 class Door : public PhysicalElement
@@ -80,23 +101,11 @@ public:
     {
       rectangle_.setSize(sf::Vector2f(32,32));
     }
-
   ~Door() = default;
+  void setVelocity(sf::Vector2f) override { sf::Vector2f(0,0); } 
+  void setPosition(sf::Vector2f) override { }
+  void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
 };
 
 
-//---------BLOCK--------------//
-class Block : public PhysicalElement
-{
-public:
-  
-  Block(int TILESIZE, int x, int y) 
-    : PhysicalElement("Block")
-    { 
-      rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
-      rectangle_.setSize(sf::Vector2f(32,32));
-    }
-  ~Block() = default;
-
-};
 #endif
