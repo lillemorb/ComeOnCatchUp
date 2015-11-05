@@ -11,6 +11,7 @@ using namespace std;
 class Graphics
 {
 public:
+<<<<<<< HEAD
   
   void drawLevel(Level current, sf::RenderWindow& window)
     {
@@ -51,6 +52,13 @@ public:
 
 
 
+=======
+  void drawLevel(Level & current, sf::RenderWindow& window)
+    {
+      vector<DrawableElement*> levelVec(current.getLevelDrawableLayout());
+      sf::RectangleShape rectangle_;
+      rectangle_.setSize(sf::Vector2f(32,32));
+>>>>>>> 141909247685cfe1e880868fe8024e1af7453b1c
       for(unsigned int i{}; i < levelVec.size(); i++)
       {
 	string tempID = levelVec.at(i)->getSpriteID();

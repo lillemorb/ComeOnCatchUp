@@ -1,20 +1,20 @@
-#ifndef GAME_H
-#define GAME_H
-
 #include <SFML/Graphics.hpp>
 //#include "Level.cc"
 #include "Graphics.cc"
-
 #include <vector>
 using namespace std;
+
+// TODO: dela upp i .cc/.h-filer
+// undersöka var liten minnesläcka finns (kolla mha valgrind)
 
 class Game
 {
 public:
 //  int run();
+  ~Game() { delete currLevelPtr_; }
+
 int run()
 {
-//  Graphics graphics_;
     
   //INITIERING
   // create the window
@@ -40,8 +40,12 @@ int run()
       01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01
       };
   
-  level_vector_.push_back(Level(TILESIZE, TILES_PER_ROW, TILES_PER_COLUMN, level1));
-
+  // Pga problem med att Level deletar sina pekare då ett tillfälligt objekt
+  // tas bort, håller vi reda på aktuell Level med en pekare istället
+  // Medans vi fortfarande bara har en Level
+  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, TILES_PER_COLUMN, level1);
+  // level_vector_.push_back(Level(TILESIZE, TILES_PER_ROW, TILES_PER_COLUMN, level1));
+  
   //LOOP
   // run the program as long as the window is open
   while (window.isOpen())
@@ -65,8 +69,7 @@ int run()
       // RITA
       // draw everything here...
       // window.draw(...);
-      if(level_vector_.size() == 1)
-	graphics_.drawLevel(level_vector_.at(0), window);
+      graphics_.drawLevel((*currLevelPtr_), window);
       //level_vector_.at(0).draw(window);
       
       // end the current frame
@@ -75,8 +78,6 @@ int run()
   
   return 0;
 }
-
-
 
 private:
   const int TILESIZE{32};
@@ -87,7 +88,8 @@ private:
   enum ActionResult{Nothing, GameCompleted, LevelCompleted, Dead, Reset, Quit};
   GameState gamestate_{Playing};
   ActionResult actionResult_{Nothing};
-  vector<Level> level_vector_{};
+//  vector<Level> level_vector_{};
+  Level* currLevelPtr_{};
   /*
   GameLogic gameLogic_;
   */
@@ -95,6 +97,3 @@ private:
  
 
 };
-
-
-#endif
