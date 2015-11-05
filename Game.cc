@@ -110,11 +110,9 @@ private:
   const int TILES_PER_ROW{24};
 //  const int TILES_PER_COLUMN{18};
   unsigned int current_level{0};
-  enum GameState{Playing, ShowScreen, Pause, Exit};
-// enum actionresult finns redan i logic
-  enum ActionResult{Nothing, GameCompleted, LevelCompleted, Dead, Reset, Quit};  
+  enum GameState{Playing, ShowScreen, Pause, Exit}; 
   GameState gamestate_{Playing};
-  ActionResult actionResult_{Nothing};
+  Logic::ActionResult actionResult_= Logic::Continue;
 //  vector<Level> level_vector_{};
   Level* currLevelPtr_{};
   Logic logic_;

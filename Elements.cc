@@ -12,7 +12,7 @@ class DrawableElement
 public:
   DrawableElement(string spriteID) : spriteID_{spriteID} {};
   virtual ~DrawableElement() = default;//=0 i design spec
-  virtual string getSpriteID(){ return spriteID_; } //=0 i design spec
+  virtual string getSpriteID(){ return spriteID_; }
   sf::Vector2f getPosition() { return rectangle_.getPosition(); }
 
 protected:
@@ -34,7 +34,7 @@ public:
   //som de inte berör
   virtual void setVelocity(sf::Vector2f vel)  = 0;
   virtual void setPosition(sf::Vector2f pos)  = 0;
-  virtual void setPosition(int x, int y)  = 0;
+  //virtual void setPosition(int x, int y)  = 0;
 
 protected:
   enum PhysicalID_{Player, Door, Block, Ground};
@@ -46,15 +46,16 @@ protected:
 class Player : public PhysicalElement
 {
 public:
-  Player()
+  Player(int TILESIZE, int x, int y)
     : PhysicalElement("Player")
     {
-      rectangle_.setSize(sf::Vector2f(32,32));
+      rectangle_.setPosition(x*TILESIZE, y*TILESIZE);      
+      rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
     }
   ~Player() = default;
   void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
-  void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
+  //void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
 };
 
 //---------BLOCK--------------//
@@ -66,12 +67,12 @@ public:
     : PhysicalElement("Block")
     { 
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
-      rectangle_.setSize(sf::Vector2f(32,32));
+      rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
     }
   ~Block() = default;
   void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
-  void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
+  //void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
 };
 
 //---------GROUND--------------//
@@ -83,12 +84,12 @@ public:
     : PhysicalElement("Ground")
     { 
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
-      rectangle_.setSize(sf::Vector2f(32,32));
+      rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
     }
   ~Ground() = default;
   void setVelocity(sf::Vector2f) override { velocity_ = sf::Vector2f(0,0); } 
   void setPosition(sf::Vector2f) override { }
-  void setPosition(int, int) override { } 
+  //void setPosition(int, int) override { } 
 };
 
 //---------DOOR--------------//
@@ -96,15 +97,16 @@ class Door : public PhysicalElement
 {
 public:
 
-  Door()
+  Door(int TILESIZE, int x, int y)
     : PhysicalElement("Door")
     {
-      rectangle_.setSize(sf::Vector2f(32,32));
+      rectangle_.setPosition(x*TILESIZE, y*TILESIZE);
+      rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
     }
   ~Door() = default;
   void setVelocity(sf::Vector2f) override { sf::Vector2f(0,0); } 
   void setPosition(sf::Vector2f) override { }
-  void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
+  //void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
 };
 
 
