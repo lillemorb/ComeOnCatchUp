@@ -1,3 +1,6 @@
+// ANVÄNDS EJ! Inkluderingsfel, därför ligger allt i Game.cc
+// tills vidare
+
 #ifndef GAME_H
 #define GAME_H
 
