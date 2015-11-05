@@ -26,14 +26,12 @@ public:
 	  physicalElementVector_.push_back(groundPtrVector_.back());
 	  break;
 	case 02:
-	  playerPtr_ = new Player();
-	  playerPtr_->setPosition(x, y);
+	  playerPtr_ = new Player(TILESIZE, x, y);
 	  drawableElementVector_.push_back(playerPtr_);
 	  physicalElementVector_.push_back(playerPtr_);
 	  break;
 	case 03:
-	  doorPtr_ = new Door();
-	  doorPtr_->setPosition(x, y);
+	  doorPtr_ = new Door(TILESIZE, x, y);
 	  drawableElementVector_.push_back(doorPtr_);
 	  physicalElementVector_.push_back(doorPtr_);
 	  break;
@@ -51,7 +49,6 @@ public:
 // Frigör minne genom att deleta pekare till alla objekt i Level
   ~Level()
     {
-      cout << "Tar bort Level" << endl;
       delete playerPtr_;
       delete doorPtr_;
       for(unsigned int i{}; i < groundPtrVector_.size(); ++i)
