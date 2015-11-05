@@ -3,94 +3,92 @@
 //TODO: flytta using namespace till .cc-fil när vi delar upp i .h/.cc
 using namespace std;
 
+//---------DRAWABLE--------------//
 class DrawableElement
 {
 public:
-  virtual ~DrawableElement() = default;
-  virtual string getSpriteID() = 0;
+  DrawableElement(string spriteID) : spriteID_{spriteID} {};
+  virtual ~DrawableElement() = default;//=0 i design spec
+  virtual string getSpriteID(){ return spriteID_; } //=0 i design spec
   sf::Vector2f getPosition() { return rectangle_.getPosition(); }
-  void draw(sf::RenderWindow& window){ window.draw(rectangle_); }
-  string tempFun() { return "Hej"; }
 
 protected:
+  string spriteID_{};
   sf::RectangleShape rectangle_;
 };
 
-
-class Player : public DrawableElement
+//---------PHYSICAL--------------//
+class PhysicalElement : public DrawableElement
 {
 public:
-  Player()
-    : DrawableElement()
-    {
-      rectangle_.setSize(sf::Vector2f(32,32));
-      rectangle_.setFillColor(sf::Color(255, 0, 0));
-    }
-  ~Player() = default;
-
-  string getSpriteID() override
-    {
-      return "Player";
-    }
-
-  void setPosition(int x, int y) { rectangle_.setPosition(x*32, y*32); }
+  PhysicalElement(string spriteID): DrawableElement(spriteID){};
+  virtual ~PhysicalElement() = default;//=0 i design spec
+  //virtual string getPhysicalID()=0; 
+  
+protected:
+  enum PhysicalID_{Player, Door, Block, Ground};
 };
 
 
-class Ground : public DrawableElement
+//---------PLAYER--------------//
+class Player : public PhysicalElement
+{
+public:
+  Player()
+    : PhysicalElement("Player")
+    {
+      rectangle_.setSize(sf::Vector2f(32,32));
+    }
+  ~Player() = default;
+  
+  void setPosition(int x, int y) { rectangle_.setPosition(x*32, y*32); }
+};
+
+//---------GROUND--------------//
+class Ground : public PhysicalElement
 {
 public:
   
   Ground(int TILESIZE, int x, int y)
-    : DrawableElement()
+    : PhysicalElement("Ground")
     { 
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
       rectangle_.setSize(sf::Vector2f(32,32));
-      rectangle_.setFillColor(sf::Color(150, 255, 100));
     }
   ~Ground() = default;
-  string getSpriteID() override
-    {
-      return "Ground";
-    }
+ 
 };
 
 
-class Door : public DrawableElement
+//---------DOOR--------------//
+class Door : public PhysicalElement
 {
 public:
 
   Door()
-    : DrawableElement()
+    : PhysicalElement("Door")
     {
       rectangle_.setSize(sf::Vector2f(32,32));
-      rectangle_.setFillColor(sf::Color(150, 80, 20));
     }
 
   ~Door() = default;
-  string getSpriteID() override
-    {
-      return "Door";
-    }
-
+ 
   void setPosition(int x, int y) { rectangle_.setPosition(x*32, y*32); }
+
 };
 
 
-class Block : public DrawableElement
+//---------BLOCK--------------//
+class Block : public PhysicalElement
 {
 public:
   
   Block(int TILESIZE, int x, int y) 
-    : DrawableElement()
+    : PhysicalElement("Block")
     { 
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
       rectangle_.setSize(sf::Vector2f(32,32));
-      rectangle_.setFillColor(sf::Color(255, 255, 0));
     }
   ~Block() = default;
-  string getSpriteID() override
-    {
-      return "Block";
-    }
+
 };
