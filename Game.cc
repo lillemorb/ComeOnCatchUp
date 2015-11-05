@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 //#include "Level.cc"
 #include "Graphics.cc"
+#include "Logic.cc"
 #include <vector>
 using namespace std;
 

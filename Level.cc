@@ -1,3 +1,6 @@
+#ifndef LEVEL_CC
+#define LEVEL_CC
+
 #include <vector>
 #include "Elements.cc"
 //TODO: ta bort efter spårutskrift tagits bort
@@ -20,20 +23,24 @@ public:
 	case 01:
 	  groundPtrVector_.push_back(new Ground(TILESIZE, x, y));
 	  drawableElementVector_.push_back(groundPtrVector_.back());
+	  physicalElementVector_.push_back(groundPtrVector_.back());
 	  break;
 	case 02:
 	  playerPtr_ = new Player();
 	  playerPtr_->setPosition(x, y);
 	  drawableElementVector_.push_back(playerPtr_);
+	  physicalElementVector_.push_back(playerPtr_);
 	  break;
 	case 03:
 	  doorPtr_ = new Door();
 	  doorPtr_->setPosition(x, y);
 	  drawableElementVector_.push_back(doorPtr_);
+	  physicalElementVector_.push_back(doorPtr_);
 	  break;
 	case 04:
 	  blockPtrVector_.push_back(new Block(TILESIZE, x, y));
 	  drawableElementVector_.push_back(blockPtrVector_.back());
+	  physicalElementVector_.push_back(blockPtrVector_.back());
 	  break;
 	default:
 	  break;
@@ -54,11 +61,14 @@ public:
     };
 
   vector<DrawableElement*> &  getLevelDrawableLayout()
-  {
-    return drawableElementVector_;
-  }
+    {
+      return drawableElementVector_;
+    }
 
-  //vector<PhysicalElement*> getLevelPhysicalLayout();
+  vector<PhysicalElement*> & getLevelPhysicalLayout()
+    {
+      return physicalElementVector_;
+    }
 
 private:
   // Håller reda på objekten med dynamiskt allokerat minne
@@ -68,6 +78,7 @@ private:
   vector<Block*> blockPtrVector_{};
   vector<Ground*> groundPtrVector_{};
   vector<DrawableElement*> drawableElementVector_{};
-  
+  vector<PhysicalElement*> physicalElementVector_{}; 
 };
 
+#endif

@@ -1,3 +1,6 @@
+#ifndef ELEMENTS_CC
+#define ELEMENTS_CC
+
 #include <SFML/Graphics.hpp>
 
 //TODO: flytta using namespace till .cc-fil när vi delar upp i .h/.cc
@@ -24,11 +27,18 @@ public:
   PhysicalElement(string spriteID): DrawableElement(spriteID){};
   virtual ~PhysicalElement() = default;//=0 i design spec
   //virtual string getPhysicalID()=0; 
-  
+
+  //TODO: ska alla ha dessa funktioner, även fasta objekt?
+  sf::Vector2f getVelocity() { return velocity_; } 
+  void setVelocity(sf::Vector2f vel) { velocity_ = vel; } 
+
 protected:
   enum PhysicalID_{Player, Door, Block, Ground};
-};
 
+private:
+  sf::Vector2f velocity_{};
+
+};
 
 //---------PLAYER--------------//
 class Player : public PhysicalElement
@@ -92,3 +102,4 @@ public:
   ~Block() = default;
 
 };
+#endif
