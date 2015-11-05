@@ -1,14 +1,24 @@
-#include "Game.h"
+#ifndef GAME_H
+#define GAME_H
 
+#include <SFML/Graphics.hpp>
+//#include "Level.cc"
+#include "Graphics.cc"
+
+#include <vector>
 using namespace std;
 
-int Game::run()
+class Game
 {
+public:
+//  int run();
+int run()
+{
+//  Graphics graphics_;
     
   //INITIERING
   // create the window
   sf::RenderWindow window(sf::VideoMode(768, 576), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
-  
   vector<int> level1{
     00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
       00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
@@ -55,8 +65,9 @@ int Game::run()
       // RITA
       // draw everything here...
       // window.draw(...);
-
-      level_vector_.at(0).draw(window);
+      if(level_vector_.size() == 1)
+	graphics_.drawLevel(level_vector_.at(0), window);
+      //level_vector_.at(0).draw(window);
       
       // end the current frame
       window.display();
@@ -64,3 +75,26 @@ int Game::run()
   
   return 0;
 }
+
+
+
+private:
+  const int TILESIZE{32};
+  const int TILES_PER_ROW{24};
+  const int TILES_PER_COLUMN{18};
+  unsigned int current_level{0};
+  enum GameState{Playing, ShowScreen, Exit};
+  enum ActionResult{Nothing, GameCompleted, LevelCompleted, Dead, Reset, Quit};
+  GameState gamestate_{Playing};
+  ActionResult actionResult_{Nothing};
+  vector<Level> level_vector_{};
+  /*
+  GameLogic gameLogic_;
+  */
+  Graphics graphics_;
+ 
+
+};
+
+
+#endif
