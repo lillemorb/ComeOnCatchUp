@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-//#include "Level.cc"
 #include "Logic.cc"
 #include "Graphics.cc"
 #include <vector>
@@ -19,7 +18,8 @@ int run()
 {
 
   Logic::Action action;
-    
+  Logic::Move move;
+
   //INITIERING
   // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
   sf::RenderWindow window(sf::VideoMode(768, 576), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
@@ -44,30 +44,11 @@ int run()
     {
       // check all the window's events that were triggered since the last iteration of the loop
       sf::Event event;
-
+      sf::Clock clock;
       // TA IN INPUT
       while (window.pollEvent(event))
 	{
-	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
-	      sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	    {
-	      //Flytta vänster
-	      action = Logic::Left;
-	    }
-	  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || 
-		   sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	    {
-	      //Flytta höger
-	      action = Logic::Right;
-	    }
-	  /*	  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || 
-		  sf::Keyboard::isKeyPressed(sf::Keyboard::W) || 
-		  sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-	    {
-	      //Hoppa
-	      action = Jump;
-	      }*/
-	  else if (event.type == sf::Event::Closed || 
+	  if (event.type == sf::Event::Closed || 
 		   sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 	    {
 	      // "close requested" event: we close the window
@@ -83,6 +64,32 @@ int run()
 	      GameState = Playing;
 	    }
 	  */
+	  
+	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
+	      sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	    {
+	      //Flytta vänster
+	      move = Logic::Left;
+	    }
+	  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || 
+		   sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	    {
+	      //Flytta höger
+	      move = Logic::Right;
+	    }
+	  else
+	    {
+	      move = Logic::Idle;
+	    }
+
+
+	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || 
+		   sf::Keyboard::isKeyPressed(sf::Keyboard::W) || 
+		   sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	    {
+	      //Hoppa
+	      action = Logic::Jump;
+	    }
 	  else
 	    {
 	      action = Logic::Nothing;
@@ -93,7 +100,7 @@ int run()
       window.clear(sf::Color(200, 255, 255, 255));
       
       // UPPDATERA LOGIC
-      logic_.update((*currLevelPtr_), action);
+      logic_.update((*currLevelPtr_), action, move);
       // RITA
       graphics_.drawLevel((*currLevelPtr_), window);
       //level_vector_.at(0).draw(window);

@@ -10,54 +10,80 @@ public:
   Logic() = default;
 
   enum ActionResult { GameCompleted, LevelCompleted, Dead, Reset, Continue };
-  enum Action { Left, Right, Nothing };
+  enum Move { Left, Right, Idle };
+  enum Action { Jump, Nothing };
 
-  ActionResult update(Level & current, Action action)
-    {
-      // Hämta vektor med objekt i Level
-      // TODO: ändra funktionsanropet till att hämta Physical-vektorn
-      vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
+  ActionResult update(Level & current, Action action, Move move)
+  {
+    // Hämta vektor med objekt i Level
+    // TODO: ändra funktionsanropet till att hämta Physical-vektorn
+    vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
 
-      // TODO: leta upp Player i vektorn,  nu antar vi att
-      // den ligger på plats 0
-//      unsigned int playerIndex{0}; 
-      ActionResult result{Continue};
+    // TODO: leta upp Player i vektorn,  nu antar vi att
+    // den ligger på plats 0
+    //      unsigned int playerIndex{0}; 
+    ActionResult result{Continue};
+    int velX{};
+    int velY{};
 
-      // Kolla om action är giltig
+    Player* player{dynamic_cast<Player*>(levelVec.at(0))};
+    // Kolla om action är giltig
 
-      // Utför action 
-      if(action == Left)
+    // Utför action 
+    //    if(action == Jump && !player->getJump)
+    if(action == Jump)
       {
-	levelVec.at(0)->setVelocity(sf::Vector2f(-1,0));
+	if(!player->getJumpAllowed())
+	  {
+	    velY = -3;
+	  }
       }
-      else if(action == Right)
+    else
       {
-	levelVec.at(0)->setVelocity(sf::Vector2f(1,0));
+	if(player->getPosition().y < 384)
+	  {
+	    velY = 3;
+	  }
+	  else 
+	  {
+	    velY = 0;
+	    player->setJumpAllowed(false);
+	  }
       }
-      else
+    
+    if(move == Left)
       {
-	levelVec.at(0)->setVelocity(sf::Vector2f(0,0));
+	velX = -3;
+      }
+    else if(move == Right)
+      {
+	velX = 3;
+      }
+    else
+      {
       }
 
-      // Uppdatera players position
-      sf::Vector2f playerPos{levelVec.at(0)->getPosition().x
-	  + levelVec.at(0)->getVelocity().x, levelVec.at(0)->getPosition().y
-	  + levelVec.at(0)->getVelocity().y,};
-//      levelVec.at(0)->setPosition(
-//	levelVec.at(0)->getPosition() + levelVec.at(0)->getVelocity());
-      levelVec.at(0)->setPosition(playerPos);
-      cout << "Players pos: " << playerPos.x << " " << playerPos.y << endl;
+    player->setVelocity(sf::Vector2f(velX,velY));
 
-      // Kollisionshantering
+    // Uppdatera players position
+    sf::Vector2f playerPos{player->getPosition().x
+	+ player->getVelocity().x, player->getPosition().y
+	+ player->getVelocity().y,};
+    //      levelVec.at(0)->setPosition(
+    //	levelVec.at(0)->getPosition() + levelVec.at(0)->getVelocity());
+    player->setPosition(playerPos);
+    //cout << "Players pos: " << playerPos.x << " " << playerPos.y << endl;
 
-      // Uppdatera position för block
+    // Kollisionshantering
 
-      // Kollisionshantering
+    // Uppdatera position för block
 
-      // Returnera actionResult;
+    // Kollisionshantering
 
-      return result;
-    }
+    // Returnera actionResult;
+
+    return result;
+  }
 
 
 
