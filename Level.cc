@@ -27,8 +27,16 @@ public:
 	  break;
 	case 02:
 	  playerPtr_ = new Player(TILESIZE, x, y);
-	  drawableElementVector_.push_back(playerPtr_);
-	  physicalElementVector_.push_back(playerPtr_);
+	  if(drawableElementVector_.size() == 0 )
+	    {
+	      drawableElementVector_.push_back(playerPtr_);
+	      physicalElementVector_.push_back(playerPtr_);
+	    }
+	  else
+	    {
+	      drawableElementVector_.insert(drawableElementVector_.begin(), playerPtr_);
+	      physicalElementVector_.insert(physicalElementVector_.begin(), playerPtr_);
+	    }
 	  break;
 	case 03:
 	  doorPtr_ = new Door(TILESIZE, x, y);
