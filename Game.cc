@@ -48,6 +48,8 @@ int run()
       // TA IN INPUT
       while (window.pollEvent(event))
 	{
+	  clock.restart();
+	  
 	  if (event.type == sf::Event::Closed || 
 		   sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 	    {
@@ -100,7 +102,7 @@ int run()
       window.clear(sf::Color(200, 255, 255, 255));
       
       // UPPDATERA LOGIC
-      logic_.update((*currLevelPtr_), action, move);
+      logic_.update((*currLevelPtr_), action, move, clock);
       // RITA
       graphics_.drawLevel((*currLevelPtr_), window);
       //level_vector_.at(0).draw(window);

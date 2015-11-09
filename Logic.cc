@@ -13,7 +13,7 @@ public:
   enum Move { Left, Right, Idle };
   enum Action { Jump, Nothing };
 
-  ActionResult update(Level & current, Action action, Move move)
+  ActionResult update(Level & current, Action action, Move move, sf::Clock & clock)
   {
     // Hämta vektor med objekt i Level
     // TODO: ändra funktionsanropet till att hämta Physical-vektorn
@@ -23,46 +23,50 @@ public:
     // den ligger på plats 0
     //      unsigned int playerIndex{0}; 
     ActionResult result{Continue};
+    sf::Time dt{clock.getElapsedTime()};
     int velX{};
     int velY{};
+    int gravity_{4};
+    int maxVelY_{96};
+    int curVel_{};
+
 
     Player* player{dynamic_cast<Player*>(levelVec.at(0))};
     // Kolla om action är giltig
 
     // Utför action 
     //    if(action == Jump && !player->getJump)
-    if(action == Jump)
+    if(action == Jump && player->getOnGround() == true)
       {
-	if(!player->getJumpAllowed())
-	  {
-	    velY = -3;
-	  }
+	//velY = velY-10*dt+gravity_*dt;
+	velY = velY-96;
+	player->setOnGround(false);
       }
-    else
+    else 
       {
-	if(player->getPosition().y < 384)
+	if(player->getOnGround() == false)
 	  {
-	    velY = 3;
+	    velY = velY+gravity_;
 	  }
-	  else 
+	else
 	  {
 	    velY = 0;
-	    player->setJumpAllowed(false);
 	  }
       }
     
     if(move == Left)
       {
-	velX = -3;
+	velX = -4;
       }
     else if(move == Right)
       {
-	velX = 3;
+	velX = 4;
       }
     else
       {
       }
 
+    //velY = velY*accY*+gravity*dt
     player->setVelocity(sf::Vector2f(velX,velY));
 
     // Uppdatera players position
