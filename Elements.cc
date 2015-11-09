@@ -63,14 +63,11 @@ public:
   ~Player() = default;
   void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
-  /*
-  //Eftersom vi har getOnGround tror vi inte att vi behöver setJumpAllowed
   void setJumpAllowed(bool jumpAllowed) { jumpAllowed_ = jumpAllowed; }
   bool getJumpAllowed() { return jumpAllowed_; }
-  */
 
 private:
-  //bool jumpAllowed_{false};
+  bool jumpAllowed_{false};
   float gravity_{9.82};
 };
 

@@ -28,7 +28,6 @@ public:
     int velY{};
     int gravity_{4};
     int maxVelY_{96};
-    int curVel_{};
 
 
     Player* player{dynamic_cast<Player*>(levelVec.at(0))};
@@ -38,9 +37,9 @@ public:
     //    if(action == Jump && !player->getJump)
     if(action == Jump && player->getOnGround() == true)
       {
-	//velY = velY-10*dt+gravity_*dt;
-	velY = velY-96;
-	player->setOnGround(false);
+	velY = -32;
+	player->setJumpAllowed(false);
+	//player->setOnGround(false);
       }
     else 
       {
@@ -58,25 +57,21 @@ public:
       {
 	velX = -4;
       }
-    else if(move == Right)
+    if(move == Right)
       {
 	velX = 4;
       }
-    else
-      {
-      }
-
-    //velY = velY*accY*+gravity*dt
+    
     player->setVelocity(sf::Vector2f(velX,velY));
 
     // Uppdatera players position
-    sf::Vector2f playerPos{player->getPosition().x
-	+ player->getVelocity().x, player->getPosition().y
-	+ player->getVelocity().y,};
-    //      levelVec.at(0)->setPosition(
-    //	levelVec.at(0)->getPosition() + levelVec.at(0)->getVelocity());
+    sf::Vector2f playerPos{
+      player->getPosition().x + player->getVelocity().x, 
+	player->getPosition().y + player->getVelocity().y + gravity_};
+    // Behöver få in tidskonstanten * Player->getVelocity
+
+
     player->setPosition(playerPos);
-    //cout << "Players pos: " << playerPos.x << " " << playerPos.y << endl;
 
     //kollisionshantering
     result = collisionHandling(levelVec);
@@ -106,7 +101,7 @@ private:
 
   ActionResult collisionHandling (vector<PhysicalElement*> & levelVec)
   {
-    //levelVec.at(0)->setOnGround(false);
+    levelVec.at(0)->setOnGround(false);
     for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	sf::FloatRect area;
@@ -133,7 +128,8 @@ private:
 		  }
 		else if (area.width < area.height)
 		  {
-		    if (area.contains( levelVec.at(0)->getPosition().x + levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+		    if (area.contains( levelVec.at(0)->getPosition().x + 
+				       levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
 		      {
 			//Right side crash
 			offset.x = -area.width;
@@ -150,7 +146,8 @@ private:
 	      }
 	    else if(levelVec.at(i)->getSpriteID() == "Block")
 	      {
-		if (area.contains( levelVec.at(0)->getPosition().x + levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+		if (area.contains( levelVec.at(0)->getPosition().x + 
+				   levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
 		  {
 		    //Right side crash
 		    levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
@@ -193,7 +190,8 @@ private:
 		  }
 		else if (area.width < area.height)
 		  {
-		    if (area.contains( levelVec.at(vecLoc)->getPosition().x + levelVec.at(vecLoc)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+		    if (area.contains( levelVec.at(vecLoc)->getPosition().x + 
+				       levelVec.at(vecLoc)->getGlobalBounds().width - 1.f, area.top + 1.f ))
 		      {
 			//Right side crash
 			offset.x = -area.width;
