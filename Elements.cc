@@ -63,7 +63,13 @@ public:
   ~Player() = default;
   void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
-  //void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
+  void setJumpAllowed(bool jumpAllowed) { jumpAllowed_ = jumpAllowed; }
+  bool getJumpAllowed() { return jumpAllowed_; }
+  
+
+private:
+  bool jumpAllowed_{false};
+  float gravity_{9.82};
 };
 
 //---------BLOCK--------------//
@@ -80,7 +86,6 @@ public:
   ~Block() = default;
   void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
-  //void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
 };
 
 //---------GROUND--------------//
@@ -97,7 +102,6 @@ public:
   ~Ground() = default;
   void setVelocity(sf::Vector2f) override { velocity_ = sf::Vector2f(0,0); } 
   void setPosition(sf::Vector2f) override { }
-  //void setPosition(int, int) override { } 
 };
 
 //---------DOOR--------------//
@@ -114,7 +118,6 @@ public:
   ~Door() = default;
   void setVelocity(sf::Vector2f) override { sf::Vector2f(0,0); } 
   void setPosition(sf::Vector2f) override { }
-  //void setPosition(int x, int y) override { rectangle_.setPosition(x*32, y*32); }
 };
 
 
