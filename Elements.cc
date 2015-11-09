@@ -34,11 +34,20 @@ public:
   //som de inte berör
   virtual void setVelocity(sf::Vector2f vel)  = 0;
   virtual void setPosition(sf::Vector2f pos)  = 0;
+  
+  //ska bara finnas för player och block
+  void move(const sf::Vector2f offset){rectangle_.move(offset);}
+
+  //virtual void setPosition(int x, int y)  = 0;
+  void setOnGround(bool onGround) { onGround_ = onGround; }
+  bool getOnGround() { return onGround_; }
+  sf::FloatRect getGlobalBounds(){ return rectangle_.getGlobalBounds(); }
 
 protected:
   enum PhysicalID_{Player, Door, Block, Ground};
   sf::Vector2f velocity_{};
-
+  bool onGround_{false};
+  
 };
 
 //---------PLAYER--------------//

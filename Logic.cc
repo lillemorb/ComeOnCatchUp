@@ -75,10 +75,12 @@ public:
     //cout << "Players pos: " << playerPos.x << " " << playerPos.y << endl;
 
     // Kollisionshantering
+    result = collisionHandling (levelVec);
 
     // Uppdatera position för block
 
     // Kollisionshantering
+    
 
     // Returnera actionResult;
 
@@ -89,4 +91,61 @@ public:
 
 private:
 
+  ActionResult collisionHandling (vector<PhysicalElement*> & levelVec)
+{
+  //levelVec.at(0)->setOnGround(false);
+  for(unsigned int i{1}; i < levelVec.size(); ++i)
+    {
+      sf::FloatRect area;
+      if(levelVec.at(0)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
+	{
+	  if(levelVec.at(i)->getSpriteID() == "Door")
+	    return LevelCompleted;
+	  else if(levelVec.at(i)->getSpriteID() == "Ground")
+	    {
+	      sf::Vector2f offset {0,0};
+	      if (area.width > area.height)
+		{
+		  if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
+		    {
+		      // Up side crash => move player down
+		      offset.y = area.height;		      
+		    }
+		  else
+		    {
+		      // Down side crash => move player back up
+		      levelVec.at(0)->setOnGround(true);
+		      offset.y = -area.height;
+		    }
+		}
+	      else if (area.width < area.height)
+		{
+		  if (area.contains( levelVec.at(0)->getPosition().x + 
+				     levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+		    {
+		      //Right side crash
+		      offset.x = -area.width;
+		    }
+		  else
+		    {
+		      //Left side crash
+		      offset.x = area.width;
+		    }
+		}
+	      levelVec.at(0)->move(offset);
+	      //cout << "offset x:" << offset.x << " y:" <<offset.y << endl;
+	      return Continue;
+	    }
+	  else if(levelVec.at(i)->getSpriteID() == "Block")
+	    {
+
+	    }
+	}
+    }
+  return Continue;
+
+}
+
+
 };
+
