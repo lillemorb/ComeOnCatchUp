@@ -47,6 +47,8 @@ int run()
       sf::Clock clock;
       // TA IN INPUT
 
+
+      // Fungerar inte just nu, behöver en fungerande jämförelse mellan LevelCompleted och hur vad som händer i Logic.
       if (actionResult_ == Logic::LevelCompleted)
 	{
 	  cout << "level 2" << endl;
