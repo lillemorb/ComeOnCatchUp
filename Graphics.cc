@@ -61,6 +61,12 @@ public:
 	if (tempID == "Player")
 	  {
 	    player_sprite.setPosition(tempPos.x, tempPos.y);
+	    Player* player{dynamic_cast<Player*>(levelVec.at(0))};
+	    if (player->getFacingRight() == false)
+	      {
+		player_sprite.setOrigin(TILESIZE, 0); // Ändrar origin för korrekt spegling
+		player_sprite.setScale(-1.0, 1); //speglar spriten
+	      }
 	    window.draw(player_sprite);
 	  }
 	else if (tempID == "Ground") 

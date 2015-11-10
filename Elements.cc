@@ -54,7 +54,8 @@ protected:
 class Player : public PhysicalElement
 {
 public:
-  Player(int TILESIZE, int x, int y)
+  //Player(int TILESIZE, int x, int y)
+  Player(int TILESIZE, float x, float y)
     : PhysicalElement("Player")
     {
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE);      
@@ -65,10 +66,14 @@ public:
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
   void setJumpAllowed(bool jumpAllowed) { jumpAllowed_ = jumpAllowed; }
   bool getJumpAllowed() { return jumpAllowed_; }
+  float getGravity() { return gravity_; }
+  bool setFacingRight(bool facingRight) { facingRight_ = facingRight; }
+  bool getFacingRight() { return facingRight_; }
 
 private:
   bool jumpAllowed_{false};
-  float gravity_{9.82};
+  float gravity_{0.5f};
+  bool facingRight_{true};
 };
 
 //---------BLOCK--------------//

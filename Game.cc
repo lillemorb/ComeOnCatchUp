@@ -46,6 +46,22 @@ int run()
       sf::Event event;
       sf::Clock clock;
       // TA IN INPUT
+
+      if (actionResult_ == Logic::LevelCompleted)
+	{
+	  cout << "level 2" << endl;
+	  current_level = current_level + 1;
+	  if ( current_level == 2)
+	    {
+	      ifstream is("Level2.txt");
+	      istream_iterator<int> start(is), end;
+	      // Level 1
+	      vector<int> level2(start, end);
+	      currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, level2);
+	    }
+	}
+
+
       while (window.pollEvent(event))
 	{
 	  clock.restart();
@@ -84,13 +100,20 @@ int run()
 	      move = Logic::Idle;
 	    }
 
-
+	  // Kan hoppa genom att hålla inne knappen, kan vara värt att göra så det är delay mellan varje knapptryck
+	  // för att ge bättre respons för användaren.
 	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || 
-		   sf::Keyboard::isKeyPressed(sf::Keyboard::W) || 
-		   sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	      sf::Keyboard::isKeyPressed(sf::Keyboard::W) || 
+	      sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	    {
 	      //Hoppa
 	      action = Logic::Jump;
+	    }
+	  else if (event.type == sf::Event::KeyReleased && ((event.key.code == sf::Keyboard::Up) || 
+							    (event.key.code == sf::Keyboard::W) || 
+							    (event.key.code == sf::Keyboard::Space)))
+	    {
+	      action = Logic::JumpReleased;
 	    }
 	  else
 	    {
@@ -118,7 +141,7 @@ private:
   const int TILESIZE{32};
   const int TILES_PER_ROW{24};
 //  const int TILES_PER_COLUMN{18};
-  unsigned int current_level{0};
+  unsigned int current_level{1};
   enum GameState{Playing, ShowScreen, Pause, Exit}; 
   GameState gamestate_{Playing};
   Logic::ActionResult actionResult_= Logic::Continue;

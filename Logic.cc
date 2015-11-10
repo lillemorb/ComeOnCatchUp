@@ -11,7 +11,7 @@ public:
 
   enum ActionResult { GameCompleted, LevelCompleted, Dead, Reset, Continue };
   enum Move { Left, Right, Idle };
-  enum Action { Jump, Nothing };
+  enum Action { Jump, JumpReleased, Nothing };
 
   ActionResult update(Level & current, Action action, Move move, sf::Clock & clock)
   {
@@ -21,74 +21,59 @@ public:
  
     ActionResult result{Continue};
     sf::Time dt{clock.getElapsedTime()};
-    int velX{};
-    int velY{};
-    int gravity_{4};
-//    int acceleration_y{};
 
-    //int maxVelY_{96};//Anna:bortkommenterad för att slippa varningen unused variable
-
-//Formler:
-//pos_y = pos_y + (velocity_y * time_difference) + (gravity_y * (time_difference ^ 2) / 2)
-//velocity_y = velocity_y + (acceleration_y * time_difference)
-
-
-//Lillemor: Väldigt rörig och ostädad kod, mitt i implementering av hopp
     Player* player{dynamic_cast<Player*>(levelVec.at(0))};
-    // Kolla om action är giltig
 
-    // Utför action 
-    //    if(action == Jump && !player->getJump)
-    if(action == Jump && player->getOnGround() == true)
+    float gravity_{player->getGravity()};
+    //float velX{player->getVelocity().x};
+    float velX{};
+    float velY{player->getVelocity().y};
+
+    
+    if (action == Jump && player->getOnGround() == true)
       {
-	//Acceleration uppåt för ett hopp
-//	acceleration_y = -32;
-	velY = -32;
-	player->setJumpAllowed(false);
-	//player->setOnGround(false);
+	velY = -9.0f;
+	player->setOnGround(false);
       }
-/*
-    else 
+    if (action == JumpReleased)
       {
-	if(player->getOnGround() == false)
-	  {
-	    velY = velY+gravity_;
-	  }
-	else
-	  {
-	    velY = 0;
-	  }
+	// Gör att man kan variera hopphöjden genom att släppa knappen tidigare
+	if(velY < -4.0f)
+	   velY = -4.0f;
       }
-*/  
-    if(move == Left)
+
+    if (move == Left)
       {
 	velX = -4;
+	player->setFacingRight(false);
       }
-    if(move == Right)
+    if (move == Right)
       {
 	velX = 4;
+	player->setFacingRight(true);
       }
 
-//Lillemor: Väldigt rörig och ostädad kod, mitt i implementering av hopp
+    //Denna bör alltid gälla, men man ramlar igenom världen ibland om den är igång alltid.
+    if (player->getOnGround() == false)
+      {
+	velY += gravity_ * (dt.asMilliseconds()/10);
+      }
 
-//    player->setVelocity(sf::Vector2f(velX,velY*(dt.asMilliseconds()/10) +
-//				     (gravity_ * (dt.asMilliseconds()*dt.asMilliseconds()/100)/2)));
-    velY = velY + gravity_ * (dt.asMilliseconds()/10);
-    cout << velY << endl;
-    player->setVelocity(sf::Vector2f(velX,velY));
+    player->setPosition(sf::Vector2f(player->getPosition().x + velX,
+				     (player->getPosition().y + round(velY*(dt.asMilliseconds()/10)))));
+    // Nuvarande problemet är att y-värdet kan lyckas sättas till ett värde som är nedanför lådornas 
+    // topp, vilket strular till det för movement i sidled. Denna fixen bör ske i collisionhandling?
+    // Förflyttningen i x-led sker statiskt istället för med acceleration.
 
-    // Uppdatera players position
-    //Lillemor/Rasmus: Behöver få in tidskonstanten * Player->getVelocity
-    //Anna: Har skrivit om koden så den blir lite kortare
-//    player->move(sf::Vector2f(velX,velY + gravity));
 
-    player->setPosition(sf::Vector2f(player->getPosition().x + player->getVelocity().x,
-      (player->getPosition().y + velY*(dt.asMilliseconds()/10) +
-       (gravity_ * (dt.asMilliseconds()*dt.asMilliseconds()/100)/2))));
+    /*
+    player->setPosition(sf::Vector2f(player->getPosition().x + velX*(dt.asMilliseconds()/10),
+				     (player->getPosition().y + velY*(dt.asMilliseconds()/10))));
+    */
 
-    // Behöver få in tidskonstanten * Player->getVelocity 
+    player->setVelocity(sf::Vector2f(velX, velY));
 
-//    player->setPosition(playerPos);
+
 
     //kollisionshantering
     result = collisionHandling(levelVec);
