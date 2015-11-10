@@ -24,7 +24,9 @@ public:
     int velX{};
     int velY{};
     int gravity_{4};
+
     //int maxVelY_{96};//Anna:bortkommenterad för att slippa varningen unused variable
+
 
 
     Player* player{dynamic_cast<Player*>(levelVec.at(0))};
@@ -50,7 +52,7 @@ public:
 	  }
       }
   
-    if(move == 0)
+    if(move == Left)
       {
 	velX = -4;
       }
@@ -91,69 +93,91 @@ public:
 private:
 
   ActionResult collisionHandling (vector<PhysicalElement*> & levelVec)
-  {
-    //levelVec.at(0)->setOnGround(false);
-    ActionResult result = Continue;
-    for(unsigned int i{1}; i < levelVec.size(); ++i)
+    {
+//      levelVec.at(0)->setOnGround(false);
+      ActionResult result = Continue;
+      for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	sf::FloatRect area;
 	if(levelVec.at(0)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
+	{
+	  if(levelVec.at(i)->getSpriteID() == "Door")
+	    result = LevelCompleted;
+	  else if(levelVec.at(i)->getSpriteID() == "Ground")
 	  {
-	    if(levelVec.at(i)->getSpriteID() == "Door")
-	      result = LevelCompleted;
-	    else if(levelVec.at(i)->getSpriteID() == "Ground")
+	    sf::Vector2f offset {0,0};
+	    if (area.width > area.height)
+	    {
+	      if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
 	      {
-		sf::Vector2f offset {0,0};
-		if (area.width > area.height)
-		  {
-		    if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
-		      {
-			// Up side crash => move player down
-			offset.y = area.height;		      
-		      }
-		    else
-		      {
-			// Down side crash => move player back up
-			levelVec.at(0)->setOnGround(true);
-			offset.y = -area.height;
-		      }
-		  }
-		else if (area.width < area.height)
-		  {
-		    if (area.contains( levelVec.at(0)->getPosition().x + 
-				       levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
-		      {
-			//Right side crash
-			offset.x = -area.width;
-		      }
-		    else
-		      {
-			//Left side crash
-			offset.x = area.width;
-		      }
-		  }
-		levelVec.at(0)->move(offset);
+		// Up side crash => move player down
+		offset.y = area.height;		      
+	      }
+	      else
+	      {
+		// Down side crash => move player back up
+		levelVec.at(0)->setOnGround(true);
+		offset.y = -area.height;
+	      }
+	    }
+	    else if (area.width < area.height)
+	    {
+	      if (area.contains( levelVec.at(0)->getPosition().x + 
+				 levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+	      {
+		//Right side crash
+		offset.x = -area.width;
+	      }
+	      else
+	      {
+		//Left side crash
+		offset.x = area.width;
+	      }
+	    }
+	    levelVec.at(0)->move(offset);
 	
-		result = Continue;
-	      }
-	    else if(levelVec.at(i)->getSpriteID() == "Block")
-	      {
-		if (area.contains( levelVec.at(0)->getPosition().x + 
-				   levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
-		  {
-		    //Right side crash
-		    levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
-		  }
-		else
-		  {
-		    //Left side crash
-		    levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
-		  }
-	      }
+	    result = Continue;
 	  }
+	  else if(levelVec.at(i)->getSpriteID() == "Block")
+	  {
+	    // Kollisionshantering i y-led
+	    sf::Vector2f offset {0,0};
+	    if (area.width > area.height)
+	    {
+	      if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
+	      {
+		// Up side crash => move player down
+		offset.y = area.height;		      
+	      }
+	      else
+	      {
+		// Down side crash => move player back up
+		levelVec.at(0)->setOnGround(true);
+		offset.y = -area.height;
+	      }
+	    }
+	    else if (area.width < area.height)
+	    {
+	      // Kollisionshantering i y-led
+	      if (area.contains( levelVec.at(0)->getPosition().x + 
+				 levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+	      {
+		//Right side crash
+		levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
+	      }
+	      else
+	      {
+		//Left side crash
+		levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
+	      }
+	    }
+	    levelVec.at(0)->move(offset);	
+	    result = Continue;
+	  }
+	}
       }
-    return result;
-  }
+      return result;
+    }
   
 
   void collisionBlock(vector<PhysicalElement*> & levelVec, unsigned int vecLoc)
