@@ -24,11 +24,16 @@ public:
     int velX{};
     int velY{};
     int gravity_{4};
+//    int acceleration_y{};
 
     //int maxVelY_{96};//Anna:bortkommenterad för att slippa varningen unused variable
 
+//Formler:
+//pos_y = pos_y + (velocity_y * time_difference) + (gravity_y * (time_difference ^ 2) / 2)
+//velocity_y = velocity_y + (acceleration_y * time_difference)
 
 
+//Lillemor: Väldigt rörig och ostädad kod, mitt i implementering av hopp
     Player* player{dynamic_cast<Player*>(levelVec.at(0))};
     // Kolla om action är giltig
 
@@ -36,10 +41,13 @@ public:
     //    if(action == Jump && !player->getJump)
     if(action == Jump && player->getOnGround() == true)
       {
+	//Acceleration uppåt för ett hopp
+//	acceleration_y = -32;
 	velY = -32;
 	player->setJumpAllowed(false);
 	//player->setOnGround(false);
       }
+/*
     else 
       {
 	if(player->getOnGround() == false)
@@ -51,7 +59,7 @@ public:
 	    velY = 0;
 	  }
       }
-  
+*/  
     if(move == Left)
       {
 	velX = -4;
@@ -60,13 +68,27 @@ public:
       {
 	velX = 4;
       }
-   
+
+//Lillemor: Väldigt rörig och ostädad kod, mitt i implementering av hopp
+
+//    player->setVelocity(sf::Vector2f(velX,velY*(dt.asMilliseconds()/10) +
+//				     (gravity_ * (dt.asMilliseconds()*dt.asMilliseconds()/100)/2)));
+    velY = velY + gravity_ * (dt.asMilliseconds()/10);
+    cout << velY << endl;
     player->setVelocity(sf::Vector2f(velX,velY));
 
     // Uppdatera players position
     //Lillemor/Rasmus: Behöver få in tidskonstanten * Player->getVelocity
     //Anna: Har skrivit om koden så den blir lite kortare
-    player->move(sf::Vector2f(velX,velY+gravity_));
+//    player->move(sf::Vector2f(velX,velY + gravity));
+
+    player->setPosition(sf::Vector2f(player->getPosition().x + player->getVelocity().x,
+      (player->getPosition().y + velY*(dt.asMilliseconds()/10) +
+       (gravity_ * (dt.asMilliseconds()*dt.asMilliseconds()/100)/2))));
+
+    // Behöver få in tidskonstanten * Player->getVelocity 
+
+//    player->setPosition(playerPos);
 
     //kollisionshantering
     result = collisionHandling(levelVec);
@@ -93,7 +115,7 @@ public:
 private:
 
   ActionResult collisionHandling (vector<PhysicalElement*> & levelVec)
-    {
+      {
 //      levelVec.at(0)->setOnGround(false);
       ActionResult result = Continue;
       for(unsigned int i{1}; i < levelVec.size(); ++i)
