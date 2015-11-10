@@ -16,18 +16,15 @@ public:
   ActionResult update(Level & current, Action action, Move move, sf::Clock & clock)
   {
     // Hämta vektor med objekt i Level
-    // TODO: ändra funktionsanropet till att hämta Physical-vektorn
+    // TODO: ändra funktionsanropet till att hämta Physical-vektorn //Anna:?? Är det inte redan det som görs?
     vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
-
-    // TODO: leta upp Player i vektorn,  nu antar vi att
-    // den ligger på plats 0
-    //      unsigned int playerIndex{0}; 
+ 
     ActionResult result{Continue};
     sf::Time dt{clock.getElapsedTime()};
     int velX{};
     int velY{};
     int gravity_{4};
-    int maxVelY_{96};
+    //int maxVelY_{96};//Anna:bortkommenterad för att slippa varningen unused variable
 
 
     Player* player{dynamic_cast<Player*>(levelVec.at(0))};
@@ -52,8 +49,8 @@ public:
 	    velY = 0;
 	  }
       }
-    
-    if(move == Left)
+  
+    if(move == 0)
       {
 	velX = -4;
       }
@@ -61,54 +58,49 @@ public:
       {
 	velX = 4;
       }
-    
+   
     player->setVelocity(sf::Vector2f(velX,velY));
 
     // Uppdatera players position
-    sf::Vector2f playerPos{
-      player->getPosition().x + player->getVelocity().x, 
-	player->getPosition().y + player->getVelocity().y + gravity_};
-    // Behöver få in tidskonstanten * Player->getVelocity
-
-
-    player->setPosition(playerPos);
+    //Lillemor/Rasmus: Behöver få in tidskonstanten * Player->getVelocity
+    //Anna: Har skrivit om koden så den blir lite kortare
+    player->move(sf::Vector2f(velX,velY+gravity_));
 
     //kollisionshantering
     result = collisionHandling(levelVec);
 
-      // Uppdatera position för block, ett för ett
-      for(unsigned int i{1}; i < levelVec.size(); ++i)
-	{
-	  sf::Vector2f noVel{0,0};
-	  if (levelVec.at(i)->getSpriteID() == "Block" && levelVec.at(i)->getVelocity() != noVel) 
-	    {
-	      // Uppdatera blockets position, samma som för player ovan, ska kanske ändras lite på båda ställen
-	      sf::Vector2f playerPos{levelVec.at(i)->getPosition().x
-		  + levelVec.at(i)->getVelocity().x, levelVec.at(i)->getPosition().y
-		  + levelVec.at(i)->getVelocity().y,};
-	      levelVec.at(i)->setPosition(playerPos);
-	      levelVec.at(i)->setVelocity(noVel);
-	      //kollisionshantering
-	      collisionBlock(levelVec, i);
-	    }
-	}
-      // Returnera actionResult;
-      return result;
-    }
-
+    // Uppdatera position för block, ett för ett
+    for(unsigned int i{1}; i < levelVec.size(); ++i)
+      {
+	sf::Vector2f noVel{0,0};
+	if (levelVec.at(i)->getSpriteID() == "Block" && 
+	    levelVec.at(i)->getVelocity() != noVel) 
+	  {
+	    // Uppdatera blockets position
+	    levelVec.at(i)->move(levelVec.at(i)->getVelocity());
+	    levelVec.at(i)->setVelocity(noVel);
+	    //kollisionshantering
+	    collisionBlock(levelVec, i);
+	  }
+      }
+    // Returnera actionResult;
+    return result;
+  }
+  
 
 private:
 
   ActionResult collisionHandling (vector<PhysicalElement*> & levelVec)
   {
-    levelVec.at(0)->setOnGround(false);
+    //levelVec.at(0)->setOnGround(false);
+    ActionResult result = Continue;
     for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	sf::FloatRect area;
 	if(levelVec.at(0)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
 	  {
 	    if(levelVec.at(i)->getSpriteID() == "Door")
-	      return LevelCompleted;
+	      result = LevelCompleted;
 	    else if(levelVec.at(i)->getSpriteID() == "Ground")
 	      {
 		sf::Vector2f offset {0,0};
@@ -141,8 +133,8 @@ private:
 		      }
 		  }
 		levelVec.at(0)->move(offset);
-		//cout << "offset x:" << offset.x << " y:" <<offset.y << endl;
-		return Continue;
+	
+		result = Continue;
 	      }
 	    else if(levelVec.at(i)->getSpriteID() == "Block")
 	      {
@@ -160,7 +152,7 @@ private:
 	      }
 	  }
       }
-    return Continue;
+    return result;
   }
   
 
@@ -226,5 +218,5 @@ private:
 	levelVec.at(0)->move(offset);
       } 
   }	  
-
+ 
 };
