@@ -32,7 +32,7 @@ int run()
 
   // Lillemor: Gör om till funktion som läser in alla filer och spara i vektor
 
-  // För över Level1 till vektorn.
+  // För över Level till vektorn.
   ifstream is("Level.txt");
   istream_iterator<int> start(is), end;
   vector<int> lvl(start, end);
@@ -66,12 +66,11 @@ int run()
 	  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
 	}
      
-      //Reset
-
       //Dead
       if(actionResult_ == Logic::Dead)
 	{
-	  delete currLevelPtr_;
+	  delete currLevelPtr_;	
+	  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
 	  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
 	}
 
@@ -104,6 +103,7 @@ int run()
 	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 	    {
 	      delete currLevelPtr_;
+	      vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
 	      currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
 	      
 	    }
