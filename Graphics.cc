@@ -51,27 +51,20 @@ public:
     sf::Sprite block_sprite;
     block_sprite.setTexture(spriteSheet_background);
     block_sprite.setTextureRect(sf::IntRect(0, 0, TILESIZE, TILESIZE));
+    sf::Sprite start_sprite;
+    start_sprite.setTexture(spriteSheet_background);
+    start_sprite.setTextureRect(sf::IntRect(96, 64, TILESIZE, TILESIZE));
+    sf::Sprite goal_sprite;
+    goal_sprite.setTexture(spriteSheet_background);
+    goal_sprite.setTextureRect(sf::IntRect(96, 32, TILESIZE, TILESIZE));
 
-
-    for(unsigned int i{}; i < levelVec.size(); i++)
+    // Rita ut allt utom Player
+    for(unsigned int i{1}; i < levelVec.size(); i++)
       {
 	string tempID = levelVec.at(i)->getSpriteID();
 	sf::Vector2f tempPos = levelVec.at(i)->getPosition();
-	  
-	if (tempID == "Player")
-	  {
-	    player_sprite.setPosition(tempPos.x, tempPos.y);
-	    Player* player{dynamic_cast<Player*>(levelVec.at(0))};
-	    if (player->getFacingRight() == false)
-	      {
-		//Ändrar origin för korrekt spegling
-		player_sprite.setOrigin(TILESIZE, 0); 
-		//speglar spriten
-		player_sprite.setScale(-1.0, 1); 
-	      }
-	    window.draw(player_sprite);
-	  }
-	else if (tempID == "Ground") 
+	
+        if (tempID == "Ground") 
 	  {
 	    ground_sprite.setPosition(tempPos.x, tempPos.y);
 	    window.draw(ground_sprite);
@@ -86,7 +79,31 @@ public:
 	    block_sprite.setPosition(tempPos.x, tempPos.y);
 	    window.draw(block_sprite);
 	  }
+	else if (tempID == "Start") 
+	  {
+	    start_sprite.setPosition(tempPos.x, tempPos.y);
+	    window.draw(start_sprite);
+	  }
+	else if (tempID == "Goal") 
+	  {
+	    goal_sprite.setPosition(tempPos.x, tempPos.y);
+	    window.draw(goal_sprite);
+	  }
       }
+
+    // Utritning av Player
+	sf::Vector2f tempPos = levelVec.at(0)->getPosition();
+	player_sprite.setPosition(tempPos.x, tempPos.y);
+	Player* player{dynamic_cast<Player*>(levelVec.at(0))};
+	if (player->getFacingRight() == false)
+	  {
+	    //Ändrar origin för korrekt spegling
+	    player_sprite.setOrigin(TILESIZE, 0); 
+	    //speglar spriten
+	    player_sprite.setScale(-1.0, 1); 
+	  }
+	window.draw(player_sprite);
+      
   }
 
 };

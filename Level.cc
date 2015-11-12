@@ -48,6 +48,14 @@ public:
 	  drawableElementVector_.push_back(blockPtrVector_.back());
 	  physicalElementVector_.push_back(blockPtrVector_.back());
 	  break;
+	case 05:
+	  backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "Start"));
+	  drawableElementVector_.push_back(backgroundPtrVector_.back());
+	  break;
+	case 06: 
+	  backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "Goal"));
+	  drawableElementVector_.push_back(backgroundPtrVector_.back());
+	  break;
 	default:
 	  break;
 	}
@@ -63,6 +71,8 @@ public:
 	delete groundPtrVector_.at(i);
       for(unsigned int i{}; i < blockPtrVector_.size(); ++i)
 	delete blockPtrVector_.at(i);
+      for(unsigned int i{}; i < backgroundPtrVector_.size(); ++i)
+	delete backgroundPtrVector_.at(i);
     };
 
   vector<DrawableElement*> &  getLevelDrawableLayout()
@@ -82,6 +92,7 @@ private:
   Door* doorPtr_{};
   vector<Block*> blockPtrVector_{};
   vector<Ground*> groundPtrVector_{};
+  vector<Background*> backgroundPtrVector_{};
   vector<DrawableElement*> drawableElementVector_{};
   vector<PhysicalElement*> physicalElementVector_{}; 
 };

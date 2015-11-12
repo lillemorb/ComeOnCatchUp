@@ -122,5 +122,18 @@ public:
   void setPosition(sf::Vector2f) override { }
 };
 
+//---------BACKGROUND--------//
+class Background : public DrawableElement
+{
+public:
+
+  Background(int TILESIZE, int x, int y, string typeID)
+    : DrawableElement(typeID)
+    {
+      rectangle_.setPosition(x*TILESIZE, y*TILESIZE);
+      rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
+    }
+  ~Background() = default;
+};
 
 #endif
