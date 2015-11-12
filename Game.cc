@@ -24,8 +24,9 @@ int run()
 
   //INITIERING
   // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
-  sf::RenderWindow window(sf::VideoMode(768, 576), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
-  
+  sf::RenderWindow window(sf::VideoMode(xPix_, yPix_), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
+  //Skicka pixelvärden till logic så den vet hur stort fönstret är
+  logic_.setPix(xPix_, yPix_);
   // Lillemor: Gör om till funktion som läser in alla filer och spara i vektor
 
   // För över Level1 till vektorn.
@@ -155,6 +156,6 @@ private:
   Level* currLevelPtr_{};
   Logic logic_;
   Graphics graphics_;
- 
-
+  int xPix_{768};
+  int yPix_{576};
 };
