@@ -24,8 +24,12 @@ int run()
 
   //INITIERING
   // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
-  sf::RenderWindow window(sf::VideoMode(768, 576), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
-  
+  sf::RenderWindow window(sf::VideoMode(xPix_, yPix_), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
+  //Skicka pixelvärden till logic så den vet hur stort fönstret är
+  logic_.setPix(xPix_, yPix_);
+ 
+  window.setVerticalSyncEnabled(true);
+
   // Lillemor: Gör om till funktion som läser in alla filer och spara i vektor
 
   // För över Level1 till vektorn.
@@ -41,7 +45,9 @@ int run()
     {
       sf::Event event;
       sf::Clock clock;
-      
+      sf::Time dt_{clock.getElapsedTime()};
+
+
       // Continue to next level
       if (actionResult_ == Logic::LevelCompleted && (current_level) < (lvl.size()/vector_size))
 	{
@@ -121,20 +127,25 @@ int run()
 	      move = Logic::Idle;
 	    }
 
-	  // Rasmus: Kan hoppa genom att hålla inne knappen, kan vara värt att göra så det är
-	  // delay mellan varje knapptryck för att ge bättre respons för användaren.
-	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || 
-	      sf::Keyboard::isKeyPressed(sf::Keyboard::W) || 
-	      sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	  // Rasmus: Potentiell TODO: Om man hoppar upp på en kant så fortsätter
+	  // man hoppa direkt om man håller inne hoppknappen.
+	  if (jumping_ == false && 
+	      (event.type == sf::Event::KeyPressed && 
+	       ((event.key.code == sf::Keyboard::Up) || 
+		(event.key.code == sf::Keyboard::W) || 
+		(event.key.code == sf::Keyboard::Space))))
 	    {
 	      //Hoppa
-	      action = Logic::Jump;
+		  action = Logic::Jump;
+		  jumping_ = true;
 	    }
-	  else if (event.type == sf::Event::KeyReleased && ((event.key.code == sf::Keyboard::Up) || 
-							    (event.key.code == sf::Keyboard::W) || 
-							    (event.key.code == sf::Keyboard::Space)))
+	  else if (event.type == sf::Event::KeyReleased && 
+		   ((event.key.code == sf::Keyboard::Up) || 
+		    (event.key.code == sf::Keyboard::W) || 
+		    (event.key.code == sf::Keyboard::Space)))
 	    {
 	      action = Logic::JumpReleased;
+	      jumping_ = false;
 	    }
 	  else
 	    {
@@ -159,17 +170,21 @@ int run()
 }
 
 private:
-const int TILESIZE{32};
-const int TILES_PER_ROW{24};
-const int TILES_PER_COLUMN{18};
-unsigned int current_level{1};
-int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
-enum GameState{Playing, ShowScreen, Pause, Exit}; 
-GameState gamestate_{Playing};
-Logic::ActionResult actionResult_= Logic::Continue;
-Level* currLevelPtr_{};
-Logic logic_;
-Graphics graphics_;
 
+  const int TILESIZE{32};
+  const int TILES_PER_ROW{24};
+  const int TILES_PER_COLUMN{18};
+  unsigned int current_level{1};
+  int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
+  enum GameState{Playing, ShowScreen, Pause, Exit}; 
+  GameState gamestate_{Playing};
+  Logic::ActionResult actionResult_= Logic::Continue;
+  Level* currLevelPtr_{};
+  Logic logic_;
+  Graphics graphics_;
+  int xPix_{768};
+  int yPix_{576};
+  bool jumping_{false};
 
 };
+  
