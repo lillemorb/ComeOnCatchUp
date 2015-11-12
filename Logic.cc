@@ -9,9 +9,9 @@ class Logic
 public:
   Logic() = default;
 
-  enum ActionResult { GameCompleted, LevelCompleted, Dead, Reset, Continue };
+  enum ActionResult { LevelCompleted, Dead, Reset, Continue };
   enum Move { Left, Right, Idle };
-  enum Action { Jump, JumpReleased, Nothing };
+  enum Action { Jump, JumpReleased, NoJump };
 
   ActionResult update(Level & current, Action action, Move move, sf::Clock & clock)
   {
@@ -24,8 +24,8 @@ public:
     Player* player{dynamic_cast<Player*>(levelVec.at(0))};
 
     float gravity_{player->getGravity()};
-    //float velX{player->getVelocity().x};
-    float velX{};
+    // 
+    float distX{};
     float velY{player->getVelocity().y};
 
     
@@ -43,41 +43,38 @@ public:
 
     if (move == Left)
       {
-	velX = -4;
+	distX = -4;
 	player->setFacingRight(false);
       }
     if (move == Right)
       {
-	velX = 4;
+	distX = 4;
 	player->setFacingRight(true);
       }
 
-    //Denna bör alltid gälla, men man ramlar igenom världen ibland om den är igång alltid.
+    //Rasmus: Denna bör alltid gälla, men man ramlar igenom världen ibland om den är igång alltid.
     if (player->getOnGround() == false)
       {
 	velY += gravity_ * (dt.asMilliseconds()/10);
       }
 
-    player->setPosition(sf::Vector2f(player->getPosition().x + velX,
-				     (player->getPosition().y + round(velY*(dt.asMilliseconds()/10)))));
-    // Nuvarande problemet är att y-värdet kan lyckas sättas till ett värde som är nedanför lådornas 
+    // Rasmus: Nuvarande problemet är att y-värdet kan lyckas sättas till ett värde som är nedanför Block:ens 
     // topp, vilket strular till det för movement i sidled. Denna fixen bör ske i collisionhandling?
     // Förflyttningen i x-led sker statiskt istället för med acceleration.
+    
+    player->move(sf::Vector2f(distX, round(velY*(dt.asMilliseconds()/10))));
+    //TODO: kolla om man verkligen ska sätta något i x-led
+    player->setVelocity(sf::Vector2f(distX, velY));
 
 
-    /*
-    player->setPosition(sf::Vector2f(player->getPosition().x + velX*(dt.asMilliseconds()/10),
-				     (player->getPosition().y + velY*(dt.asMilliseconds()/10))));
-    */
+    // kollisionshantering spelare
 
-    player->setVelocity(sf::Vector2f(velX, velY));
+    // TODO: Ska denna verkligen sättas här? Undersök.
+    levelVec.at(0)->setOnGround(false);
 
-
-
-    //kollisionshantering
     result = collisionHandling(levelVec);
  
-    // Uppdatera position för block, ett för ett
+    // Uppdatera position för block ett och ett, med kollisionshantering för vardera block
     for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	sf::Vector2f noVel{0,0};
@@ -99,8 +96,8 @@ public:
 private:
 
   ActionResult collisionHandling (vector<PhysicalElement*> & levelVec)
-      {
-//      levelVec.at(0)->setOnGround(false);
+    {
+
       ActionResult result = Continue;
       for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
@@ -110,8 +107,12 @@ private:
 	  if(levelVec.at(i)->getSpriteID() == "Door")
 	  {
 	    cout << "Kollision med Door" << endl;
+
+	    //Lillemor: Kolla vilken av följande rader som är korrekt.
+	    //Bortkommenterad tills vidare för att slippa banbyte.
 //	    result = LevelCompleted;
-	    return LevelCompleted;
+
+//	    return LevelCompleted;
 	  }
 	  else if(levelVec.at(i)->getSpriteID() == "Ground")
 	  {
@@ -168,7 +169,7 @@ private:
 	    }
 	    else if (area.width < area.height)
 	    {
-	      // Kollisionshantering i y-led
+	      // Kollisionshantering i x-led
 	      if (area.contains( levelVec.at(0)->getPosition().x + 
 				 levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
 	      {
@@ -238,7 +239,8 @@ private:
 	sf::Vector2f offset {0,0};
 	if (area.width < area.height)
 	  {
-	    if (area.contains( levelVec.at(0)->getPosition().x + levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+	    if (area.contains( levelVec.at(0)->getPosition().x
+			       + levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
 	      {
 		//Right side crash
 		offset.x = -area.width;

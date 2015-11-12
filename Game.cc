@@ -1,3 +1,5 @@
+//Game.cc
+
 #include <SFML/Graphics.hpp>
 #include "Logic.cc"
 #include "Graphics.cc"
@@ -24,32 +26,24 @@ int run()
   // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
   sf::RenderWindow window(sf::VideoMode(768, 576), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
   
-  // Gör om till funktion
+  // Lillemor: Gör om till funktion som läser in alla filer och spara i vektor
+
   // För över Level1 till vektorn.
   ifstream is("Level1.txt");
   istream_iterator<int> start(is), end;
   // Level 1
   vector<int> level1(start, end);
 
-
-
-  // Pga problem med att Level deletar sina pekare då ett tillfälligt objekt
-  // tas bort, håller vi reda på aktuell Level med en pekare istället
-  // Medans vi fortfarande bara har en Level
   currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, level1);
-  // level_vector_.push_back(Level(TILESIZE, TILES_PER_ROW, TILES_PER_COLUMN, level1));
   
   //LOOP
   // run the program as long as the window is open
   while (window.isOpen())
     {
-      // check all the window's events that were triggered since the last iteration of the loop
       sf::Event event;
       sf::Clock clock;
-      // TA IN INPUT
 
-
-      // Fungerar inte just nu, behöver en fungerande jämförelse mellan LevelCompleted och hur vad som händer i Logic.
+      // Continue to next level
       if (actionResult_ == Logic::LevelCompleted)
 	{
 	  cout << "level 2" << endl;
@@ -73,7 +67,8 @@ int run()
 	  }
 	}
 
-
+      // check all the window's events that were triggered since the last iteration of the loop
+      // TA IN INPUT
       while (window.pollEvent(event))
 	{
 	  clock.restart();
@@ -85,6 +80,7 @@ int run()
 	      window.close();
 	    }
 	  /*
+	    // Rasmus: Eventuellt för senare bruk
 	  else if (event.type == sf::Event::LostFocus)
 	    {
 	      GameState = Pause;
@@ -112,7 +108,7 @@ int run()
 	      move = Logic::Idle;
 	    }
 
-	  // Kan hoppa genom att hålla inne knappen, kan vara värt att göra så det är
+	  // Rasmus: Kan hoppa genom att hålla inne knappen, kan vara värt att göra så det är
 	  // delay mellan varje knapptryck för att ge bättre respons för användaren.
 	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || 
 	      sf::Keyboard::isKeyPressed(sf::Keyboard::W) || 
@@ -129,7 +125,7 @@ int run()
 	    }
 	  else
 	    {
-	      action = Logic::Nothing;
+	      action = Logic::NoJump;
 	    }
 	}
       
@@ -138,9 +134,9 @@ int run()
       
       // UPPDATERA LOGIC
       actionResult_ = logic_.update((*currLevelPtr_), action, move, clock);
+
       // RITA
       graphics_.drawLevel((*currLevelPtr_), window);
-      //level_vector_.at(0).draw(window);
       
       // end the current frame
       window.display();
@@ -152,12 +148,10 @@ int run()
 private:
   const int TILESIZE{32};
   const int TILES_PER_ROW{24};
-//  const int TILES_PER_COLUMN{18};
   unsigned int current_level{1};
   enum GameState{Playing, ShowScreen, Pause, Exit}; 
   GameState gamestate_{Playing};
   Logic::ActionResult actionResult_= Logic::Continue;
-//  vector<Level> level_vector_{};
   Level* currLevelPtr_{};
   Logic logic_;
   Graphics graphics_;

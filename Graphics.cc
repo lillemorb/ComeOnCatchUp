@@ -64,8 +64,10 @@ public:
 	    Player* player{dynamic_cast<Player*>(levelVec.at(0))};
 	    if (player->getFacingRight() == false)
 	      {
-		player_sprite.setOrigin(TILESIZE, 0); // Ändrar origin för korrekt spegling
-		player_sprite.setScale(-1.0, 1); //speglar spriten
+		//Ändrar origin för korrekt spegling
+		player_sprite.setOrigin(TILESIZE, 0); 
+		//speglar spriten
+		player_sprite.setScale(-1.0, 1); 
 	      }
 	    window.draw(player_sprite);
 	  }

@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 //TODO: flytta using namespace till .cc-fil när vi delar upp i .h/.cc
+//TODO: städa funktioner, var ska de ligga, uppdatera övriga filer därefter
 using namespace std;
 
 //---------DRAWABLE--------------//
@@ -64,14 +65,11 @@ public:
   ~Player() = default;
   void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
-  void setJumpAllowed(bool jumpAllowed) { jumpAllowed_ = jumpAllowed; }
-  bool getJumpAllowed() { return jumpAllowed_; }
   float getGravity() { return gravity_; }
-  bool setFacingRight(bool facingRight) { facingRight_ = facingRight; }
+  void setFacingRight(bool facingRight) { facingRight_ = facingRight; }
   bool getFacingRight() { return facingRight_; }
 
 private:
-  bool jumpAllowed_{false};
   float gravity_{0.5f};
   bool facingRight_{true};
 };
