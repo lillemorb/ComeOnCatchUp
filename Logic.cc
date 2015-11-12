@@ -16,7 +16,6 @@ public:
   ActionResult update(Level & current, Action action, Move move, sf::Clock & clock)
   {
     // Hämta vektor med objekt i Level
-    // TODO: ändra funktionsanropet till att hämta Physical-vektorn //Anna:?? Är det inte redan det som görs?
     vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
  
     ActionResult result{Continue};
@@ -77,7 +76,7 @@ public:
 
     //kollisionshantering
     result = collisionHandling(levelVec);
-
+ 
     // Uppdatera position för block, ett för ett
     for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
@@ -109,7 +108,11 @@ private:
 	if(levelVec.at(0)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
 	{
 	  if(levelVec.at(i)->getSpriteID() == "Door")
-	    result = LevelCompleted;
+	  {
+	    cout << "Kollision med Door" << endl;
+//	    result = LevelCompleted;
+	    return LevelCompleted;
+	  }
 	  else if(levelVec.at(i)->getSpriteID() == "Ground")
 	  {
 	    sf::Vector2f offset {0,0};

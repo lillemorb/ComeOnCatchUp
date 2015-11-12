@@ -24,6 +24,7 @@ int run()
   // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
   sf::RenderWindow window(sf::VideoMode(768, 576), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
   
+  // Gör om till funktion
   // För över Level1 till vektorn.
   ifstream is("Level1.txt");
   istream_iterator<int> start(is), end;
@@ -54,13 +55,22 @@ int run()
 	  cout << "level 2" << endl;
 	  current_level = current_level + 1;
 	  if ( current_level == 2)
-	    {
-	      ifstream is("Level2.txt");
-	      istream_iterator<int> start(is), end;
-	      // Level 1
-	      vector<int> level2(start, end);
-	      currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, level2);
-	    }
+	  {
+	    ifstream is("Level2.txt");
+	    istream_iterator<int> start(is), end;
+	    // Level 1
+	    vector<int> level2(start, end);
+	    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, level2);
+	  }
+	  else if( current_level > 2)
+	  {
+	    ifstream is("Level1.txt");
+	    istream_iterator<int> start(is), end;
+	    // Level 1
+	    vector<int> level1(start, end);
+	    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, level1);
+	    current_level = 1;
+	  }
 	}
 
 
@@ -102,8 +112,8 @@ int run()
 	      move = Logic::Idle;
 	    }
 
-	  // Kan hoppa genom att hålla inne knappen, kan vara värt att göra så det är delay mellan varje knapptryck
-	  // för att ge bättre respons för användaren.
+	  // Kan hoppa genom att hålla inne knappen, kan vara värt att göra så det är
+	  // delay mellan varje knapptryck för att ge bättre respons för användaren.
 	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || 
 	      sf::Keyboard::isKeyPressed(sf::Keyboard::W) || 
 	      sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
@@ -127,7 +137,7 @@ int run()
       window.clear(sf::Color(200, 255, 255, 255));
       
       // UPPDATERA LOGIC
-      logic_.update((*currLevelPtr_), action, move, clock);
+      actionResult_ = logic_.update((*currLevelPtr_), action, move, clock);
       // RITA
       graphics_.drawLevel((*currLevelPtr_), window);
       //level_vector_.at(0).draw(window);
