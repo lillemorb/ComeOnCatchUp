@@ -31,10 +31,9 @@ int run()
   // För över Level1 till vektorn.
   ifstream is("Level1.txt");
   istream_iterator<int> start(is), end;
-  // Level 1
-  vector<int> level1(start, end);
-
-  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, level1);
+  vector<int> lvl(start, end);
+  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
   
   //LOOP
   // run the program as long as the window is open
@@ -42,30 +41,37 @@ int run()
     {
       sf::Event event;
       sf::Clock clock;
-
+      
       // Continue to next level
-      if (actionResult_ == Logic::LevelCompleted)
+      if (actionResult_ == Logic::LevelCompleted && (current_level) < (lvl.size()/vector_size))
 	{
-	  cout << "level 2" << endl;
 	  current_level = current_level + 1;
-	  if ( current_level == 2)
-	  {
-	    ifstream is("Level2.txt");
-	    istream_iterator<int> start(is), end;
-	    // Level 1
-	    vector<int> level2(start, end);
-	    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, level2);
-	  }
-	  else if( current_level > 2)
-	  {
-	    ifstream is("Level1.txt");
-	    istream_iterator<int> start(is), end;
-	    // Level 1
-	    vector<int> level1(start, end);
-	    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, level1);
-	    current_level = 1;
-	  }
+	  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+	  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
+	 
 	}
+      // Slutskärm ska fixas här
+      else if (actionResult_ == Logic::LevelCompleted && (current_level) >= (lvl.size()/vector_size))
+	{
+	  current_level = 1;
+	  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+	  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
+	}
+      /*
+      //Reset
+      if(actionResult_ == Logic::Reset)
+	{
+	  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+	  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
+	}
+      */
+      //Dead
+      if(actionResult_ == Logic::Dead)
+	{
+	  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+	  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
+	}
+
 
       // check all the window's events that were triggered since the last iteration of the loop
       // TA IN INPUT
@@ -90,7 +96,14 @@ int run()
 	      GameState = Playing;
 	    }
 	  */
-	  
+	  /*
+	    //knapp för reset
+	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+	    {
+	      return Logic::Reset;
+	    }
+
+	  */
 	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
 	      sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	    {
@@ -140,21 +153,23 @@ int run()
       
       // end the current frame
       window.display();
-    }
+}
   
   return 0;
 }
 
 private:
-  const int TILESIZE{32};
-  const int TILES_PER_ROW{24};
-  unsigned int current_level{1};
-  enum GameState{Playing, ShowScreen, Pause, Exit}; 
-  GameState gamestate_{Playing};
-  Logic::ActionResult actionResult_= Logic::Continue;
-  Level* currLevelPtr_{};
-  Logic logic_;
-  Graphics graphics_;
- 
+const int TILESIZE{32};
+const int TILES_PER_ROW{24};
+const int TILES_PER_COLUMN{18};
+unsigned int current_level{1};
+int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
+enum GameState{Playing, ShowScreen, Pause, Exit}; 
+GameState gamestate_{Playing};
+Logic::ActionResult actionResult_= Logic::Continue;
+Level* currLevelPtr_{};
+Logic logic_;
+Graphics graphics_;
+
 
 };
