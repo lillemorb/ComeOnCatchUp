@@ -43,6 +43,7 @@ public:
   void setOnGround(bool onGround) { onGround_ = onGround; }
   bool getOnGround() { return onGround_; }
   sf::FloatRect getGlobalBounds(){ return rectangle_.getGlobalBounds(); }
+  const sf::Vector2f getSize(){ return rectangle_.getSize(); }
 
 protected:
   enum PhysicalID_{Player, Door, Block, Ground};

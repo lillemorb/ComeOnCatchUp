@@ -13,6 +13,8 @@ public:
   enum Move { Left, Right, Idle };
   enum Action { Jump, JumpReleased, NoJump };
 
+  void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
+
   ActionResult update(Level & current, Action action, Move move, sf::Clock & clock)
   {
     // Hämta vektor med objekt i Level
@@ -94,12 +96,33 @@ public:
   
 
 private:
+  int xPix_{768};
+  int yPix_{576};
+
 
   ActionResult collisionHandling (vector<PhysicalElement*> & levelVec)
-    {
+  {
+    ActionResult result = Continue;
+    
+    sf::Vector2f playerPos = levelVec.at(0)->getPosition();
+    //Lillemor: kollisionshantering mot fönstrets gränser
+    //Kolla mot vänster
+    if(playerPos.x < 0)
+      levelVec.at(0)->move(sf::Vector2f(-playerPos.x,0));
+      //Kolla mot höger
+    if((playerPos.x + levelVec.at(0)->getSize().x) > xPix_)
+      levelVec.at(0)->move(sf::Vector2f(xPix_-(playerPos.x + levelVec.at(0)->getSize().x), 0));
+    //Kolla uppåt
+    if(playerPos.y < 0)
+      levelVec.at(0)->move(sf::Vector2f(-playerPos.y,0));
+    //Kolla nedåt och returnera död
+    if(playerPos.y > yPix_)
+      {
+	cout << "dead" << endl;
+	return Dead;
+      }
 
-      ActionResult result = Continue;
-      for(unsigned int i{1}; i < levelVec.size(); ++i)
+    for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	sf::FloatRect area;
 	if(levelVec.at(0)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
@@ -112,7 +135,7 @@ private:
 	    //Bortkommenterad tills vidare för att slippa banbyte.
 //	    result = LevelCompleted;
 
-//	    return LevelCompleted;
+	    return LevelCompleted;
 	  }
 	  else if(levelVec.at(i)->getSpriteID() == "Ground")
 	  {
@@ -151,14 +174,14 @@ private:
 	  }
 	  else if(levelVec.at(i)->getSpriteID() == "Block")
 	  {
-	    // Kollisionshantering i y-led
+	    // Kollisionshantering i y-led, spelare flyttas, block ändras inte
 	    sf::Vector2f offset {0,0};
 	    if (area.width > area.height)
 	    {
 	      if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
 	      {
 		// Up side crash => move player down
-		offset.y = area.height;		      
+		offset.y = area.height;	  
 	      }
 	      else
 	      {
@@ -166,10 +189,11 @@ private:
 		levelVec.at(0)->setOnGround(true);
 		offset.y = -area.height;
 	      }
+	      levelVec.at(0)->move(offset);
 	    }
 	    else if (area.width < area.height)
 	    {
-	      // Kollisionshantering i x-led
+	      // Kollisionshantering i x-led, blocket får uppdaterad hastighet, spelare flyttas inte
 	      if (area.contains( levelVec.at(0)->getPosition().x + 
 				 levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
 	      {
@@ -181,8 +205,7 @@ private:
 		//Left side crash
 		levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
 	      }
-	    }
-	    levelVec.at(0)->move(offset);	
+	    }	
 	    result = Continue;
 	  }
 	}
