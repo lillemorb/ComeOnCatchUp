@@ -135,7 +135,7 @@ private:
 	    //Bortkommenterad tills vidare för att slippa banbyte.
 //	    result = LevelCompleted;
 
-//	    return LevelCompleted;
+	    return LevelCompleted;
 	  }
 	  else if(levelVec.at(i)->getSpriteID() == "Ground")
 	  {

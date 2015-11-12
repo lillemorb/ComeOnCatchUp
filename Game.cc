@@ -33,7 +33,7 @@ int run()
   // Lillemor: Gör om till funktion som läser in alla filer och spara i vektor
 
   // För över Level1 till vektorn.
-  ifstream is("Level1.txt");
+  ifstream is("Level.txt");
   istream_iterator<int> start(is), end;
   vector<int> lvl(start, end);
   vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
@@ -51,6 +51,7 @@ int run()
       // Continue to next level
       if (actionResult_ == Logic::LevelCompleted && (current_level) < (lvl.size()/vector_size))
 	{
+	  delete currLevelPtr_;
 	  current_level = current_level + 1;
 	  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
 	  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
@@ -59,22 +60,18 @@ int run()
       // Slutskärm ska fixas här
       else if (actionResult_ == Logic::LevelCompleted && (current_level) >= (lvl.size()/vector_size))
 	{
+	  delete currLevelPtr_;
 	  current_level = 1;
 	  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
 	  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
 	}
-      /*
+     
       //Reset
-      if(actionResult_ == Logic::Reset)
-	{
-	  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
-	  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
-	}
-      */
+
       //Dead
       if(actionResult_ == Logic::Dead)
 	{
-	  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+	  delete currLevelPtr_;
 	  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
 	}
 
@@ -102,14 +99,16 @@ int run()
 	      GameState = Playing;
 	    }
 	  */
-	  /*
-	    //knapp för reset
+	  
+	  //Reset
 	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 	    {
-	      return Logic::Reset;
+	      delete currLevelPtr_;
+	      currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
+	      
 	    }
-
-	  */
+	  
+	  
 	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
 	      sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	    {
