@@ -15,7 +15,7 @@ public:
 
   void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
 
-  ActionResult update(Level & current, Action action, Move move, sf::Clock & clock)
+  ActionResult update(Level &current, Action action, Move move, sf::Clock &clock)
   {
     // Hämta vektor med objekt i Level
     vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
@@ -40,7 +40,7 @@ public:
       {
 	// Gör att man kan variera hopphöjden genom att släppa knappen tidigare
 	if(velY < -4.0f)
-	   velY = -4.0f;
+	  velY = -4.0f;
       }
 
     if (move == Left)
@@ -57,14 +57,16 @@ public:
     //Rasmus: Denna bör alltid gälla, men man ramlar igenom världen ibland om den är igång alltid.
     if (player->getOnGround() == false)
       {
-	velY += gravity_ * (dt.asMilliseconds()/10);
+	velY += gravity_ * (dt.asMilliseconds()/10.0);
       }
 
     // Rasmus: Nuvarande problemet är att y-värdet kan lyckas sättas till ett värde som är nedanför Block:ens 
     // topp, vilket strular till det för movement i sidled. Denna fixen bör ske i collisionhandling?
     // Förflyttningen i x-led sker statiskt istället för med acceleration.
     
-    player->move(sf::Vector2f(distX, round(velY*(dt.asMilliseconds()/10))));
+    cout << dt.asSeconds() << endl;
+
+    player->move(sf::Vector2f(distX, round(velY*(dt.asMilliseconds()/10.0))));
     //TODO: kolla om man verkligen ska sätta något i x-led
     player->setVelocity(sf::Vector2f(distX, velY));
 
@@ -109,7 +111,7 @@ private:
     //Kolla mot vänster
     if(playerPos.x < 0)
       levelVec.at(0)->move(sf::Vector2f(-playerPos.x,0));
-      //Kolla mot höger
+    //Kolla mot höger
     if((playerPos.x + levelVec.at(0)->getSize().x) > xPix_)
       levelVec.at(0)->move(sf::Vector2f(xPix_-(playerPos.x + levelVec.at(0)->getSize().x), 0));
     //Kolla uppåt
@@ -126,114 +128,114 @@ private:
       {
 	sf::FloatRect area;
 	if(levelVec.at(0)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
-	{
-	  if(levelVec.at(i)->getSpriteID() == "Door")
 	  {
-	    cout << "Kollision med Door" << endl;
+	    if(levelVec.at(i)->getSpriteID() == "Door")
+	      {
+		cout << "Kollision med Door" << endl;
 
-	    //Lillemor: Kolla vilken av följande rader som är korrekt.
-	    //Bortkommenterad tills vidare för att slippa banbyte.
-//	    result = LevelCompleted;
+		//Lillemor: Kolla vilken av följande rader som är korrekt.
+		//Bortkommenterad tills vidare för att slippa banbyte.
+		//	    result = LevelCompleted;
 
-	    return LevelCompleted;
-	  }
-	  else if(dynamic_cast<Ground*>(levelVec.at(i)))
-	  {
-	    sf::Vector2f offset {0,0};
+		return LevelCompleted;
+	      }
+	    else if(dynamic_cast<Ground*>(levelVec.at(i)))
+	      {
+		sf::Vector2f offset {0,0};
 	    
-	    //PÅBÖRJAT: ny kollisionshantering
+		//PÅBÖRJAT: ny kollisionshantering
 
-	    //Ground med nedre gräns, flytta ned
-	    if(levelVec.at(i)->getSpriteID() == "G12")
-	      offset.y = area.height;	
-	    //Ground med vänster gräns, flytta vänster
-	    else if(levelVec.at(i)->getSpriteID() == "G14")
-		offset.x = -area.width;
-	    //Ground med höger gräns, flytta höger
-	    else if(levelVec.at(i)->getSpriteID() == "G16")
-		offset.x = area.width;
-	    //Ground med övre gräns, flytta upp
-	    else if(levelVec.at(i)->getSpriteID() == "G18")
-		offset.y = -area.height;
-	    //Mitten, inga kanter, gör inget
-	    else if(levelVec.at(i)->getSpriteID() == "G15")
-	    {}
-	    else
-	    {	  
-	      //Eventuellt
-	      if (area.width > area.height)
-	      {
-		if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
-		{
-		  // Up side crash => move player down
-		  offset.y = area.height;		      
-		}
-		else
-		{
-		  // Down side crash => move player back up
-		  levelVec.at(0)->setOnGround(true);
-		  offset.y = -area.height;
-		}
-	      }
-	      else if (area.width < area.height)
-	      {
-		if (area.contains( levelVec.at(0)->getPosition().x + 
-				   levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
-		{
-		  //Right side crash
+		//Ground med nedre gräns, flytta ned
+		if(levelVec.at(i)->getSpriteID() == "G12")
+		  offset.y = area.height;	
+		//Ground med vänster gräns, flytta vänster
+		else if(levelVec.at(i)->getSpriteID() == "G14")
 		  offset.x = -area.width;
-		}
-		else
-		{
-		  //Left side crash
+		//Ground med höger gräns, flytta höger
+		else if(levelVec.at(i)->getSpriteID() == "G16")
 		  offset.x = area.width;
-		}
-	      }
-	    }
-	    levelVec.at(0)->move(offset);
+		//Ground med övre gräns, flytta upp
+		else if(levelVec.at(i)->getSpriteID() == "G18")
+		  offset.y = -area.height;
+		//Mitten, inga kanter, gör inget
+		else if(levelVec.at(i)->getSpriteID() == "G15")
+		  {}
+		else
+		  {	  
+		    //Eventuellt
+		    if (area.width > area.height)
+		      {
+			if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
+			  {
+			    // Up side crash => move player down
+			    offset.y = area.height;		      
+			  }
+			else
+			  {
+			    // Down side crash => move player back up
+			    levelVec.at(0)->setOnGround(true);
+			    offset.y = -area.height;
+			  }
+		      }
+		    else if (area.width < area.height)
+		      {
+			if (area.contains( levelVec.at(0)->getPosition().x + 
+					   levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+			  {
+			    //Right side crash
+			    offset.x = -area.width;
+			  }
+			else
+			  {
+			    //Left side crash
+			    offset.x = area.width;
+			  }
+		      }
+		  }
+		levelVec.at(0)->move(offset);
 	
-	    result = Continue;
+		result = Continue;
+	      }
+	    else if(levelVec.at(i)->getSpriteID() == "Block")
+	      {
+		// Kollisionshantering i y-led, spelare flyttas, block ändras inte
+		sf::Vector2f offset {0,0};
+		if (area.width > area.height)
+		  {
+		    if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
+		      {
+			// Up side crash => move player down
+			offset.y = area.height;	  
+		      }
+		    else
+		      {
+			// Down side crash => move player back up
+			levelVec.at(0)->setOnGround(true);
+			offset.y = -area.height;
+		      }
+		    levelVec.at(0)->move(offset);
+		  }
+		else if (area.width < area.height)
+		  {
+		    // Kollisionshantering i x-led, blocket får uppdaterad hastighet, spelare flyttas inte
+		    if (area.contains( levelVec.at(0)->getPosition().x + 
+				       levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+		      {
+			//Right side crash
+			levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
+		      }
+		    else
+		      {
+			//Left side crash
+			levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
+		      }
+		  }	
+		result = Continue;
+	      }
 	  }
-	  else if(levelVec.at(i)->getSpriteID() == "Block")
-	  {
-	    // Kollisionshantering i y-led, spelare flyttas, block ändras inte
-	    sf::Vector2f offset {0,0};
-	    if (area.width > area.height)
-	    {
-	      if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
-	      {
-		// Up side crash => move player down
-		offset.y = area.height;	  
-	      }
-	      else
-	      {
-		// Down side crash => move player back up
-		levelVec.at(0)->setOnGround(true);
-		offset.y = -area.height;
-	      }
-	      levelVec.at(0)->move(offset);
-	    }
-	    else if (area.width < area.height)
-	    {
-	      // Kollisionshantering i x-led, blocket får uppdaterad hastighet, spelare flyttas inte
-	      if (area.contains( levelVec.at(0)->getPosition().x + 
-				 levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
-	      {
-		//Right side crash
-		levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
-	      }
-	      else
-	      {
-		//Left side crash
-		levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
-	      }
-	    }	
-	    result = Continue;
-	  }
-	}
       }
-      return result;
-    }
+    return result;
+  }
   
 
   void collisionBlock(vector<PhysicalElement*> & levelVec, unsigned int vecLoc)
