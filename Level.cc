@@ -12,78 +12,82 @@ class Level
 {
 public:
   Level(int TILESIZE, int TILES_PER_ROW, vector<int> level_vector)
-    {
-      for(unsigned int i{}; i < level_vector.size(); i++)
+  {
+    for(unsigned int i{}; i < level_vector.size(); i++)
       {
 	int x = i%TILES_PER_ROW;
 	int y = i/TILES_PER_ROW;
 
-	switch(level_vector.at(i))
-	{
-	case 01:
-	  groundPtrVector_.push_back(new Ground(TILESIZE, x, y));
-	  drawableElementVector_.push_back(groundPtrVector_.back());
-	  physicalElementVector_.push_back(groundPtrVector_.back());
-	  break;
-	case 02:
-	  playerPtr_ = new Player(TILESIZE, x, y);
-	  if(drawableElementVector_.size() == 0 )
-	    {
-	      drawableElementVector_.push_back(playerPtr_);
-	      physicalElementVector_.push_back(playerPtr_);
-	    }
-	  else
-	    {
-	      drawableElementVector_.insert(drawableElementVector_.begin(), playerPtr_);
-	      physicalElementVector_.insert(physicalElementVector_.begin(), playerPtr_);
-	    }
-	  break;
-	case 03:
-	  doorPtr_ = new Door(TILESIZE, x, y);
-	  drawableElementVector_.push_back(doorPtr_);
-	  physicalElementVector_.push_back(doorPtr_);
-	  break;
-	case 04:
-	  blockPtrVector_.push_back(new Block(TILESIZE, x, y));
-	  drawableElementVector_.push_back(blockPtrVector_.back());
-	  physicalElementVector_.push_back(blockPtrVector_.back());
-	  break;
-	case 05:
-	  backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "Start"));
-	  drawableElementVector_.push_back(backgroundPtrVector_.back());
-	  break;
-	case 06: 
-	  backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "Goal"));
-	  drawableElementVector_.push_back(backgroundPtrVector_.back());
-	  break;
-	default:
-	  break;
-	}
-      }
-    }
+	// Kontrollerar ground-objekten
+	if(level_vector.at(i) >= 10 && level_vector.at(i) <= 25)
+	  {
+	    string name = "G" + to_string(level_vector.at(i));
+	    groundPtrVector_.push_back(new Ground(TILESIZE, x, y, name));
+	    drawableElementVector_.push_back(groundPtrVector_.back());
+	    physicalElementVector_.push_back(groundPtrVector_.back());
+	  }
 
-// Frigör minne genom att deleta pekare till alla objekt i Level
+	switch(level_vector.at(i))
+	  {
+	  case 01:
+	    playerPtr_ = new Player(TILESIZE, x, y);
+	    if(drawableElementVector_.size() == 0 )
+	      {
+		drawableElementVector_.push_back(playerPtr_);
+		physicalElementVector_.push_back(playerPtr_);
+	      }
+	    else
+	      {
+		drawableElementVector_.insert(drawableElementVector_.begin(), playerPtr_);
+		physicalElementVector_.insert(physicalElementVector_.begin(), playerPtr_);
+	      }
+	    break;
+	  case 02:
+	    doorPtr_ = new Door(TILESIZE, x, y);
+	    drawableElementVector_.push_back(doorPtr_);
+	    physicalElementVector_.push_back(doorPtr_);
+	    break;
+	  case 03:
+	    blockPtrVector_.push_back(new Block(TILESIZE, x, y));
+	    drawableElementVector_.push_back(blockPtrVector_.back());
+	    physicalElementVector_.push_back(blockPtrVector_.back());
+	    break;
+	  case 30:
+	    backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "Start"));
+	    drawableElementVector_.push_back(backgroundPtrVector_.back());
+	    break;
+	  case 31: 
+	    backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "Goal"));
+	    drawableElementVector_.push_back(backgroundPtrVector_.back());
+	    break;
+	  default:
+	    break;
+	  }
+      }
+  }
+
+  // Frigör minne genom att deleta pekare till alla objekt i Level
   ~Level()
-    {
-      delete playerPtr_;
-      delete doorPtr_;
-      for(unsigned int i{}; i < groundPtrVector_.size(); ++i)
-	delete groundPtrVector_.at(i);
-      for(unsigned int i{}; i < blockPtrVector_.size(); ++i)
-	delete blockPtrVector_.at(i);
-      for(unsigned int i{}; i < backgroundPtrVector_.size(); ++i)
-	delete backgroundPtrVector_.at(i);
-    };
+  {
+    delete playerPtr_;
+    delete doorPtr_;
+    for(unsigned int i{}; i < groundPtrVector_.size(); ++i)
+      delete groundPtrVector_.at(i);
+    for(unsigned int i{}; i < blockPtrVector_.size(); ++i)
+      delete blockPtrVector_.at(i);
+    for(unsigned int i{}; i < backgroundPtrVector_.size(); ++i)
+      delete backgroundPtrVector_.at(i);
+  };
 
   vector<DrawableElement*> &  getLevelDrawableLayout()
-    {
-      return drawableElementVector_;
-    }
+  {
+    return drawableElementVector_;
+  }
 
   vector<PhysicalElement*> & getLevelPhysicalLayout()
-    {
-      return physicalElementVector_;
-    }
+  {
+    return physicalElementVector_;
+  }
 
 private:
   // Håller reda på objekten med dynamiskt allokerat minne

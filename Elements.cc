@@ -109,8 +109,9 @@ class Ground : public PhysicalElement
 {
 public:
   
-  Ground(int TILESIZE, int x, int y)
-    : PhysicalElement("Ground")
+  Ground(int TILESIZE, int x, int y, string typeID)
+    : PhysicalElement(typeID)
+      //    : PhysicalElement("Ground")
     { 
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
       rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
