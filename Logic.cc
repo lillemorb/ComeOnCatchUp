@@ -121,7 +121,7 @@ private:
 	cout << "dead" << endl;
 	return Dead;
       }
-
+    // TODO: GetSpriteID ska vara getPhysicalID när den funktionen är implementerad //Lillemor
     for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	sf::FloatRect area;
@@ -137,35 +137,57 @@ private:
 
 	    return LevelCompleted;
 	  }
-	  else if(levelVec.at(i)->getSpriteID() == "Ground")
+	  else if(dynamic_cast<Ground*>(levelVec.at(i)))
 	  {
 	    sf::Vector2f offset {0,0};
-	    if (area.width > area.height)
-	    {
-	      if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
-	      {
-		// Up side crash => move player down
-		offset.y = area.height;		      
-	      }
-	      else
-	      {
-		// Down side crash => move player back up
-		levelVec.at(0)->setOnGround(true);
-		offset.y = -area.height;
-	      }
-	    }
-	    else if (area.width < area.height)
-	    {
-	      if (area.contains( levelVec.at(0)->getPosition().x + 
-				 levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
-	      {
-		//Right side crash
+	    
+	    //PÅBÖRJAT: ny kollisionshantering
+
+	    //Ground med nedre gräns, flytta ned
+	    if(levelVec.at(i)->getSpriteID() == "G12")
+	      offset.y = area.height;	
+	    //Ground med vänster gräns, flytta vänster
+	    else if(levelVec.at(i)->getSpriteID() == "G14")
 		offset.x = -area.width;
-	      }
-	      else
-	      {
-		//Left side crash
+	    //Ground med höger gräns, flytta höger
+	    else if(levelVec.at(i)->getSpriteID() == "G16")
 		offset.x = area.width;
+	    //Ground med övre gräns, flytta upp
+	    else if(levelVec.at(i)->getSpriteID() == "G18")
+		offset.y = -area.height;
+	    //Mitten, inga kanter, gör inget
+	    else if(levelVec.at(i)->getSpriteID() == "G15")
+	    {}
+	    else
+	    {	  
+	      //Eventuellt
+	      if (area.width > area.height)
+	      {
+		if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
+		{
+		  // Up side crash => move player down
+		  offset.y = area.height;		      
+		}
+		else
+		{
+		  // Down side crash => move player back up
+		  levelVec.at(0)->setOnGround(true);
+		  offset.y = -area.height;
+		}
+	      }
+	      else if (area.width < area.height)
+	      {
+		if (area.contains( levelVec.at(0)->getPosition().x + 
+				   levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+		{
+		  //Right side crash
+		  offset.x = -area.width;
+		}
+		else
+		{
+		  //Left side crash
+		  offset.x = area.width;
+		}
 	      }
 	    }
 	    levelVec.at(0)->move(offset);

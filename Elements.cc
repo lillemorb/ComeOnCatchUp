@@ -43,7 +43,7 @@ public:
   void setOnGround(bool onGround) { onGround_ = onGround; }
   bool getOnGround() { return onGround_; }
   virtual sf::FloatRect getGlobalBounds() = 0;
-// Innan ändring
+// Lillemor: Innan ändring till mindre bounding box för Player => virtuell funktion
 //  sf::FloatRect getGlobalBounds(){ return rectangle_.getGlobalBounds(); }
   const sf::Vector2f getSize(){ return rectangle_.getSize(); }
 
@@ -72,15 +72,15 @@ public:
   void setFacingRight(bool facingRight) { facingRight_ = facingRight; }
   bool getFacingRight() { return facingRight_; }
 
-	// Returnerar en (något) mindre bounding box för player än tilesize
-	// TODO: fixa bug för att sedan minska globalBounds ytterligare tills den stämmer med
-	// utseendet på players sprite. Bug: Player vibrerar vid kollision med Block vid mindre
-	// bounding box, bland annat.
-	sf::FloatRect getGlobalBounds() override {
-		sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
-		sf::FloatRect smallerBounds(largeBounds.left+2.0, largeBounds.top, largeBounds.width-4.0, largeBounds.height);
-		return smallerBounds;
-	}
+  // Returnerar en (något) mindre bounding box för player än tilesize
+  // TODO: fixa bug för att sedan minska globalBounds ytterligare tills den stämmer med
+  // utseendet på players sprite. Bug: Player vibrerar vid kollision med Block vid mindre
+  // bounding box, bland annat.
+  sf::FloatRect getGlobalBounds() override {
+    sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
+    sf::FloatRect smallerBounds(largeBounds.left+2.0, largeBounds.top, largeBounds.width-4.0, largeBounds.height);
+    return smallerBounds;
+  }
 
 private:
   float gravity_{0.5f};
@@ -101,7 +101,7 @@ public:
   ~Block() = default;
   void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
-	sf::FloatRect getGlobalBounds() override { return rectangle_.getGlobalBounds(); }
+  sf::FloatRect getGlobalBounds() override { return rectangle_.getGlobalBounds(); }
 };
 
 //---------GROUND--------------//
@@ -118,7 +118,7 @@ public:
   ~Ground() = default;
   void setVelocity(sf::Vector2f) override { velocity_ = sf::Vector2f(0,0); } 
   void setPosition(sf::Vector2f) override { }
-	sf::FloatRect getGlobalBounds() override { return rectangle_.getGlobalBounds(); }
+  sf::FloatRect getGlobalBounds() override { return rectangle_.getGlobalBounds(); }
 };
 
 //---------DOOR--------------//
@@ -135,7 +135,7 @@ public:
   ~Door() = default;
   void setVelocity(sf::Vector2f) override { sf::Vector2f(0,0); } 
   void setPosition(sf::Vector2f) override { }
-	sf::FloatRect getGlobalBounds() override { return rectangle_.getGlobalBounds(); }
+  sf::FloatRect getGlobalBounds() override { return rectangle_.getGlobalBounds(); }
 };
 
 //---------BACKGROUND--------//
