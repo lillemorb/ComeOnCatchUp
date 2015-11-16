@@ -63,9 +63,7 @@ public:
     // Rasmus: Nuvarande problemet är att y-värdet kan lyckas sättas till ett värde som är nedanför Block:ens 
     // topp, vilket strular till det för movement i sidled. Denna fixen bör ske i collisionhandling?
     // Förflyttningen i x-led sker statiskt istället för med acceleration.
-    
-    cout << dt.asSeconds() << endl;
-
+ 
     player->move(sf::Vector2f(distX, round(velY*(dt.asMilliseconds()/10.0))));
     //TODO: kolla om man verkligen ska sätta något i x-led
     player->setVelocity(sf::Vector2f(distX, velY));

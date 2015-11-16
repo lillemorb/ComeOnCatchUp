@@ -19,8 +19,8 @@ public:
   int run()
   {
 
-    Logic::Action action;
-    Logic::Move move;
+    Logic::Action action{Logic::NoJump};
+    Logic::Move move{Logic::Idle};
 
     //INITIERING
     // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
