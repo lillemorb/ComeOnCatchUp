@@ -20,10 +20,26 @@ public:
 
 	// Kontrollerar ground-objekten
 	if(level_vector.at(i) >= 10 && level_vector.at(i) <= 25)
-	  {
-	    string name = "G" + to_string(level_vector.at(i));
-	    groundPtrVector_.push_back(new Ground(TILESIZE, x, y, name));
+	  {	    
+	    int num{level_vector.at(i)};
+	    string name = "G" + to_string(num);
+
+	    PhysicalElement::CollisionBorders collBorders{};
+
+	    if(num == 12 || num == 13 || num == 15 || num == 16 ||
+	       num == 18 || num == 19 || num == 21 || num == 25)
+	      collBorders.left = false;
+	    if(num == 11 || num == 12 || num == 14 || num == 15 ||
+	       num == 17 || num == 18 || num == 20 || num == 25)
+	      collBorders.right = false;
+	    if((num >= 11 && num <= 16) || num == 23 || num == 24)
+	      collBorders.up = false;
+	    if((num >= 14 && num <= 19) || num == 22 || num == 24)
+	      collBorders.down = false;
+
+	    groundPtrVector_.push_back(new Ground(TILESIZE, x, y, name, collBorders));
 	    drawableElementVector_.push_back(groundPtrVector_.back());
+
 	    // Lillemor: Ground utan kanter ska inte hanteras av Logic ty ingen kollision
 	    if(level_vector.at(i) != 15)
 	      physicalElementVector_.push_back(groundPtrVector_.back());
