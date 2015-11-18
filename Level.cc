@@ -42,7 +42,11 @@ public:
 
 	    // Lillemor: Ground utan kanter ska inte hanteras av Logic ty ingen kollision
 	    if(level_vector.at(i) != 15)
+	    {
 	      physicalElementVector_.push_back(groundPtrVector_.back());
+	      cout << collBorders.left << " " << collBorders.right << " "
+		   << collBorders.up << " " << collBorders.down << endl;
+	    }
 	  }
 
 	switch(level_vector.at(i))

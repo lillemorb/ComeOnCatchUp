@@ -105,6 +105,8 @@ private:
     {
       ActionResult result = Continue;
        Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
+       cout << "x: " << playerPtr->getGlobalBounds().left
+	    << "y: " << playerPtr->getGlobalBounds().top << endl;
 
       //Check for collision against window borders
       sf::Vector2f playerPos = sf::Vector2f(playerPtr->getGlobalBounds().left, 
@@ -144,12 +146,14 @@ private:
 	    sf::Vector2f offset {0,0};
 	    string tempSpriteID{levelVec.at(i)->getSpriteID()};	    
 
-/*
-	    offset = collisionDisplacement(playerPtr, area);
+	    offset = collisionDisplacement(playerPtr, levelVec.at(i), area);
 	    if(offset.y < 0)
 	      playerPtr->setOnGround(true);
 	    playerPtr->move(offset);
-*/
+
+//	    cout << tempSpriteID << endl;
+
+/*
 	    //Ground med nedre gräns, flytta ned
 	    if(levelVec.at(i)->getSpriteID() == "G12")
 	      offset.y = area.height;	
@@ -187,6 +191,7 @@ private:
 	      }
 	    }
 	    playerPtr->move(offset);
+*/
 	  }
 	  else if(levelVec.at(i)->getSpriteID() == "Block")
 	  {
@@ -253,47 +258,80 @@ private:
     }	  
 
   //Lillemor: obs, bara för Ground tills vidare
-  sf::Vector2f collisionDisplacement(PhysicalElement* element, sf::FloatRect area)
+  sf::Vector2f collisionDisplacement(PhysicalElement* element, PhysicalElement* collidingElement, sf::FloatRect area)
     {
 //      string tempSpriteID{element->getSpriteID()};
       sf::Vector2f offset{0,0};
-      PhysicalElement::CollisionBorders collBorders(element->getCollisionBorders());
+      PhysicalElement::CollisionBorders collBorders(collidingElement->getCollisionBorders());
       bool up{collBorders.up};
       bool down{collBorders.down};
       bool left{collBorders.left};
       bool right{collBorders.right};
+      cout << "Width: " << area.width << " Height: " << area.height << endl;
 
+/*
+      //Ground med enbart övre gräns, flytta upp
+      if(up && !(down && left && right))
+	offset.y = -area.height;
+      //Ground med enbart nedre gräns, flytta ned
+      else if(down && !(up && left && right))
+	offset.y = area.height;	
+      //Ground med enbart vänster gräns, flytta vänster
+      else if(left && !(up && down && right))
+	offset.x = -area.width;
+      //Ground med enbart höger gräns, flytta höger
+      else if(right && !(up && down && left))
+	offset.x = area.width;
+      //Ground med enbart vänster och höger gräns
+      else if(right && left && !(up && down))
+	offset = collisionLeftRight(element, area);
+      //Ground med enbart övre och undre gräns
+      else if(!(right && left) && up && down)
+      {
+	offset = collisionUpDown(element, area);
+	cout << "Övre + nedre" << endl;
+      }
+      else if ((up || down) && area.width > area.height)
+*/
       if ((up || down) && area.width > area.height)
       {
-	if (area.contains({ area.left, element->getPosition().y }))
+	if (area.contains({ area.left, element->getGlobalBounds().top }))
+//	if (area.contains({ area.left, element->getPosition().y }))
 	{
 	  // Up side crash => move player down
-	  if(up)
+	  if(down)
 	    offset.y = area.height;		      
 	}
 	else
 	{
 	  // Down side crash => move player back up
-	  if(down)
+	  if(up)
 	  {
+	    cout << "*****************UPP**************" << endl;
 	    offset.y = -area.height;
 	  }
 	}
       }
-      else if (area.width < area.height)
+      else if ((left || right) && area.width < area.height)
       {
-	if (area.contains( element->getPosition().x + 
+	if (area.contains( element->getGlobalBounds().left + 
 			   element->getGlobalBounds().width - 1.f, area.top + 1.f ))
 	{
 	  //Right side crash
-	  offset.x = -area.width;
+	  if(left)
+	  {
+	    cout << "*****************HÖGER**************" << endl;
+	    offset.x = -area.width;
+	  }
 	}
 	else
 	{
 	  //Left side crash
-	  offset.x = area.width;
+	  if(right)
+	    offset.x = area.width;
 	}
-      }   
+      }  
+      return offset;
     }  
 
   // Helper function, checks for collision up/down and returns resulting displacement
