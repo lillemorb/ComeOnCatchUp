@@ -39,10 +39,6 @@ public:
 
 
     // Inläsning av sprites
-    //    sf::Sprite player_sprite;
-    //player_sprite.setTexture(spriteSheet_player);
-    //player_sprite.setTextureRect(sf::IntRect(0, 0, TILESIZE, TILESIZE));
-
     sf::Sprite door_sprite;
     door_sprite.setTexture(spriteSheet_background);
     door_sprite.setTextureRect(sf::IntRect(96, 0, TILESIZE, TILESIZE));

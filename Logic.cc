@@ -96,6 +96,7 @@ public:
       else
 	{
 	  player->setJump(false);
+	  velY = 0;
 	}
       if (!(move == Left || move == Right))
 	{
