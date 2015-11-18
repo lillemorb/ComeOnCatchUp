@@ -73,13 +73,13 @@ public:
   void setFacingRight(bool facingRight) { facingRight_ = facingRight; }
   bool getFacingRight() { return facingRight_; }
 
-  // Returnerar en (något) mindre bounding box för player än tilesize
-  // TODO: fixa bug för att sedan minska globalBounds ytterligare tills den stämmer med
-  // utseendet på players sprite. Bug: Player vibrerar vid kollision med Block vid mindre
-  // bounding box, bland annat.
+  // Returnerar en mindre bounding box för player än tilesize
+  // Lillemor: bug fixad så att bounding box kan sättas så liten som den ska vara
+  // kollisionshantering kollade ibland på getPosition() istället för getGlobalBounds()
   sf::FloatRect getGlobalBounds() override {
     sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
-    sf::FloatRect smallerBounds(largeBounds.left+4.0, largeBounds.top, largeBounds.width-8.0, largeBounds.height);
+    sf::FloatRect smallerBounds(largeBounds.left+4.0, largeBounds.top,
+				largeBounds.width-8.0, largeBounds.height);
     return smallerBounds;
   }
 
@@ -137,7 +137,13 @@ public:
   ~Door() = default;
   void setVelocity(sf::Vector2f) override { sf::Vector2f(0,0); } 
   void setPosition(sf::Vector2f) override { }
-  sf::FloatRect getGlobalBounds() override { return rectangle_.getGlobalBounds(); }
+  // Lillemor: returnerar liten bounding box så att man ser Player "gå in i" dörren
+  sf::FloatRect getGlobalBounds() override {
+    sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
+    sf::FloatRect smallerBounds(largeBounds.left+12.0, largeBounds.top,
+				largeBounds.width-24.0, largeBounds.height);
+    return smallerBounds;
+  }
 };
 
 //---------BACKGROUND--------//

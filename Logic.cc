@@ -59,16 +59,16 @@ public:
       {
 	velY += gravity_ * (dt.asMilliseconds()/10.0);
       }
-
+      // Lillemor: nedanstående problem fixat med ny kollisionshantering
       // Rasmus: Nuvarande problemet är att y-värdet kan lyckas sättas till ett värde som är
       // nedanför Block:ens 
       // topp, vilket strular till det för movement i sidled. Denna fixen bör ske i collisionhandling?
+
       // Förflyttningen i x-led sker statiskt istället för med acceleration.
  
       player->move(sf::Vector2f(distX, round(velY*(dt.asMilliseconds()/10.0))));
       //TODO: kolla om man verkligen ska sätta något i x-led
       player->setVelocity(sf::Vector2f(distX, velY));
-
 
       // kollisionshantering spelare
 
@@ -97,6 +97,7 @@ public:
   
 
 private:
+  //Lillemor: default-värden, men sätts om med funktionen setPix()
   int xPix_{768};
   int yPix_{576};
 
@@ -106,25 +107,34 @@ private:
   ActionResult collisionHandling (vector<PhysicalElement*> & levelVec)
     {
       ActionResult result = Continue;
-    
-      sf::Vector2f playerPos = levelVec.at(0)->getPosition();
-      //Lillemor: kollisionshantering mot fönstrets gränser
-      //Kolla mot vänster
+
+      // Lillemor: uppdaterat så att kollision mot fönstrets gränser sker mot
+      // players bounding box ist f players tilesize
+      sf::Vector2f playerPos = sf::Vector2f(levelVec.at(0)->getGlobalBounds().left, 
+					    levelVec.at(0)->getGlobalBounds().top);
+      sf::Vector2f playerSize = sf::Vector2f(levelVec.at(0)->getGlobalBounds().width, 
+					    levelVec.at(0)->getGlobalBounds().height);
+
+      //Check for collision against window borders
+
+      //Check left border
       if(playerPos.x < 0)
 	levelVec.at(0)->move(sf::Vector2f(-playerPos.x,0));
-      //Kolla mot höger
-      if((playerPos.x + levelVec.at(0)->getSize().x) > xPix_)
-	levelVec.at(0)->move(sf::Vector2f(xPix_-(playerPos.x + levelVec.at(0)->getSize().x), 0));
-      //Kolla uppåt
+      //Check right border
+      else if((playerPos.x + playerSize.x) > xPix_)
+	levelVec.at(0)->move(sf::Vector2f(xPix_-(playerPos.x + playerSize.x), 0));
+
+      //Check upper border
       if(playerPos.y < 0)
 	levelVec.at(0)->move(sf::Vector2f(-playerPos.y,0));
-      //Kolla nedåt och returnera död
-      if(playerPos.y > yPix_)
+      //Check lower border and if collision return Dead
+      else if(playerPos.y > yPix_)
       {
 	cout << "dead" << endl;
 	return Dead;
       }
-      // TODO: GetSpriteID ska vara getPhysicalID när den funktionen är implementerad...osäker! //Lillemor
+      // TODO: GetSpriteID ska vara getPhysicalID när den funktionen är implementerad - tänkte
+      // vi förut. Vad behövs egentligen för Logic resp Graphics, tänk lite mer //Lillemor
       for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	sf::FloatRect area;
