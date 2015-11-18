@@ -19,7 +19,6 @@ public:
     // Går detta att flytta ut på ett snyggt sätt?
     int TILESIZE = 32;
 
-
     // Dessa ska bara göras en gång
     // Inläsning av texturer
     sf::Texture spriteSheet_background;
@@ -31,6 +30,7 @@ public:
       }
     sf::Texture spriteSheet_player;
     if (!spriteSheet_player.loadFromFile("Sprites/Tomato.png")) 
+      //if (!spriteSheet_player.loadFromFile("Sprites/Pirate_spritesheet.png"))
       {
 	cerr << "Kunde inte ladda players sprite" << endl;
 	// Fixa felhantering! 
@@ -39,12 +39,10 @@ public:
 
 
     // Inläsning av sprites
-    sf::Sprite player_sprite;
-    player_sprite.setTexture(spriteSheet_player);
-    player_sprite.setTextureRect(sf::IntRect(0, 0, TILESIZE, TILESIZE));
-    sf::Sprite ground_sprite;
-    ground_sprite.setTexture(spriteSheet_background);
-    ground_sprite.setTextureRect(sf::IntRect(32, 0, TILESIZE, TILESIZE));
+    //    sf::Sprite player_sprite;
+    //player_sprite.setTexture(spriteSheet_player);
+    //player_sprite.setTextureRect(sf::IntRect(0, 0, TILESIZE, TILESIZE));
+
     sf::Sprite door_sprite;
     door_sprite.setTexture(spriteSheet_background);
     door_sprite.setTextureRect(sf::IntRect(96, 0, TILESIZE, TILESIZE));
@@ -57,8 +55,32 @@ public:
     sf::Sprite goal_sprite;
     goal_sprite.setTexture(spriteSheet_background);
     goal_sprite.setTextureRect(sf::IntRect(96, 32, TILESIZE, TILESIZE));
+     
+    // Player
+    std::map<int, sf::Sprite> player_sprite;
+    // Innehåller vilka positioner players olika animationer har
+    std::vector<std::pair<int, int>> playerAnimationCoordinates = {
+      {0,0},
+      {32, 0},
+      {64, 0},
+      {96, 0},
+      {128, 0},
+      {160, 0},
+      {192, 0},
+      {224, 0}};
+
+    int playerValue = 0;
     
+    for(auto it = playerAnimationCoordinates.begin(); it != playerAnimationCoordinates.end(); ++it)
+      {
+	sf::Sprite temp_sprite;
+	temp_sprite.setTexture(spriteSheet_player);
+        temp_sprite.setTextureRect(sf::IntRect(it->first, it->second, TILESIZE, TILESIZE));
+        player_sprite[playerValue] = temp_sprite;
+        ++playerValue;
+      }
  
+
     // Ground
     // Innehåller vilka positioner som varje unikt sprite har
     std::vector<std::pair<int, int>> groundCoordinates = {
@@ -80,7 +102,7 @@ public:
       {96, 128}};
 
     // Map från 10-25 som innhåller grounds olika värden
-    std::map<int, sf::Sprite> groundSprite;
+    std::map<int, sf::Sprite> ground_sprite;
 
     int groundValue = 10;
     for(auto it = groundCoordinates.begin(); it != groundCoordinates.end(); ++it)
@@ -88,7 +110,7 @@ public:
         sf::Sprite temp_sprite;
         temp_sprite.setTexture(spriteSheet_background);
         temp_sprite.setTextureRect(sf::IntRect(it->first, it->second, TILESIZE, TILESIZE));
-        groundSprite[groundValue] = temp_sprite;
+        ground_sprite[groundValue] = temp_sprite;
         ++groundValue;
       }
 
@@ -123,23 +145,26 @@ public:
 	else if (tempID[0] == 'G')
 	  {
 	    int position = stoi(tempID.substr(1));
-	    groundSprite[position].setPosition(tempPos.x, tempPos.y);
-	    window.draw(groundSprite[position]);
+	    ground_sprite[position].setPosition(tempPos.x, tempPos.y);
+	    window.draw(ground_sprite[position]);
 	  }
       }
 
     // Utritning av Player
-	sf::Vector2f tempPos = levelVec.at(0)->getPosition();
-	player_sprite.setPosition(tempPos.x, tempPos.y);
-	Player* player{dynamic_cast<Player*>(levelVec.at(0))};
-	if (player->getFacingRight() == false)
-	  {
-	    //Ändrar origin för korrekt spegling
-	    player_sprite.setOrigin(TILESIZE, 0); 
-	    //speglar spriten
-	    player_sprite.setScale(-1.0, 1); 
-	  }
-	window.draw(player_sprite);
+    
+    sf::Vector2f tempPos = levelVec.at(0)->getPosition();
+    Player* player{dynamic_cast<Player*>(levelVec.at(0))};
+    int sprite_position = player->getAnimation();
+    player_sprite[sprite_position].setPosition(tempPos.x, tempPos.y);
+    if (player->getFacingRight() == false)
+      {
+	//Ändrar origin för korrekt spegling
+	player_sprite[sprite_position].setOrigin(TILESIZE, 0); 
+	//speglar spriten
+	player_sprite[sprite_position].setScale(-1.0, 1); 
+      }
+    window.draw(player_sprite[sprite_position]);
+
   }
 
 };

@@ -3,6 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include "Level.cc"
 #include <vector>
+#include <SFML/Audio.hpp>
+//#include <SFML/Sound.hpp>
 
 class Logic
 {
@@ -14,6 +16,30 @@ public:
   enum Action { Jump, JumpReleased, NoJump };
 
   void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
+
+
+  /*
+  sf::SoundBuffer jump_soundBuffer;
+  if (!jump_soundBuffer.loadFromFile("Sounds/Player_jump.wav"))
+    {
+      cerr << "Kunde inte ladda Player_jump.wav" << endl;
+      // Fixa felhantering
+      // return 1;
+    }
+  sf::Sound jump_sound;
+  jump_sound.SetBuffer(jump_soundBuffer);
+  
+  sf::SoundBuffer box_soundBuffer;
+    if (!box_soundBuffer.loadFromFile("Sounds/Box_push.wav"))
+    {
+      cerr << "Kunde inte ladda Box_push.wav" << endl;
+      // Fixa felhantering
+      // return 1;
+    }
+  sf::Sound box_sound;
+  box_sound.SetBuffer(box_soundBuffer);
+  */
+
 
   ActionResult update(Level &current, Action action, Move move, sf::Clock &clock)
     {
@@ -32,33 +58,47 @@ public:
 
     
       if (action == Jump && player->getOnGround() == true)
-      {
-	velY = -9.0f;
-	player->setOnGround(false);
-      }
+	{
+	  velY = -9.0f;
+	  player->setOnGround(false);
+	  player->setJump(true);
+	  //jump_sound.Play();
+	}
       if (action == JumpReleased)
-      {
-	// Gör att man kan variera hopphöjden genom att släppa knappen tidigare
-	if(velY < -4.0f)
-	  velY = -4.0f;
-      }
+	{
+	  // Gör att man kan variera hopphöjden genom att släppa knappen tidigare
+	  if(velY < -4.0f)
+	    velY = -4.0f;
+	}
 
       if (move == Left)
-      {
-	distX = -4;
-	player->setFacingRight(false);
-      }
+	{
+	  distX = -4;
+	  player->setFacingRight(false);
+	  player->setWalk(true);
+	}
       if (move == Right)
-      {
-	distX = 4;
-	player->setFacingRight(true);
-      }
+	{
+	  distX = 4;
+	  player->setFacingRight(true);
+	  player->setWalk(true);
+	}
+
 
       //Rasmus: Denna bör alltid gälla, men man ramlar igenom världen ibland om den är igång alltid.
       if (player->getOnGround() == false)
-      {
-	velY += gravity_ * (dt.asMilliseconds()/10.0);
-      }
+	{
+	  velY += gravity_ * (dt.asMilliseconds()/10.0);
+	}
+      else
+	{
+	  player->setJump(false);
+	}
+      if (!(move == Left || move == Right))
+	{
+	  player->setWalk(false);
+	}
+
       // Lillemor: nedanstående problem fixat med ny kollisionshantering
       // Rasmus: Nuvarande problemet är att y-värdet kan lyckas sättas till ett värde som är
       // nedanför Block:ens 
