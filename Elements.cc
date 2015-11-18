@@ -14,7 +14,6 @@ class DrawableElement
 public:
   DrawableElement(string spriteID) : spriteID_{spriteID} {};
   virtual ~DrawableElement() = default;//=0 i design spec
-  //Lillemor: tog bort virtual eftersom spriteID_ finns här
   string getSpriteID(){ return spriteID_; }
   sf::Vector2f getPosition() { return rectangle_.getPosition(); }
 
@@ -30,6 +29,14 @@ public:
   PhysicalElement(string spriteID): DrawableElement(spriteID){}
   virtual ~PhysicalElement() = default;//=0 i design spec
   //virtual string getPhysicalID()=0; 
+
+  struct CollisionBorders
+  {
+    bool left{true};
+    bool right{true};
+    bool up{true};
+    bool down{true};
+  };
 
   sf::Vector2f getVelocity() { return velocity_; }
 
@@ -48,10 +55,16 @@ public:
 // Lillemor: Innan ändring till mindre bounding box för Player => virtuell funktion
 //  sf::FloatRect getGlobalBounds(){ return rectangle_.getGlobalBounds(); }
   //TODO: getSize ska istället returnera storleken på bounding box (eller?) //Lillemor
-  const sf::Vector2f getSize(){ return rectangle_.getSize(); }
+//  const sf::Vector2f getSize(){ return rectangle_.getSize();}
+  virtual const sf::Vector2f getSize(){ return rectangle_.getSize();}
+  CollisionBorders getCollisionBorders() { return collisionBorders_; }
+
 
 protected:
   enum PhysicalID_{Player, Door, Block, Ground};
+
+  CollisionBorders collisionBorders_{};
+
   sf::Vector2f velocity_{};
   bool onGround_{false};
   
@@ -119,14 +132,17 @@ public:
 
 
   // Returnerar en mindre bounding box för player än tilesize
-  // Lillemor: bug fixad så att bounding box kan sättas så liten som den ska vara
-  // kollisionshantering kollade ibland på getPosition() istället för getGlobalBounds()
   sf::FloatRect getGlobalBounds() override {
     sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
     sf::FloatRect smallerBounds(largeBounds.left+4.0, largeBounds.top,
 				largeBounds.width-8.0, largeBounds.height);
     return smallerBounds;
   }
+  virtual const sf::Vector2f getSize()
+    {
+      return sf::Vector2f(getGlobalBounds().width, getGlobalBounds().height);
+    }
+
 
 private:
   float gravity_{0.5f};
@@ -162,10 +178,10 @@ class Ground : public PhysicalElement
 {
 public:
   
-  Ground(int TILESIZE, int x, int y, string typeID)
-    : PhysicalElement(typeID)
-      //    : PhysicalElement("Ground")
+  Ground(int TILESIZE, int x, int y, string spriteID, CollisionBorders collisionBorders)
+    : PhysicalElement(spriteID)
     { 
+      collisionBorders_ = collisionBorders;
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
       rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
     }
