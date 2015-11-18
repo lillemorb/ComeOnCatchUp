@@ -190,10 +190,10 @@ private:
 	      if(offset.y < 0)
 		player->setOnGround(true);
 	    }
+	    //Måste ha noggrannare villkor för att inte få problem med att
+	    //player fastnar vid gång höger->vänster mot vissa block
 	    else
 	    {
-	      //Måste ha noggrannare villkor för att inte få problem med att
-	      //player fastnar vid gång höger->vänster mot vissa block
 	      if (area.width > area.height)
 	      {
 		offset = collisionUpDown(player, area);
@@ -213,23 +213,10 @@ private:
 	  }
 	  else if(levelVec.at(i)->getSpriteID() == "Block")
 	  {
-	    // Kollisionshantering i y-led, spelare flyttas, block ändras inte
+	    // Kollisionshantering i y-led, spelare flyttas, block flyttas inte
 	    sf::Vector2f offset {0,0};
 	    if (area.width > area.height)
 	    {
-/*
-	      if (area.contains({ area.left, player->getPosition().y }))
-	      {
-		// Up side crash => move player down
-		offset.y = area.height;	  
-	      }
-	      else
-	      {
-		// Down side crash => move player back up
-		player->setOnGround(true);
-		offset.y = -area.height;
-	      }
-*/
 	      offset = collisionUpDown(player, area);
 	      if(offset.y < 0)
 		player->setOnGround(true);	      
@@ -237,20 +224,6 @@ private:
 	    }
 	    else if (area.width < area.height)
 	    {
-	      // Kollisionshantering i x-led, blocket får uppdaterad hastighet, spelare flyttas inte
-/*
-	      if (area.contains( player->getGlobalBounds().left + 
-				 player->getGlobalBounds().width - 1.f, area.top + 1.f ))
-	      {
-		//Right side crash
-		levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
-	      }
-	      else
-	      {
-		//Left side crash
-		levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
-	      }
-*/
 	      offset = collisionLeftRight(player, area);
 	      // Kollisionshantering i x-led, blocket får uppdaterad hastighet,
 	      // spelare flyttas inte
@@ -282,40 +255,12 @@ private:
 	    sf::Vector2f offset {0,0};
 	    if (area.width > area.height)
 	    {
-// Lillemor: det borkommenterade har ersatts med kortare hjälpfunktioner, samma
-// har gjort vid kollision mot Ground ovan
-/*
-	      if (area.contains({ area.left, levelVec.at(vecLoc)->getPosition().y }))
-	      {
-		// Up side crash => move block down
-		offset.y = area.height;		      
-	      }
-	      else
-	      {
-		// Down side crash => move block back up
-		levelVec.at(vecLoc)->setOnGround(true);
-		offset.y = -area.height;
-	      }
-*/
 	      offset = collisionUpDown(levelVec.at(vecLoc), area);
 	      if(offset.y < 0)
 		levelVec.at(vecLoc)->setOnGround(true);
 	    }
 	    else if (area.width < area.height)
 	    {
-/*
-	      if (area.contains( levelVec.at(vecLoc)->getGlobalBounds().left + 
-				 levelVec.at(vecLoc)->getGlobalBounds().width - 1.f, area.top + 1.f ))
-	      {
-		//Right side crash
-		offset.x = -area.width;
-	      }
-	      else
-	      {
-		//Left side crash
-		offset.x = area.width;
-	      }
-*/
 	      offset = collisionLeftRight(levelVec.at(vecLoc), area);
 	    }
 	    levelVec.at(vecLoc)->move(offset);
@@ -326,22 +271,6 @@ private:
       if(player->getGlobalBounds().intersects(levelVec.at(vecLoc)->getGlobalBounds(), area))
       {
 	sf::Vector2f offset {0,0};
-/*
-	if (area.width < area.height)
-	{
-	  if (area.contains( player->getGlobalBounds().left
-			     + player->getGlobalBounds().width - 1.f, area.top + 1.f ))
-	  {
-	    //Right side crash
-	    offset.x = -area.width;
-	  }
-	  else
-	  {
-	    //Left side crash
-	    offset.x = area.width;
-	  }
-	}
-*/
 	offset = collisionLeftRight(player, area);
 	player->move(offset);
       } 
