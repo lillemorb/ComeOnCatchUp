@@ -2,6 +2,7 @@
 #define ELEMENTS_CC
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 //TODO: flytta using namespace till .cc-fil när vi delar upp i .h/.cc
 //TODO: städa funktioner, var ska de ligga, uppdatera övriga filer därefter
@@ -86,6 +87,49 @@ public:
   float getGravity() { return gravity_; }
   void setFacingRight(bool facingRight) { facingRight_ = facingRight; }
   bool getFacingRight() { return facingRight_; }
+  //int getSpriteNumberWalking() { return spriteNumberWalking_; }
+  int getCurrentSprite() { return currentSprite_; }
+  void setJump(bool jump) { jump_ = jump; }
+  void setWalk(bool walk) { walk_ = walk; }
+  
+  int getAnimation()
+  {
+    if (jump_ == true)
+      currentSprite_ = 7;
+    else if (walk_ == true)
+      {    
+	if(spriteDelay_ >= 20)
+	  {
+	    if(spriteNumberWalking_ != 4)
+	      spriteNumberWalking_++;
+	    else
+	      spriteNumberWalking_ = 0;
+	    spriteDelay_ = 0;
+	  }
+	else
+	  spriteDelay_ = spriteDelay_ + 1;
+
+	currentSprite_ = spriteNumberWalking_;
+      }
+    // Idle
+    else
+      {
+	if(spriteDelay_ >= 20)
+	  {
+	    if(spriteNumberIdle_ == 0)
+	      spriteNumberIdle_ = 1;
+	    else
+	      spriteNumberIdle_ = 0;
+	    spriteDelay_ = 0;
+	  }
+	else
+	  spriteDelay_ = spriteDelay_ + 1;
+	
+	currentSprite_ = (5 + spriteNumberIdle_);
+      }
+    return currentSprite_;
+  } 
+
 
   // Returnerar en mindre bounding box för player än tilesize
   sf::FloatRect getGlobalBounds() override {
@@ -103,6 +147,13 @@ public:
 private:
   float gravity_{0.5f};
   bool facingRight_{true};
+  int spriteNumberWalking_{0};
+  int spriteNumberIdle_{0};
+  int walkCycle_{0};
+  int spriteDelay_{0};
+  int currentSprite_{0};
+  bool jump_{false};
+  bool walk_{false};
 };
 
 //---------BLOCK--------------//

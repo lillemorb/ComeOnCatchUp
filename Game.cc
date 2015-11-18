@@ -138,6 +138,8 @@ public:
 		     ((event.key.code == sf::Keyboard::Up) || 
 		      (event.key.code == sf::Keyboard::W) || 
 		      (event.key.code == sf::Keyboard::Space))))
+		  // TODO: Rasmus: W och Space fungerar inte för stunden, vet ej varför
+
 		  {
 		    //Hoppa
 		    action = Logic::Jump;
