@@ -46,6 +46,7 @@ public:
   virtual sf::FloatRect getGlobalBounds() = 0;
 // Lillemor: Innan ändring till mindre bounding box för Player => virtuell funktion
 //  sf::FloatRect getGlobalBounds(){ return rectangle_.getGlobalBounds(); }
+  //TODO: getSize ska istället returnera storleken på bounding box (eller?) //Lillemor
   const sf::Vector2f getSize(){ return rectangle_.getSize(); }
 
 protected:
