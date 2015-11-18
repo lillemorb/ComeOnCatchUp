@@ -31,14 +31,14 @@ public:
     window.setVerticalSyncEnabled(true);
 
     // Lillemor: Gör om till funktion som läser in alla filer och spara i vektor
-
+    
     // För över Level till vektorn.
-    ifstream is("Level.txt");
+    ifstream is("VScreen.txt");
     istream_iterator<int> start(is), end;
     vector<int> lvl(start, end);
     vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
     currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
-  
+    
     //LOOP
     // run the program as long as the window is open
     while (window.isOpen())
@@ -59,11 +59,9 @@ public:
 	  }
 	// Slutskärm ska fixas här
 	else if (actionResult_ == Logic::LevelCompleted && (current_level) >= (lvl.size()/vector_size))
-	  {
-	    delete currLevelPtr_;
-	    current_level = 1;
-	    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
-	    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
+	  { 
+	    
+	    gamestate_ = VictoryScreen;
 	  }
      
 	//Dead
@@ -77,6 +75,7 @@ public:
 
 	// check all the window's events that were triggered since the last iteration of the loop
 	// TA IN INPUT
+
 	while (window.pollEvent(event))
 	  {
 	    clock.restart();
@@ -99,72 +98,127 @@ public:
 	    }
 	    */
 	  
-	    //Reset
-	    if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
-	      {
-		delete currLevelPtr_;
-		vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
-		currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
+	    if (gamestate_ == Playing)
+	      {	      
+		//Reset
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+		  {
+		    delete currLevelPtr_;
+		    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+		    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
 	      
-	      }
+		  }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+		  {
+		    
+		    gamestate_ = Menu;
+		  }
 	  
-	  
-	    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
-		sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	      {
-		//Flytta vänster
-		move = Logic::Left;
-	      }
-	    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || 
-		     sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	      {
-		//Flytta höger
-		move = Logic::Right;
-	      }
-	    else
-	      {
-		move = Logic::Idle;
-	      }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
+		    sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		  {
+		    //Flytta vänster
+		    move = Logic::Left;
+		  }
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || 
+			 sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		  {
+		    //Flytta höger
+		    move = Logic::Right;
+		  }
+		else
+		  {
+		    move = Logic::Idle;
+		  }
 
-	    // Rasmus: Potentiell TODO: Om man hoppar upp på en kant så fortsätter
-	    // man hoppa direkt om man håller inne hoppknappen.
-	    if (jumping_ == false && 
-		(event.type == sf::Event::KeyPressed && 
-		 ((event.key.code == sf::Keyboard::Up) || 
-		  (event.key.code == sf::Keyboard::W) || 
-		  (event.key.code == sf::Keyboard::Space))))
-	      {
-		//Hoppa
-		action = Logic::Jump;
-		jumping_ = true;
-	      }
-	    else if (event.type == sf::Event::KeyReleased && 
+		// Rasmus: Potentiell TODO: Om man hoppar upp på en kant så fortsätter
+		// man hoppa direkt om man håller inne hoppknappen.
+		if (jumping_ == false && 
+		    (event.type == sf::Event::KeyPressed && 
 		     ((event.key.code == sf::Keyboard::Up) || 
 		      (event.key.code == sf::Keyboard::W) || 
-		      (event.key.code == sf::Keyboard::Space)))
-	      {
-		action = Logic::JumpReleased;
-		jumping_ = false;
+		      (event.key.code == sf::Keyboard::Space))))
+		  {
+		    //Hoppa
+		    action = Logic::Jump;
+		    jumping_ = true;
+		  }
+		else if (event.type == sf::Event::KeyReleased && 
+			 ((event.key.code == sf::Keyboard::Up) || 
+			  (event.key.code == sf::Keyboard::W) || 
+			  (event.key.code == sf::Keyboard::Space)))
+		  {
+		    action = Logic::JumpReleased;
+		    jumping_ = false;
+		  }
+		else
+		  {
+		    action = Logic::NoJump;
+		  }
 	      }
-	    else
+	    else if (gamestate_ == VictoryScreen)
 	      {
-		action = Logic::NoJump;
+		// "OBS! du är i victoryscreen, tryck höger piltagent för att börja om och vänster piltagent för att avsluta spelet" 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
+		    sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		  {
+		    window.close();
+		  }
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || 
+			 sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		  {
+		    current_level = 1;
+		    gamestate_ = Playing;
+		    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+		    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
+		    
+
+		  }
+	      }
+	    else if (gamestate_ == Menu) 
+	      {	
+		// "OBS! du är i menu tryck upp en gång och sen enter för att spela, ner och enter för att avsluta"
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && current_menu < 2)
+		  {
+		   
+		    current_menu = current_menu + 1;
+		  }
+		  
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && current_menu > 1)
+		  {
+		    current_menu = current_menu - 1;
+		  }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+		  {
+		    switch (current_menu)
+		      {
+		      case 1:
+			window.close();
+			break;
+		      case 2:
+			current_level = 1;
+			gamestate_ = Playing;
+			vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+			currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
+			break;
+			
+		      }
+		  }
 	      }
 	  }
-      
 	// clear the window with black color
 	window.clear(sf::Color(200, 255, 255, 255));
-      
-	// UPPDATERA LOGIC
-	actionResult_ = logic_.update((*currLevelPtr_), action, move, clock);
-
-	// RITA
-	graphics_.drawLevel((*currLevelPtr_), window);
-      
+	if (gamestate_ == Playing)
+	  {
+	    // UPPDATERA LOGIC
+	    actionResult_ = logic_.update((*currLevelPtr_), action, move, clock);
+	    // RITA
+	    graphics_.drawLevel((*currLevelPtr_), window);
+	  }
 	// end the current frame
 	window.display();
+	  
       }
-  
     return 0;
   }
 
@@ -174,8 +228,9 @@ private:
   const int TILES_PER_ROW{24};
   const int TILES_PER_COLUMN{18};
   unsigned int current_level{1};
+  unsigned int current_menu{1};
   int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
-  enum GameState{Playing, ShowScreen, Pause, Exit}; 
+  enum GameState{Playing, VictoryScreen, Pause, Exit, Menu}; 
   GameState gamestate_{Playing};
   Logic::ActionResult actionResult_= Logic::Continue;
   Level* currLevelPtr_{};
