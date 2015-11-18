@@ -24,7 +24,9 @@ public:
 	    string name = "G" + to_string(level_vector.at(i));
 	    groundPtrVector_.push_back(new Ground(TILESIZE, x, y, name));
 	    drawableElementVector_.push_back(groundPtrVector_.back());
-	    physicalElementVector_.push_back(groundPtrVector_.back());
+	    // Lillemor: Ground utan kanter ska inte hanteras av Logic ty ingen kollision
+	    if(level_vector.at(i) != 15)
+	      physicalElementVector_.push_back(groundPtrVector_.back());
 	  }
 
 	switch(level_vector.at(i))
