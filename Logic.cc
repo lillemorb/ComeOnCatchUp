@@ -107,26 +107,27 @@ private:
   ActionResult collisionHandling (vector<PhysicalElement*> & levelVec)
     {
       ActionResult result = Continue;
+       Player* player{dynamic_cast<Player*>(levelVec.at(0))};
 
       // Lillemor: uppdaterat så att kollision mot fönstrets gränser sker mot
       // players bounding box ist f players tilesize
-      sf::Vector2f playerPos = sf::Vector2f(levelVec.at(0)->getGlobalBounds().left, 
-					    levelVec.at(0)->getGlobalBounds().top);
-      sf::Vector2f playerSize = sf::Vector2f(levelVec.at(0)->getGlobalBounds().width, 
-					    levelVec.at(0)->getGlobalBounds().height);
+      sf::Vector2f playerPos = sf::Vector2f(player->getGlobalBounds().left, 
+					    player->getGlobalBounds().top);
+      sf::Vector2f playerSize = sf::Vector2f(player->getGlobalBounds().width, 
+					    player->getGlobalBounds().height);
 
       //Check for collision against window borders
 
       //Check left border
       if(playerPos.x < 0)
-	levelVec.at(0)->move(sf::Vector2f(-playerPos.x,0));
+	player->move(sf::Vector2f(-playerPos.x,0));
       //Check right border
       else if((playerPos.x + playerSize.x) > xPix_)
-	levelVec.at(0)->move(sf::Vector2f(xPix_-(playerPos.x + playerSize.x), 0));
+	player->move(sf::Vector2f(xPix_-(playerPos.x + playerSize.x), 0));
 
       //Check upper border
       if(playerPos.y < 0)
-	levelVec.at(0)->move(sf::Vector2f(-playerPos.y,0));
+	player->move(sf::Vector2f(-playerPos.y,0));
       //Check lower border and if collision return Dead
       else if(playerPos.y > yPix_)
       {
@@ -138,16 +139,16 @@ private:
       for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	sf::FloatRect area;
-	if(levelVec.at(0)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
+	if(player->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
 	{
 	  if(levelVec.at(i)->getSpriteID() == "Door")
 	  {
 	    cout << "Kollision med Door" << endl;
 
-	    // Lillemor: testade igen, fick problem på banan 2 om LevelCompleted inte returnerades,
-	    // har inte kollat varför men kanske ska gå på att returnera direkt för säkerhets skull?
-     	    // result = LevelCompleted;
-	    return LevelCompleted;
+	    // Lillemor: om LevelCompleted returneras faller Player halvt genom golvet vid 
+	    // kollision med Door vilket kan ses innan nästa bana laddas. 
+     	    result = LevelCompleted;
+	    // return LevelCompleted;
 	  }
 	  else if(dynamic_cast<Ground*>(levelVec.at(i)))
 	  {
@@ -161,21 +162,18 @@ private:
 	    //Ground med vänster gräns, flytta vänster
 	    else if(levelVec.at(i)->getSpriteID() == "G14")
 	    {
-	      cout << "Kollision: " << levelVec.at(i)->getSpriteID() << endl;
 	      offset.x = -area.width;
 	    }
 	    //Ground med höger gräns, flytta höger
 	    else if(levelVec.at(i)->getSpriteID() == "G16")
 	    {
-	      cout << "Kollision: " << levelVec.at(i)->getSpriteID() << endl;
 	      offset.x = area.width;
 	    }
 	    //Ground med övre gräns, flytta upp
 	    else if(levelVec.at(i)->getSpriteID() == "G18")
 	    {
 	      //Lillemor: måste komma ihåg att sätta setOnGround(true) då Player står på mark!!
-	      cout << "Kollision: " << levelVec.at(i)->getSpriteID() << endl;
-	      levelVec.at(0)->setOnGround(true);
+	      player->setOnGround(true);
 	      offset.y = -area.height;
 	    }
 	    //Mitten, inga kanter, gör inget. Lillemor: ska nu inte vara med i vektorn med
@@ -186,7 +184,7 @@ private:
 	    // fanns med
 	    else if( tempSpriteID == "G25") 
 	    {
-	      if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
+	      if (area.contains({ area.left, player->getPosition().y }))
 	      {
 		// Up side crash => move player down
 		offset.y = area.height;		      
@@ -194,17 +192,16 @@ private:
 	      else
 	      {
 		// Down side crash => move player back up
-		levelVec.at(0)->setOnGround(true);
+		player->setOnGround(true);
 		offset.y = -area.height;
 	      }
 	    }
 	    else
 	    {
-	      cout << "** Kollision: " << tempSpriteID << endl;
 	      //Eventuellt
 	      if (area.width > area.height)
 	      {
-		if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
+		if (area.contains({ area.left, player->getPosition().y }))
 		{
 		  // Up side crash => move player down
 		  offset.y = area.height;		      
@@ -212,14 +209,14 @@ private:
 		else
 		{
 		  // Down side crash => move player back up
-		  levelVec.at(0)->setOnGround(true);
+		  player->setOnGround(true);
 		  offset.y = -area.height;
 		}
 	      }
 	      else if (area.width < area.height)
 	      {
-		if (area.contains( levelVec.at(0)->getGlobalBounds().left + 
-				   levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+		if (area.contains( player->getGlobalBounds().left + 
+				   player->getGlobalBounds().width - 1.f, area.top + 1.f ))
 		{
 		  //Right side crash
 		  offset.x = -area.width;
@@ -231,9 +228,11 @@ private:
 		}
 	      }
 	    }
-	    levelVec.at(0)->move(offset);
+	    player->move(offset);
 	
-	    result = Continue;
+	    // Lillemor: om kollision med Door ska man inte fortsätta med denna bana
+	    if (result != LevelCompleted)
+	      result = Continue;
 	  }
 	  else if(levelVec.at(i)->getSpriteID() == "Block")
 	  {
@@ -241,7 +240,7 @@ private:
 	    sf::Vector2f offset {0,0};
 	    if (area.width > area.height)
 	    {
-	      if (area.contains({ area.left, levelVec.at(0)->getPosition().y }))
+	      if (area.contains({ area.left, player->getPosition().y }))
 	      {
 		// Up side crash => move player down
 		offset.y = area.height;	  
@@ -249,17 +248,17 @@ private:
 	      else
 	      {
 		// Down side crash => move player back up
-		levelVec.at(0)->setOnGround(true);
+		player->setOnGround(true);
 		offset.y = -area.height;
 	      }
-	      levelVec.at(0)->move(offset);
+	      player->move(offset);
 	    }
 	    else if (area.width < area.height)
 	    {
 	      // Kollisionshantering i x-led, blocket får uppdaterad hastighet, spelare flyttas inte
 	      // Lillemor: uppdaterat så att kollision fungerar med Players mindre bounding box
-	      if (area.contains( levelVec.at(0)->getGlobalBounds().left + 
-				 levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+	      if (area.contains( player->getGlobalBounds().left + 
+				 player->getGlobalBounds().width - 1.f, area.top + 1.f ))
 	      {
 		//Right side crash
 		levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
@@ -281,6 +280,8 @@ private:
   void collisionBlock(vector<PhysicalElement*> & levelVec, unsigned int vecLoc)
     {
       sf::FloatRect area;
+       Player* player{dynamic_cast<Player*>(levelVec.at(0))};
+
       for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	if(levelVec.at(vecLoc)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
@@ -322,13 +323,13 @@ private:
 	}
       }
       //Flytta ev tillbaka spelare, OBS kollar bara höger och vänster för aktuellt block och spelaren
-      if(levelVec.at(0)->getGlobalBounds().intersects(levelVec.at(vecLoc)->getGlobalBounds(), area))
+      if(player->getGlobalBounds().intersects(levelVec.at(vecLoc)->getGlobalBounds(), area))
       {
 	sf::Vector2f offset {0,0};
 	if (area.width < area.height)
 	{
-	  if (area.contains( levelVec.at(0)->getGlobalBounds().left
-			     + levelVec.at(0)->getGlobalBounds().width - 1.f, area.top + 1.f ))
+	  if (area.contains( player->getGlobalBounds().left
+			     + player->getGlobalBounds().width - 1.f, area.top + 1.f ))
 	  {
 	    //Right side crash
 	    offset.x = -area.width;
@@ -339,7 +340,7 @@ private:
 	    offset.x = area.width;
 	  }
 	}
-	levelVec.at(0)->move(offset);
+	player->move(offset);
       } 
     }	  
  
