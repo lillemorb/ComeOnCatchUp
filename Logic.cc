@@ -155,6 +155,7 @@ private:
 	    sf::Vector2f offset {0,0};
 	    string tempSpriteID{levelVec.at(i)->getSpriteID()};	    
 	    //PÅBÖRJAT: ny kollisionshantering
+	    //Lillemor: har städat undan kollision vänster-höger, upp-ned i mindre funktioner
 
 	    //Ground med nedre gräns, flytta ned
 	    if(levelVec.at(i)->getSpriteID() == "G12")
@@ -180,52 +181,28 @@ private:
 	    //PhysicalElements
 	    // else if(levelVec.at(i)->getSpriteID() == "G15")
 	    // {}
+
 	    // Lillemor: Player fastnade vid gång från höger till vänster om inte denna sats
 	    // fanns med
 	    else if( tempSpriteID == "G25") 
 	    {
-	      if (area.contains({ area.left, player->getPosition().y }))
-	      {
-		// Up side crash => move player down
-		offset.y = area.height;		      
-	      }
-	      else
-	      {
-		// Down side crash => move player back up
+	      offset = collisionUpDown(player, area);
+	      if(offset.y < 0)
 		player->setOnGround(true);
-		offset.y = -area.height;
-	      }
 	    }
 	    else
 	    {
-	      //Eventuellt
+	      //Måste ha noggrannare villkor för att inte få problem med att
+	      //player fastnar vid gång höger->vänster mot vissa block
 	      if (area.width > area.height)
 	      {
-		if (area.contains({ area.left, player->getPosition().y }))
-		{
-		  // Up side crash => move player down
-		  offset.y = area.height;		      
-		}
-		else
-		{
-		  // Down side crash => move player back up
+		offset = collisionUpDown(player, area);
+		if(offset.y < 0)
 		  player->setOnGround(true);
-		  offset.y = -area.height;
-		}
 	      }
 	      else if (area.width < area.height)
 	      {
-		if (area.contains( player->getGlobalBounds().left + 
-				   player->getGlobalBounds().width - 1.f, area.top + 1.f ))
-		{
-		  //Right side crash
-		  offset.x = -area.width;
-		}
-		else
-		{
-		  //Left side crash
-		  offset.x = area.width;
-		}
+		offset = collisionLeftRight(player, area);
 	      }
 	    }
 	    player->move(offset);
@@ -240,6 +217,7 @@ private:
 	    sf::Vector2f offset {0,0};
 	    if (area.width > area.height)
 	    {
+/*
 	      if (area.contains({ area.left, player->getPosition().y }))
 	      {
 		// Up side crash => move player down
@@ -251,12 +229,16 @@ private:
 		player->setOnGround(true);
 		offset.y = -area.height;
 	      }
+*/
+	      offset = collisionUpDown(player, area);
+	      if(offset.y < 0)
+		player->setOnGround(true);	      
 	      player->move(offset);
 	    }
 	    else if (area.width < area.height)
 	    {
 	      // Kollisionshantering i x-led, blocket får uppdaterad hastighet, spelare flyttas inte
-	      // Lillemor: uppdaterat så att kollision fungerar med Players mindre bounding box
+/*
 	      if (area.contains( player->getGlobalBounds().left + 
 				 player->getGlobalBounds().width - 1.f, area.top + 1.f ))
 	      {
@@ -268,6 +250,14 @@ private:
 		//Left side crash
 		levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
 	      }
+*/
+	      offset = collisionLeftRight(player, area);
+	      // Kollisionshantering i x-led, blocket får uppdaterad hastighet,
+	      // spelare flyttas inte
+	      if(offset.x < 0)
+		levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
+	      else if(offset.x > 0)
+		levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
 	    }	
 	    result = Continue;
 	  }
@@ -292,6 +282,9 @@ private:
 	    sf::Vector2f offset {0,0};
 	    if (area.width > area.height)
 	    {
+// Lillemor: det borkommenterade har ersatts med kortare hjälpfunktioner, samma
+// har gjort vid kollision mot Ground ovan
+/*
 	      if (area.contains({ area.left, levelVec.at(vecLoc)->getPosition().y }))
 	      {
 		// Up side crash => move block down
@@ -303,9 +296,14 @@ private:
 		levelVec.at(vecLoc)->setOnGround(true);
 		offset.y = -area.height;
 	      }
+*/
+	      offset = collisionUpDown(levelVec.at(vecLoc), area);
+	      if(offset.y < 0)
+		levelVec.at(vecLoc)->setOnGround(true);
 	    }
 	    else if (area.width < area.height)
 	    {
+/*
 	      if (area.contains( levelVec.at(vecLoc)->getGlobalBounds().left + 
 				 levelVec.at(vecLoc)->getGlobalBounds().width - 1.f, area.top + 1.f ))
 	      {
@@ -317,6 +315,8 @@ private:
 		//Left side crash
 		offset.x = area.width;
 	      }
+*/
+	      offset = collisionLeftRight(levelVec.at(vecLoc), area);
 	    }
 	    levelVec.at(vecLoc)->move(offset);
 	  }	
@@ -326,6 +326,7 @@ private:
       if(player->getGlobalBounds().intersects(levelVec.at(vecLoc)->getGlobalBounds(), area))
       {
 	sf::Vector2f offset {0,0};
+/*
 	if (area.width < area.height)
 	{
 	  if (area.contains( player->getGlobalBounds().left
@@ -340,8 +341,49 @@ private:
 	    offset.x = area.width;
 	  }
 	}
+*/
+	offset = collisionLeftRight(player, area);
 	player->move(offset);
       } 
     }	  
- 
+  
+  // Helper function, checks for collision up/down and returns resulting displacement
+  sf::Vector2f collisionUpDown(PhysicalElement* element, sf::FloatRect area)
+    {
+      sf::Vector2f offset(0,0);
+      if (area.contains({ area.left, element->getPosition().y }))
+      {
+	// Up side crash => move element down
+	offset.y = area.height;		      
+      }
+      else
+      {
+	// Down side crash => move element back up
+	offset.y = -area.height;
+      }
+      return offset;
+    } 
+
+  // Helper function, checks for collision left/right and returns resulting displacement
+  sf::Vector2f collisionLeftRight(PhysicalElement* element, sf::FloatRect area)
+    {
+      sf::Vector2f offset(0,0);
+      // Lillemor: uppdaterat så att kollision fungerar med eventuellt mindre bounding box
+      if (area.contains( element->getGlobalBounds().left + 
+			 element->getGlobalBounds().width - 1.f, area.top + 1.f ))
+      {
+	//Right side crash
+	offset.x = -area.width;
+      }
+      else
+      {
+	//Left side crash
+	offset.x = area.width;
+      }
+      return offset;
+    }
+
 };
+
+
+
