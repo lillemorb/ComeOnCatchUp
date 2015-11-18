@@ -13,7 +13,8 @@ class DrawableElement
 public:
   DrawableElement(string spriteID) : spriteID_{spriteID} {};
   virtual ~DrawableElement() = default;//=0 i design spec
-  virtual string getSpriteID(){ return spriteID_; }
+  //Lillemor: tog bort virtual eftersom spriteID_ finns här
+  string getSpriteID(){ return spriteID_; }
   sf::Vector2f getPosition() { return rectangle_.getPosition(); }
 
 protected:
@@ -25,7 +26,7 @@ protected:
 class PhysicalElement : public DrawableElement
 {
 public:
-  PhysicalElement(string spriteID): DrawableElement(spriteID){};
+  PhysicalElement(string spriteID): DrawableElement(spriteID){}
   virtual ~PhysicalElement() = default;//=0 i design spec
   //virtual string getPhysicalID()=0; 
 
@@ -78,7 +79,7 @@ public:
   // bounding box, bland annat.
   sf::FloatRect getGlobalBounds() override {
     sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
-    sf::FloatRect smallerBounds(largeBounds.left+2.0, largeBounds.top, largeBounds.width-4.0, largeBounds.height);
+    sf::FloatRect smallerBounds(largeBounds.left+4.0, largeBounds.top, largeBounds.width-8.0, largeBounds.height);
     return smallerBounds;
   }
 
