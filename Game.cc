@@ -7,6 +7,7 @@
 #include <vector>
 #include <fstream>
 #include <iterator>
+#include <unistd.h>
 using namespace std;
 
 // TODO: dela upp i .cc/.h-filer
@@ -37,16 +38,16 @@ public:
 
     // För över Level till vektorn.
 
-// Lillemor: Här öppnades VScreen.txt istället för Level.txt? Var det meningen?
-// Oavsett vilket saknas VScreen.txt    
-//    ifstream is("VScreen.txt");
+    // Lillemor: Här öppnades VScreen.txt istället för Level.txt? Var det meningen?
+    // Oavsett vilket saknas VScreen.txt    
+    //    ifstream is("VScreen.txt");
 
     ifstream is("Level.txt");
     if(!is)
-    {
-      cerr << "Couldn't open Level.txt" << endl;
-      return 1;
-    }
+      {
+	cerr << "Couldn't open Level.txt" << endl;
+	return 1;
+      }
     istream_iterator<int> start(is), end;
     vector<int> lvl(start, end);
     vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
@@ -65,6 +66,7 @@ public:
 	// Continue to next level
 	if (actionResult_ == Logic::LevelCompleted && (current_level) < (lvl.size()/vector_size))
 	  {
+	    
 	    delete currLevelPtr_;
 	    current_level = current_level + 1;
 	    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1),
@@ -75,7 +77,7 @@ public:
 	// Slutskärm ska fixas här
 	else if (actionResult_ == Logic::LevelCompleted && (current_level) >= (lvl.size()/vector_size))
 	  { 
-	    
+	    current_menu = 2;
 	    gamestate_ = VictoryScreen;
 	  }
      
@@ -126,7 +128,7 @@ public:
 		  }
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
 		  {
-		    
+		    current_menu = 1;
 		    gamestate_ = Menu;
 		  }
 	  
@@ -172,54 +174,106 @@ public:
 		    action = Logic::NoJump;
 		  }
 	      }
-	    else if (gamestate_ == VictoryScreen)
-	      {
-		// "OBS! du är i victoryscreen, tryck höger piltagent för att börja om och vänster piltagent för att avsluta spelet" 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
-		    sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		  {
-		    window.close();
-		  }
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || 
-			 sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		  {
-		    current_level = 1;
-		    gamestate_ = Playing;
-		    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
-		    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
-		    
 
-		  }
-	      }
-	    else if (gamestate_ == Menu) 
+	    else if (gamestate_ == Menu || gamestate_ == VictoryScreen || gamestate_ == LevelSel) 
 	      {	
 		// "OBS! du är i menu tryck upp en gång och sen enter för att spela, ner och enter för att avsluta"
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && current_menu < 2)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && current_menu_row < 3)
 		  {
-		   
-		    current_menu = current_menu + 1;
+		    cout << "upp i menyn" << endl;
+		    current_menu_row = current_menu_row + 1;
 		  }
 		  
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && current_menu > 1)
-		  {
-		    current_menu = current_menu - 1;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && current_menu_row > 1)
+		  { 
+		    cout << "ner i menyn" << endl;
+		    current_menu_row = current_menu_row - 1;
 		  }
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+		if (current_menu == 1 || current_menu == 2)
 		  {
-		    switch (current_menu)
+		    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
 		      {
-		      case 1:
-			window.close();
-			break;
-		      case 2:
-			current_level = 1;
-			gamestate_ = Playing;
-			vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
-			currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
-			break;
+			if (current_menu == 1)
+			  {
+			    cout << "Du är nu i huvudmenyn" << endl;
+			    switch (current_menu_row)
+			      {
+			      case 1:
+				cout << "Exit" << endl;
+				window.close();
+				break;
+			      case 2:
+				cout << "Start på level 1" << endl;
+				current_level = 1;
+				gamestate_ = Playing;
+				delete currLevelPtr_;
+				vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+				currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
 			
+				break;
+				/*
+			      case 3:
+				cout << "Går till level menyn" << endl;
+				current_menu = 3;
+				break;
+				*/
+			      }
+		   
+			  }
+			else if (current_menu == 2)
+			  {
+			    cout << "Du är nu i victory menyn" << endl;
+			    switch (current_menu_row)
+			      {
+			      case 1:
+				cout << "Exit" << endl;
+				window.close();
+				break;
+			      case 2:
+				cout << "Börja om från level 1" << endl;
+				current_level = 1;
+				gamestate_ = Playing;				delete currLevelPtr_;
+				vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+				currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
+				
+			      }
+			  }
+		
 		      }
 		  }
+		/*
+		else if (current_menu == 3)
+		  {
+		    sleep(1);
+		    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+		      {    
+			cout << "Du är nu i level menyn" << endl;
+			switch (current_menu_row)
+			  {
+			  case 1:
+			    cout << "Du försökte gå till level 1" << endl;
+			    current_level = 1;
+			    gamestate_ = Playing;
+			    return Logic::LevelCompleted;
+			    break;
+			  case 2:	
+			    cout << "Du försökte gå till level 2" << endl;
+			    current_level = 2;
+			    gamestate_ = Playing;
+			    return Logic::LevelCompleted;
+			    break;
+			  case 3:
+			    cout << "Du försökte gå till level 3" << endl;
+			    current_level = 2;
+			    gamestate_ = Playing;
+			    return Logic::LevelCompleted;
+
+			  }	
+			  
+		      }
+		
+		  }
+		*/
 	      }
 	  }
 	// clear the window with black color
@@ -231,6 +285,7 @@ public:
 	    // RITA
 	    graphics_.drawLevel((*currLevelPtr_), window);
 	  }
+
 	// end the current frame
 	window.display();
 	  
@@ -245,8 +300,9 @@ private:
   const int TILES_PER_COLUMN{18};
   unsigned int current_level{1};
   unsigned int current_menu{1};
+  unsigned int current_menu_row{1};
   int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
-  enum GameState{Playing, VictoryScreen, Pause, Exit, Menu}; 
+  enum GameState{Playing, VictoryScreen, Pause, LevelSel, Menu}; 
   GameState gamestate_{Playing};
   Logic::ActionResult actionResult_= Logic::Continue;
   Level* currLevelPtr_{};
@@ -257,4 +313,4 @@ private:
   bool jumping_{false};
 
 };
-  
+
