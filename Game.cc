@@ -30,10 +30,18 @@ public:
  
     window.setVerticalSyncEnabled(true);
 
-    // Lillemor: Gör om till funktion som läser in alla filer och spara i vektor
-    
     // För över Level till vektorn.
-    ifstream is("VScreen.txt");
+
+// Lillemor: Här öppnades VScreen.txt istället för Level.txt? Var det meningen?
+// Oavsett vilket saknas VScreen.txt    
+//    ifstream is("VScreen.txt");
+
+    ifstream is("Level.txt");
+    if(!is)
+    {
+      cerr << "Couldn't open Level.txt" << endl;
+      return 1;
+    }
     istream_iterator<int> start(is), end;
     vector<int> lvl(start, end);
     vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
@@ -53,7 +61,8 @@ public:
 	  {
 	    delete currLevelPtr_;
 	    current_level = current_level + 1;
-	    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+	    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1),
+				 lvl.begin() + vector_size*current_level);
 	    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
 	 
 	  }
@@ -68,7 +77,8 @@ public:
 	if(actionResult_ == Logic::Dead)
 	  {
 	    delete currLevelPtr_;	
-	    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+	    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1),
+				 lvl.begin() + vector_size*current_level);
 	    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
 	  }
 
