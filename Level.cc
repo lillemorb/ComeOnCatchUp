@@ -10,6 +10,34 @@ using namespace std;
 
 class Level
 {
+private:
+  // Håller reda på objekten med dynamiskt allokerat minne
+  // för att inte få minnesfel
+  Player* playerPtr_{};
+  Door* doorPtr_{};
+  vector<Player*> playerPtrVector_{};
+  vector<Door*> doorPtrVector_{};
+  vector<Block*> blockPtrVector_{};
+  vector<Ground*> groundPtrVector_{};
+  vector<Background*> backgroundPtrVector_{};
+  //vector<DrawableElement*> drawableElementVector_{};
+  //vector<PhysicalElement*> physicalElementVector_{}; 
+
+//ordning i vectorn: Player, block, door, ground, background
+  vector<vector<DrawableElement*>> drawableElementVector_(vector<DrawableElement*>(), 
+							   vector<DrawableElement*>(),
+							   vector<DrawableElement*>(),
+							   vector<DrawableElement*>(),
+							   vector<DrawableElement*>());
+//ordning i vectorn: Player, block, door, ground
+  vector<vector<PhysicalElement*>> physicalElementVector_(vector<PhysicalElement*>(),
+							  vector<PhysicalElement*>(),
+							  vector<PhysicalElement*>(),
+							  vector<PhysicalElement*>()); 
+
+
+
+
 public:
   Level(int TILESIZE, int TILES_PER_ROW, vector<int> level_vector)
   {
@@ -18,7 +46,7 @@ public:
 	int x = i%TILES_PER_ROW;
 	int y = i/TILES_PER_ROW;
 
-	// Kontrollerar ground-objekten
+	// Skapar Groundobjekt och lägger in i groundPtrVector
 	if(level_vector.at(i) >= 10 && level_vector.at(i) <= 25)
 	  {	    
 	    int num{level_vector.at(i)};
@@ -37,19 +65,100 @@ public:
 	    if((num >= 14 && num <= 19) || num == 22 || num == 24)
 	      collBorders.down = false;
 
-	    groundPtrVector_.push_back(new Ground(TILESIZE, x, y, name, collBorders));
-	    drawableElementVector_.push_back(groundPtrVector_.back());
+	    //groundPtrVector_.push_back(new Ground(TILESIZE, x, y, name, collBorders));
+	    Ground* G = new Ground(TILESIZE, x, y, name, collBorders);
+	    drawableElementVector_.at(3).push_back(G);
+//drawableElementVector_.at(3).push_back(new Ground(TILESIZE, x, y, name, collBorders));
 
 	    // Lillemor: Ground utan kanter ska inte hanteras av Logic ty ingen kollision
-	    if(level_vector.at(i) != 15)
-	    {
-	      physicalElementVector_.push_back(groundPtrVector_.back());
+	    //  if(level_vector.at(i) != 15)
+	    // {
+	    // physicalElementVector_.at(3).push_back(drawableElementVector_.back());
+//physicalElementVector_.at(3).push_back(groundPtrVector_.back());
 //	      cout << collBorders.left << " " << collBorders.right << " "
 //		   << collBorders.up << " " << collBorders.down << endl;
-	    }
+	    //}
 	  }
 
-	switch(level_vector.at(i))
+/*	switch(level_vector.at(i))
+	  {
+	  case 01:
+	    drawableElementVector_.at(0).push_back(playerPtr_ = new Player(TILESIZE, x, y));
+	    physicalElementVector_.at(0).push_back(drawableElementVector_.back());
+	    break;
+	  case 02:
+	    drawableElementVector_.at(2).push_back(playerPtr_ = new Door(TILESIZE, x, y));
+	    physicalElementVector_.at(2).push_back(drawableElementVector_.back());
+	    break;
+	  case 03:
+	    drawableElementVector_.at(1).push_back(playerPtr_ = new Block(TILESIZE, x, y));
+	    physicalElementVector_.at(1).push_back(drawableElementVector_.back());
+	    break;
+	  case 30:
+	    drawableElementVector_.at(4).push_back(playerPtr_ = new Background(TILESIZE, x, y, "Start"));
+	    break;
+	  case 31: 
+	    drawableElementVector_.at(4).push_back(playerPtr_ = new Background(TILESIZE, x, y, "Goal"));
+	  default:
+	    break;
+	    }*/
+      }
+  }
+
+  // Frigör minne genom att deleta pekare till alla objekt i Level
+  ~Level()
+  {
+    delete playerPtr_;
+    delete doorPtr_;
+    for(unsigned int i{}; i < groundPtrVector_.size(); ++i)
+      delete groundPtrVector_.at(i);
+    for(unsigned int i{}; i < blockPtrVector_.size(); ++i)
+      delete blockPtrVector_.at(i);
+    for(unsigned int i{}; i < backgroundPtrVector_.size(); ++i)
+      delete backgroundPtrVector_.at(i);
+  };
+
+  vector<DrawableElement*> &  getLevelDrawableLayout()
+  {
+    return drawableElementVector_;
+  }
+
+  vector<PhysicalElement*> & getLevelPhysicalLayout()
+  {
+    return physicalElementVector_;
+  }
+
+/*private:
+  // Håller reda på objekten med dynamiskt allokerat minne
+  // för att inte få minnesfel
+  Player* playerPtr_{};
+  Door* doorPtr_{};
+  vector<Player*> playerPtrVector_{};
+  vector<Door*> doorPtrVector_{};
+  vector<Block*> blockPtrVector_{};
+  vector<Ground*> groundPtrVector_{};
+  vector<Background*> backgroundPtrVector_{};
+  //vector<DrawableElement*> drawableElementVector_{};
+  //vector<PhysicalElement*> physicalElementVector_{}; 
+
+//ordning i vectorn: Player, block, door, ground, background
+  vector<vector<DrawableElement*>> drawableElementVector_(vector<DrawableElement*>(), 
+							   vector<DrawableElement*>(),
+							   vector<DrawableElement*>(),
+							   vector<DrawableElement*>(),
+							   vector<DrawableElement*>());
+//ordning i vectorn: Player, block, door, ground
+  vector<vector<PhysicalElement*>> physicalElementVector_(vector<PhysicalElement*>(),
+							  vector<PhysicalElement*>(),
+							  vector<PhysicalElement*>(),
+							  vector<PhysicalElement*>()); */
+
+};
+
+#endif
+
+
+/*	switch(level_vector.at(i))
 	  {
 	  case 01:
 	    playerPtr_ = new Player(TILESIZE, x, y);
@@ -84,43 +193,4 @@ public:
 	    break;
 	  default:
 	    break;
-	  }
-      }
-  }
-
-  // Frigör minne genom att deleta pekare till alla objekt i Level
-  ~Level()
-  {
-    delete playerPtr_;
-    delete doorPtr_;
-    for(unsigned int i{}; i < groundPtrVector_.size(); ++i)
-      delete groundPtrVector_.at(i);
-    for(unsigned int i{}; i < blockPtrVector_.size(); ++i)
-      delete blockPtrVector_.at(i);
-    for(unsigned int i{}; i < backgroundPtrVector_.size(); ++i)
-      delete backgroundPtrVector_.at(i);
-  };
-
-  vector<DrawableElement*> &  getLevelDrawableLayout()
-  {
-    return drawableElementVector_;
-  }
-
-  vector<PhysicalElement*> & getLevelPhysicalLayout()
-  {
-    return physicalElementVector_;
-  }
-
-private:
-  // Håller reda på objekten med dynamiskt allokerat minne
-  // för att inte få minnesfel
-  Player* playerPtr_{};
-  Door* doorPtr_{};
-  vector<Block*> blockPtrVector_{};
-  vector<Ground*> groundPtrVector_{};
-  vector<Background*> backgroundPtrVector_{};
-  vector<DrawableElement*> drawableElementVector_{};
-  vector<PhysicalElement*> physicalElementVector_{}; 
-};
-
-#endif
+	  }*/
