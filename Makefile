@@ -3,9 +3,9 @@ CCFLAGS = -std=c++11
 
 FILES = Project.cc Elements.cc Game.cc Graphics.cc Level.cc Logic.cc
 OBJECTS = Elements.o Game.o Graphics.o Level.o Logic.o Project.o
-SFMLINCLUDES = -lsfml-graphics -lsfml-window -lsfml-system
+SFMLINCLUDES = -lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system
 
-all: Project.cc Elements.cc Game.cc Graphics.cc Level.cc Logic.cc
+all: Project.cc Elements.cc Game.cc Graphics.cc Level.cc Logic.cc GameSounds.cc
 	$(CCC) $(CCFLAGS) $(FILES) -o project $(SFMLINCLUDES)
 
 # 'make clean' tar bort objektkodsfiler och 'core' (minnesdump).

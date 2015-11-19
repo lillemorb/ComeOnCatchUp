@@ -2,9 +2,9 @@
 
 #include <SFML/Graphics.hpp>
 #include "Level.cc"
+#include "GameSounds.cc"
 #include <vector>
-#include <SFML/Audio.hpp>
-//#include <SFML/Sound.hpp>
+
 
 class Logic
 {
@@ -17,14 +17,14 @@ public:
 
   void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
 
-  ActionResult update(Level &current, Action action, Move move, sf::Clock &clock)
+  ActionResult update(Level &current, Action action, Move move, sf::Clock &clock,
+		      GameSounds &gamesounds)
     {
       // Hämta vektor med objekt i Level
       vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
  
       ActionResult result{Continue};
       sf::Time dt{clock.getElapsedTime()};
-
       //TODO: player ska vara playerPtr
       Player* player{dynamic_cast<Player*>(levelVec.at(0))};
 
@@ -33,16 +33,16 @@ public:
       float distX{};
       float velY{player->getVelocity().y};
 
-    
       if (action == Jump && player->getOnGround() == true)
 	{
 	  velY = -9.0f;
 	  player->setOnGround(false);
 	  player->setJump(true);
+	  gamesounds.getJumpSound();
 	}
+      // Gör att man kan variera hopphöjden genom att släppa knappen tidigare
       if (action == JumpReleased)
 	{
-	  // Gör att man kan variera hopphöjden genom att släppa knappen tidigare
 	  if(velY < -4.0f)
 	    velY = -4.0f;
 	}
@@ -84,7 +84,7 @@ public:
 
       // kollisionshantering spelare
       player->setOnGround(false);
-      result = collisionHandlingPlayer(levelVec);
+      result = collisionHandlingPlayer(levelVec, gamesounds);
  
       // Uppdatera position för block ett och ett, med kollisionshantering för vardera block
       for(unsigned int i{1}; i < levelVec.size(); ++i)
@@ -105,13 +105,13 @@ public:
 	  }
 	  if(levelVec.at(i)->getBelowWindow() == false)
 	  {
-	  levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x,
-					    velYBlock*(dt.asMilliseconds()/10.0)));  
-	  levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
+	    levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x,
+					      velYBlock*(dt.asMilliseconds()/10.0)));  
+	    levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
 	  
-	  //kollisionshantering
-	  levelVec.at(i)->setOnGround(false);
-	  collisionBlock(levelVec, i);
+	    //kollisionshantering
+	    levelVec.at(i)->setOnGround(false);
+	    collisionBlock(levelVec, i, gamesounds);
 	  }
 	}
       }
@@ -126,7 +126,7 @@ private:
   //Lillemor: observera att vid kollisionshantering är det alltid getGlobalBounds som måste
   //användas och inte getPosition (åtminstone för Player och Door), eftersom deras bounding box
   //inte är lika stor som en tile
-  ActionResult collisionHandlingPlayer (vector<PhysicalElement*> & levelVec)
+  ActionResult collisionHandlingPlayer (vector<PhysicalElement*> & levelVec, GameSounds &gamesounds)
     {
       ActionResult result{Continue};
        Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
@@ -150,6 +150,7 @@ private:
       else if(playerPos.y > yPix_)
       {
 	cout << "dead" << endl;
+	gamesounds.getDeathSound();
 	return Dead;
       }
       // TODO: GetSpriteID ska vara getPhysicalID när den funktionen är implementerad - tänkte
@@ -187,10 +188,12 @@ private:
 	    if(offset.x < 0)
 	    {
 	      levelVec.at(i)->setVelocity(sf::Vector2f(2, levelVec.at(i)->getVelocity().y));
+	      gamesounds.getBoxSound();
 	    }
 	    else if(offset.x > 0)
 	    {
 	      levelVec.at(i)->setVelocity(sf::Vector2f(-2, levelVec.at(i)->getVelocity().y));
+	      gamesounds.getBoxSound();
 	    }
 	    offset.x = 0;
 
@@ -201,7 +204,7 @@ private:
       return result;
     }
 
-  void collisionBlock(vector<PhysicalElement*> & levelVec, unsigned int vecLoc)
+  void collisionBlock(vector<PhysicalElement*> & levelVec, unsigned int vecLoc, GameSounds gamesounds)
     {
       sf::FloatRect area;
       Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
