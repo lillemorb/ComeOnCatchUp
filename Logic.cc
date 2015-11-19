@@ -52,7 +52,6 @@ public:
       Player* player{dynamic_cast<Player*>(levelVec.at(0))};
 
       float gravity_{player->getGravity()};
-      // 
       float distX{};
       float velY{player->getVelocity().y};
 
@@ -149,9 +148,6 @@ private:
       ActionResult result{Continue};
        Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
 
-       //cout << "x: " << playerPtr->getGlobalBounds().left
-       //    << "y: " << playerPtr->getGlobalBounds().top << endl;
-
       //Check for collision against window borders
       sf::Vector2f playerPos = sf::Vector2f(playerPtr->getGlobalBounds().left, 
 					    playerPtr->getGlobalBounds().top);
@@ -188,78 +184,17 @@ private:
 	  else if(dynamic_cast<Ground*>(levelVec.at(i)))
 	  {
 	    sf::Vector2f offset {0,0};
-//	    string tempSpriteID{levelVec.at(i)->getSpriteID()};	    
 
 	    offset = collisionDisplacement(playerPtr, levelVec.at(i), area);
 	    if(offset.y < 0)
 	      playerPtr->setOnGround(true);
 	    playerPtr->move(offset);
-
-//	    cout << tempSpriteID << endl;
-
-/*
-	    //Ground med nedre gräns, flytta ned
-	    if(levelVec.at(i)->getSpriteID() == "G12")
-	      offset.y = area.height;	
-	    //Ground med vänster gräns, flytta vänster
-	    else if(levelVec.at(i)->getSpriteID() == "G14")
-	      offset.x = -area.width;
-	    //Ground med höger gräns, flytta höger
-	    else if(levelVec.at(i)->getSpriteID() == "G16")
-	      offset.x = area.width;
-	    //Ground med övre gräns, flytta upp
-	    else if(levelVec.at(i)->getSpriteID() == "G18")
-	    {
-	      playerPtr->setOnGround(true);
-	      offset.y = -area.height;
-	    }
-	    else if( tempSpriteID == "G25") 
-	    {
-	      offset = collisionUpDown(playerPtr, area);
-	      if(offset.y < 0)
-		playerPtr->setOnGround(true);
-	    }
-	    //Måste ha noggrannare villkor för att inte få problem med att
-	    //player fastnar vid gång höger->vänster mot vissa block
-	    else
-	    {
-	      if (area.width > area.height)
-	      {
-		offset = collisionUpDown(playerPtr, area);
-		if(offset.y < 0)
-		  playerPtr->setOnGround(true);
-	      }
-	      else if (area.width < area.height)
-	      {
-		offset = collisionLeftRight(playerPtr, area);
-	      }
-	    }
-	    playerPtr->move(offset);
-*/
 	  }
 	  else if(levelVec.at(i)->getSpriteID() == "Block")
 	  {
 	    // Kollisionshantering i y-led, spelare flyttas, block flyttas inte
 	    sf::Vector2f offset {0,0};
-/*
-	    if (area.width > area.height)
-	    {
-	      offset = collisionUpDown(playerPtr, area);
-	      if(offset.y < 0)
-		playerPtr->setOnGround(true);	      
-	      playerPtr->move(offset);
-	    }
-	    else if (area.width < area.height)
-	    {
-	      offset = collisionLeftRight(playerPtr, area);
-	      // Kollisionshantering i x-led, blocket får uppdaterad hastighet,
-	      // spelare flyttas inte tillbaka
-	      if(offset.x < 0)
-		levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
-	      else if(offset.x > 0)
-		levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
-	    }
-*/
+
 	    offset = collisionDisplacement(playerPtr, levelVec.at(i), area);
 	    if(offset.y < 0)
 	      playerPtr->setOnGround(true);
@@ -292,19 +227,7 @@ private:
 	  if(levelVec.at(i)->getSpriteID().at(0) == 'G' || levelVec.at(i)->getSpriteID() == "Block")
 	  {
 	    sf::Vector2f offset {0,0};
-// Lillemor: Ersatt med kodavsnittet precis under
-/*
-	    if (area.width > area.height)
-	    {
-	      offset = collisionUpDown(levelVec.at(vecLoc), area);
-	      if(offset.y < 0)
-		levelVec.at(vecLoc)->setOnGround(true);
-	    }
-	    else if (area.width < area.height)
-	    {
-	      offset = collisionLeftRight(levelVec.at(vecLoc), area);
-	    }
-*/
+
 	    offset = collisionDisplacement(levelVec.at(vecLoc), levelVec.at(i), area);
 	    if(offset.y < 0)
 	      levelVec.at(vecLoc)->setOnGround(true);
@@ -312,14 +235,11 @@ private:
 	  }	
 	}
       }
-      //Flytta ev tillbaka spelare, OBS kollar bara höger och vänster för aktuellt block och spelaren
+      //Flytta tillbaka spelare om Block:et inte gick att flytta
       if(playerPtr->getGlobalBounds().intersects(levelVec.at(vecLoc)->getGlobalBounds(), area))
       {
 	sf::Vector2f offset {0,0};
-/*
-	offset = collisionLeftRight(playerPtr, area);
-	playerPtr->move(offset);
-*/
+
 	// Lillemor: Obs, kollar i både x- och y-led, behöver kanske  bara kolla x-led...
 	offset = collisionDisplacement(playerPtr, levelVec.at(vecLoc), area);
 	if(offset.y < 0)
@@ -328,42 +248,16 @@ private:
       } 
     }	  
 
-  //Lillemor: fungerar för andra (alla?) objekt, inte bara Ground
-  sf::Vector2f collisionDisplacement(PhysicalElement* element, PhysicalElement* collidingElement, sf::FloatRect area)
+  sf::Vector2f collisionDisplacement(PhysicalElement* element, PhysicalElement* collidingElement,
+				     sf::FloatRect area)
     {
-//      string tempSpriteID{element->getSpriteID()};
       sf::Vector2f offset{0,0};
       PhysicalElement::CollisionBorders collBorders(collidingElement->getCollisionBorders());
       bool up{collBorders.up};
       bool down{collBorders.down};
       bool left{collBorders.left};
       bool right{collBorders.right};
-      //cout << "Width: " << area.width << " Height: " << area.height << endl;
 
-/*
-      //Ground med enbart övre gräns, flytta upp
-      if(up && !(down && left && right))
-	offset.y = -area.height;
-      //Ground med enbart nedre gräns, flytta ned
-      else if(down && !(up && left && right))
-	offset.y = area.height;	
-      //Ground med enbart vänster gräns, flytta vänster
-      else if(left && !(up && down && right))
-	offset.x = -area.width;
-      //Ground med enbart höger gräns, flytta höger
-      else if(right && !(up && down && left))
-	offset.x = area.width;
-      //Ground med enbart vänster och höger gräns
-      else if(right && left && !(up && down))
-	offset = collisionLeftRight(element, area);
-      //Ground med enbart övre och undre gräns
-      else if(!(right && left) && up && down)
-      {
-	offset = collisionUpDown(element, area);
-	cout << "Övre + nedre" << endl;
-      }
-      else if ((up || down) && area.width > area.height)
-*/
       if ((up || down) && area.width > area.height)
       {
 	if (area.contains({ area.left, element->getGlobalBounds().top }))
