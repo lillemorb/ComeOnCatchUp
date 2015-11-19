@@ -55,8 +55,9 @@ public:
 protected:
   enum PhysicalID_{Player, Door, Block, Ground};
   CollisionBorders collisionBorders_{};
-  sf::Vector2f velocity_{};
-  bool onGround_{false};  
+  float gravity_{0.5f};
+  sf::Vector2f velocity_{sf::Vector2f (0,gravity_)};
+  bool onGround_{false};
 };
 
 //---------PLAYER--------------//
@@ -134,7 +135,6 @@ public:
   } 
 
 private:
-  float gravity_{0.5f};
   bool facingRight_{true};
   int spriteNumberWalking_{0};
   int spriteNumberIdle_{0};
@@ -154,7 +154,7 @@ public:
     : PhysicalElement("Block")
     { 
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
-      rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
+      rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));      
     }
   ~Block() = default;
 

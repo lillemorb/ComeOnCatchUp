@@ -24,9 +24,10 @@ public:
  
       ActionResult result{Continue};
       sf::Time dt{clock.getElapsedTime()};
-       
+      //TODO: player ska vara playerPtr
       Player* player{dynamic_cast<Player*>(levelVec.at(0))};
 
+      //TODO: gravity_ ska heta gravity ty inte datamedlem
       float gravity_{player->getGravity()};
       float distX{};
       float velY{player->getVelocity().y};
@@ -58,9 +59,6 @@ public:
 	  player->setWalk(true);
 	}
 
-
-      //Rasmus: Denna bör alltid gälla, men man ramlar igenom världen
-      //ibland om den är igång alltid.
       if (player->getOnGround() == false)
 	{
 	  velY += gravity_ * (dt.asMilliseconds()/10.0);
@@ -70,48 +68,55 @@ public:
       else
 	{
 	  player->setJump(false);
-	  velY = 0;
+	  velY = gravity_;
 	}
       if (!(move == Left || move == Right))
 	{
 	  player->setWalk(false);
 	}
 
-
       // Förflyttningen i x-led sker statiskt istället för med acceleration.
+      float y = velY*(dt.asMilliseconds()/10.0);
+      player->move(sf::Vector2f(distX, round(y)));
 
-      player->move(sf::Vector2f(distX, round(velY*(dt.asMilliseconds()/10.0))));
-      //TODO: kolla om man verkligen ska sätta något i x-led
       player->setVelocity(sf::Vector2f(distX, velY));
 
       // kollisionshantering spelare
-
-      // TODO: Ska denna verkligen sättas här? Undersök.
-      levelVec.at(0)->setOnGround(false);
-
+      player->setOnGround(false);
       result = collisionHandlingPlayer(levelVec, gamesounds);
  
       // Uppdatera position för block ett och ett, med kollisionshantering för vardera block
       for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
-	sf::Vector2f noVel{0,0};
-	if (levelVec.at(i)->getSpriteID() == "Block" && 
-	    levelVec.at(i)->getVelocity() != noVel) 
+	float velYBlock{levelVec.at(i)->getVelocity().y};
+
+	if(levelVec.at(i)->getSpriteID() == "Block")
 	{
-	  // Uppdatera blockets position
-	  levelVec.at(i)->move(levelVec.at(i)->getVelocity());
-	  levelVec.at(i)->setVelocity(noVel);
+	  if (levelVec.at(i)->getOnGround() == false)
+	  {
+	    velYBlock += gravity_ * (dt.asMilliseconds()/10.0);
+	    if (velYBlock >= 8)
+	      velYBlock = 8.0f;
+	  }
+	  else
+	  {
+	    velYBlock = gravity_;
+	  }
+
+	  levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x,
+					    velYBlock*(dt.asMilliseconds()/10.0)));  
+	  levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
+       
 	  //kollisionshantering
+	  levelVec.at(i)->setOnGround(false);
 	  collisionBlock(levelVec, i, gamesounds);
 	}
       }
       // Returnera actionResult;
       return result;
     }
-  
 
 private:
-  //Lillemor: default-värden, men sätts om med funktionen setPix()
   int xPix_{768};
   int yPix_{576};
 
@@ -178,15 +183,15 @@ private:
 	    // If Player collided with a Block on the x-axis, that Block
 	    // will get a velocity and Player will not be moved back
 	    if(offset.x < 0)
-	      {
-	      levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
+	    {
+	      levelVec.at(i)->setVelocity(sf::Vector2f(2, levelVec.at(i)->getVelocity().y));
 	      gamesounds.getBoxSound();
-	      }
+	    }
 	    else if(offset.x > 0)
-	      {
-	      levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
+	    {
+	      levelVec.at(i)->setVelocity(sf::Vector2f(-2, levelVec.at(i)->getVelocity().y));
 	      gamesounds.getBoxSound();
-	      }
+	    }
 	    offset.x = 0;
 
 	    playerPtr->move(offset);
@@ -203,7 +208,9 @@ private:
 
       for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
-	if(levelVec.at(vecLoc)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
+	// Första villkoret kollar att man inte försöker kollisionshantera kollision med sig själv
+	if( levelVec.at(vecLoc) != levelVec.at(i) &&
+	    levelVec.at(vecLoc)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
 	{
 	  //Lillemor: Kollar mot första bokstaven för olika Ground-objekt
 	  if(levelVec.at(i)->getSpriteID().at(0) == 'G' || levelVec.at(i)->getSpriteID() == "Block")
@@ -243,7 +250,6 @@ private:
       if ((up || down) && area.width > area.height)
       {
 	if (area.contains({ area.left, element->getGlobalBounds().top }))
-//	if (area.contains({ area.left, element->getPosition().y }))
 	{
 	  // Up side crash => move player down
 	  if(down)
@@ -275,43 +281,6 @@ private:
       return offset;
     }  
 
-/*
-  // Helper function, checks for collision up/down and returns resulting displacement
-  sf::Vector2f collisionUpDown(PhysicalElement* element, sf::FloatRect area)
-    {
-      sf::Vector2f offset(0,0);
-      if (area.contains({ area.left, element->getPosition().y }))
-      {
-	// Up side crash => move element down
-	offset.y = area.height;		      
-      }
-      else
-      {
-	// Down side crash => move element back up
-	offset.y = -area.height;
-      }
-      return offset;
-    } 
-
-  // Helper function, checks for collision left/right and returns resulting displacement
-  sf::Vector2f collisionLeftRight(PhysicalElement* element, sf::FloatRect area)
-    {
-      sf::Vector2f offset(0,0);
-      // Lillemor: uppdaterat så att kollision fungerar med eventuellt mindre bounding box
-      if (area.contains( element->getGlobalBounds().left + 
-			 element->getGlobalBounds().width - 1.f, area.top + 1.f ))
-      {
-	//Right side crash
-	offset.x = -area.width;
-      }
-      else
-      {
-	//Left side crash
-	offset.x = area.width;
-      }
-      return offset;
-    }
-*/
 };
 
 
