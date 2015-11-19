@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "Logic.cc"
 #include "Graphics.cc"
+#include "GameSounds.cc"
 #include <vector>
 #include <fstream>
 #include <iterator>
@@ -31,6 +32,10 @@ public:
  
     window.setVerticalSyncEnabled(true);
 
+    GameSounds gamesounds;
+
+    gamesounds.loadSounds();
+
     // För över Level till vektorn.
 
     // Lillemor: Här öppnades VScreen.txt istället för Level.txt? Var det meningen?
@@ -47,7 +52,8 @@ public:
     vector<int> lvl(start, end);
     vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
     currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
-    
+
+
     //LOOP
     // run the program as long as the window is open
     while (window.isOpen())
@@ -151,7 +157,6 @@ public:
 		      (event.key.code == sf::Keyboard::W) || 
 		      (event.key.code == sf::Keyboard::Space))))
 		  // TODO: Rasmus: W och Space fungerar inte för stunden, vet ej varför
-
 		  {
 		    //Hoppa
 		    action = Logic::Jump;
@@ -277,7 +282,7 @@ public:
 	if (gamestate_ == Playing)
 	  {
 	    // UPPDATERA LOGIC
-	    actionResult_ = logic_.update((*currLevelPtr_), action, move, clock);
+	    actionResult_ = logic_.update((*currLevelPtr_), action, move, clock, gamesounds);
 	    // RITA
 	    graphics_.drawLevel((*currLevelPtr_), window);
 	  }

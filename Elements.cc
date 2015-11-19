@@ -46,6 +46,9 @@ public:
   //( i Player returnerar den storleken på bounding box ist f rectangle )
   virtual const sf::Vector2f getSize(){ return rectangle_.getSize();}
 
+  virtual void setBelowWindow(bool) {}
+  virtual bool getBelowWindow() { return false; }
+
   //Implementeras här och ärvs sedan utan polymorfi
   sf::Vector2f getVelocity() { return velocity_; }
   void setOnGround(bool onGround) { onGround_ = onGround; }
@@ -55,8 +58,9 @@ public:
 protected:
   enum PhysicalID_{Player, Door, Block, Ground};
   CollisionBorders collisionBorders_{};
-  sf::Vector2f velocity_{};
-  bool onGround_{false};  
+  float gravity_{0.5f};
+  sf::Vector2f velocity_{sf::Vector2f (0,gravity_)};
+  bool onGround_{false};
 };
 
 //---------PLAYER--------------//
@@ -134,7 +138,6 @@ public:
   } 
 
 private:
-  float gravity_{0.5f};
   bool facingRight_{true};
   int spriteNumberWalking_{0};
   int spriteNumberIdle_{0};
@@ -154,7 +157,7 @@ public:
     : PhysicalElement("Block")
     { 
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
-      rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
+      rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));      
     }
   ~Block() = default;
 
@@ -162,6 +165,12 @@ public:
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
   void move(const sf::Vector2f offset) override { rectangle_.move(offset); }
   sf::FloatRect getGlobalBounds() override { return rectangle_.getGlobalBounds(); }
+  
+  void setBelowWindow(bool out) override { belowWindow_=out; }
+  bool getBelowWindow() override {return belowWindow_;}
+
+private:
+  bool belowWindow_{false};
 };
 
 //---------GROUND--------------//
