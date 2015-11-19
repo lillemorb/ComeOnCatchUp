@@ -146,8 +146,9 @@ private:
   //inte är lika stor som en tile
   ActionResult collisionHandlingPlayer (vector<PhysicalElement*> & levelVec)
     {
-      ActionResult result = Continue;
+      ActionResult result{Continue};
        Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
+
        //cout << "x: " << playerPtr->getGlobalBounds().left
        //    << "y: " << playerPtr->getGlobalBounds().top << endl;
 
@@ -187,7 +188,7 @@ private:
 	  else if(dynamic_cast<Ground*>(levelVec.at(i)))
 	  {
 	    sf::Vector2f offset {0,0};
-	    string tempSpriteID{levelVec.at(i)->getSpriteID()};	    
+//	    string tempSpriteID{levelVec.at(i)->getSpriteID()};	    
 
 	    offset = collisionDisplacement(playerPtr, levelVec.at(i), area);
 	    if(offset.y < 0)
@@ -240,6 +241,7 @@ private:
 	  {
 	    // Kollisionshantering i y-led, spelare flyttas, block flyttas inte
 	    sf::Vector2f offset {0,0};
+/*
 	    if (area.width > area.height)
 	    {
 	      offset = collisionUpDown(playerPtr, area);
@@ -256,8 +258,21 @@ private:
 		levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
 	      else if(offset.x > 0)
 		levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
-	    }	
-	    result = Continue;
+	    }
+*/
+	    offset = collisionDisplacement(playerPtr, levelVec.at(i), area);
+	    if(offset.y < 0)
+	      playerPtr->setOnGround(true);
+
+	    // If Player collided with a Block on the x-axis, that Block
+	    // will get a velocity and Player will not be moved back
+	    if(offset.x < 0)
+	      levelVec.at(i)->setVelocity(sf::Vector2f(1,0));
+	    else if(offset.x > 0)
+	      levelVec.at(i)->setVelocity(sf::Vector2f(-1,0));
+	    offset.x = 0;
+
+	    playerPtr->move(offset);
 	  }
 	}
       }
@@ -277,6 +292,8 @@ private:
 	  if(levelVec.at(i)->getSpriteID().at(0) == 'G' || levelVec.at(i)->getSpriteID() == "Block")
 	  {
 	    sf::Vector2f offset {0,0};
+// Lillemor: Ersatt med kodavsnittet precis under
+/*
 	    if (area.width > area.height)
 	    {
 	      offset = collisionUpDown(levelVec.at(vecLoc), area);
@@ -287,6 +304,10 @@ private:
 	    {
 	      offset = collisionLeftRight(levelVec.at(vecLoc), area);
 	    }
+*/
+	    offset = collisionDisplacement(levelVec.at(vecLoc), levelVec.at(i), area);
+	    if(offset.y < 0)
+	      levelVec.at(vecLoc)->setOnGround(true);
 	    levelVec.at(vecLoc)->move(offset);
 	  }	
 	}
@@ -295,12 +316,19 @@ private:
       if(playerPtr->getGlobalBounds().intersects(levelVec.at(vecLoc)->getGlobalBounds(), area))
       {
 	sf::Vector2f offset {0,0};
+/*
 	offset = collisionLeftRight(playerPtr, area);
+	playerPtr->move(offset);
+*/
+	// Lillemor: Obs, kollar i både x- och y-led, behöver kanske  bara kolla x-led...
+	offset = collisionDisplacement(playerPtr, levelVec.at(vecLoc), area);
+	if(offset.y < 0)
+	  playerPtr->setOnGround(true);
 	playerPtr->move(offset);
       } 
     }	  
 
-  //Lillemor: obs, bara för Ground tills vidare
+  //Lillemor: fungerar för andra (alla?) objekt, inte bara Ground
   sf::Vector2f collisionDisplacement(PhysicalElement* element, PhysicalElement* collidingElement, sf::FloatRect area)
     {
 //      string tempSpriteID{element->getSpriteID()};
@@ -349,10 +377,7 @@ private:
 	{
 	  // Down side crash => move player back up
 	  if(up)
-	  {
-	    //	    cout << "*****************UPP**************" << endl;
 	    offset.y = -area.height;
-	  }
 	}
       }
       else if ((left || right) && area.width < area.height)
@@ -362,10 +387,7 @@ private:
 	{
 	  //Right side crash
 	  if(left)
-	  {
-	    //cout << "*****************HÖGER**************" << endl;
 	    offset.x = -area.width;
-	  }
 	}
 	else
 	{
@@ -377,6 +399,7 @@ private:
       return offset;
     }  
 
+/*
   // Helper function, checks for collision up/down and returns resulting displacement
   sf::Vector2f collisionUpDown(PhysicalElement* element, sf::FloatRect area)
     {
@@ -412,7 +435,7 @@ private:
       }
       return offset;
     }
-
+*/
 };
 
 
