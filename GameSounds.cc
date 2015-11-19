@@ -38,13 +38,23 @@ public:
  
   void getDeathSound() { death_sound_.play(); }
   void getJumpSound() { jump_sound_.play(); }
-  void getBoxSound() { box_sound_.play(); }
+  void getBoxSound() 
+  { 
+    if(delay_ == 10)
+      {
+	box_sound_.play();
+	delay_ = 0;
+      }
+    else 
+      delay_++;
+  }
   
 private:
   sf::SoundBuffer death_soundBuffer_;
   sf::SoundBuffer jump_soundBuffer_;
   sf::SoundBuffer box_soundBuffer_;
-  
+
+  int delay_ {0};
   sf::Sound death_sound_;
   sf::Sound jump_sound_;
   sf::Sound box_sound_;
