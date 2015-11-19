@@ -149,16 +149,15 @@ public:
 
 		// Rasmus: Potentiell TODO: Om man hoppar upp på en kant så fortsätter
 		// man hoppa direkt om man håller inne hoppknappen.
-		if (jumping_ == false && 
-		    (event.type == sf::Event::KeyPressed && 
-		     ((event.key.code == sf::Keyboard::Up) || 
-		      (event.key.code == sf::Keyboard::W) || 
-		      (event.key.code == sf::Keyboard::Space))))
+		if (event.type == sf::Event::KeyPressed && 
+		    ((event.key.code == sf::Keyboard::Up) || 
+		     (event.key.code == sf::Keyboard::W) || 
+		     (event.key.code == sf::Keyboard::Space)) && jumping_ == false)
 		  // TODO: Rasmus: W och Space fungerar inte för stunden, vet ej varför
 		  {
 		    //Hoppa
-		    action = Logic::Jump;
 		    jumping_ = true;
+		    action = Logic::Jump;
 		  }
 		else if (event.type == sf::Event::KeyReleased && 
 			 ((event.key.code == sf::Keyboard::Up) || 

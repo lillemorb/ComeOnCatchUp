@@ -145,7 +145,7 @@ private:
 
       //Check upper border
       if(playerPos.y < 0)
-	playerPtr->move(sf::Vector2f(-playerPos.y,0));
+	playerPtr->move(sf::Vector2f(0,-playerPos.y));
       //Check lower border and if collision return Dead
       else if(playerPos.y > yPix_)
       {
@@ -274,7 +274,16 @@ private:
 	{
 	  // Up side crash => move player down
 	  if(down)
-	    offset.y = area.height;		      
+	    {
+	    offset.y = area.height;
+
+	    /*
+	      // Rasmus: Ifall man vill skippa att man glider i taket används följande
+	      // Nackdelen är att man hoppar efteråt om man inte släpper hopp-knappen
+	    if(element->getVelocity().y < -2.0f)
+	      element->setVelocity(sf::Vector2f(0, -2.0f));
+	    */
+	    }
 	}
 	else
 	{
