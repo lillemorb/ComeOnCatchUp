@@ -26,14 +26,14 @@ public:
 
     //INITIERING
     // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
-    sf::RenderWindow window(sf::VideoMode(xPix_, yPix_), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(xPix_, yPix_), "Come on, catch up!", 
+			    sf::Style::Titlebar | sf::Style::Close);
     //Skicka pixelvärden till logic så den vet hur stort fönstret är
     logic_.setPix(xPix_, yPix_);
  
     window.setVerticalSyncEnabled(true);
 
     GameSounds gamesounds;
-
     gamesounds.loadSounds();
 
     // För över Level till vektorn.
@@ -50,7 +50,8 @@ public:
       }
     istream_iterator<int> start(is), end;
     vector<int> lvl(start, end);
-    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), 
+			 lvl.begin() + vector_size*current_level);
     currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
 
 
@@ -122,9 +123,9 @@ public:
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 		  {
 		    delete currLevelPtr_;
-		    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+		    vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), 
+					 lvl.begin() + vector_size*current_level);
 		    currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel); 
-	      
 		  }
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
 		  {
@@ -207,7 +208,8 @@ public:
 				current_level = 1;
 				gamestate_ = Playing;
 				delete currLevelPtr_;
-				vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+				vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), 
+						     lvl.begin() + vector_size*current_level);
 				currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
 			
 				break;
@@ -232,8 +234,10 @@ public:
 			      case 2:
 				cout << "Börja om från level 1" << endl;
 				current_level = 1;
-				gamestate_ = Playing;				delete currLevelPtr_;
-				vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), lvl.begin() + vector_size*current_level);
+				gamestate_ = Playing;				
+				delete currLevelPtr_;
+				vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), 
+						     lvl.begin() + vector_size*current_level);
 				currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
 				
 			      }
