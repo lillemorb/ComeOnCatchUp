@@ -13,7 +13,7 @@ class DrawableElement
 {
 public:
   DrawableElement(string spriteID) : spriteID_{spriteID} {};
-  virtual ~DrawableElement() = default;//=0 i design spec
+  virtual ~DrawableElement() = default;
   string getSpriteID(){ return spriteID_; }
   sf::Vector2f getPosition() { return rectangle_.getPosition(); }
 
@@ -27,47 +27,36 @@ class PhysicalElement : public DrawableElement
 {
 public:
   PhysicalElement(string spriteID): DrawableElement(spriteID){}
-  virtual ~PhysicalElement() = default;//=0 i design spec
+  virtual ~PhysicalElement() = default;
   //virtual string getPhysicalID()=0; 
 
   struct CollisionBorders
-  {
-    bool left{true};
-    bool right{true};
-    bool up{true};
-    bool down{true};
-  };
-
-  sf::Vector2f getVelocity() { return velocity_; }
+  { bool left{true}; bool right{true}; bool up{true}; bool down{true}; };
 
   //Följande funktioner implementeras som tomma för de objekt
   //som de inte berör
   virtual void setVelocity(sf::Vector2f vel)  = 0;
   virtual void setPosition(sf::Vector2f pos)  = 0;
-  
-  //ska bara finnas för player och block
-  void move(const sf::Vector2f offset){rectangle_.move(offset);}
+  virtual void move(const sf::Vector2f offset) = 0; 
 
-  //virtual void setPosition(int x, int y)  = 0;
+  //Alla ärvande klasser implementerar egen variant
+  virtual sf::FloatRect getGlobalBounds() = 0;
+
+  //Implementeras här men ärvande klasser kan implementera egen variant
+  //( i Player returnerar den storleken på bounding box ist f rectangle )
+  virtual const sf::Vector2f getSize(){ return rectangle_.getSize();}
+
+  //Implementeras här och ärvs sedan utan polymorfi
+  sf::Vector2f getVelocity() { return velocity_; }
   void setOnGround(bool onGround) { onGround_ = onGround; }
   bool getOnGround() { return onGround_; }
-  virtual sf::FloatRect getGlobalBounds() = 0;
-// Lillemor: Innan ändring till mindre bounding box för Player => virtuell funktion
-//  sf::FloatRect getGlobalBounds(){ return rectangle_.getGlobalBounds(); }
-  //TODO: getSize ska istället returnera storleken på bounding box (eller?) //Lillemor
-//  const sf::Vector2f getSize(){ return rectangle_.getSize();}
-  virtual const sf::Vector2f getSize(){ return rectangle_.getSize();}
   CollisionBorders getCollisionBorders() { return collisionBorders_; }
-
 
 protected:
   enum PhysicalID_{Player, Door, Block, Ground};
-
   CollisionBorders collisionBorders_{};
-
   sf::Vector2f velocity_{};
-  bool onGround_{false};
-  
+  bool onGround_{false};  
 };
 
 //---------PLAYER--------------//
@@ -82,8 +71,22 @@ public:
       rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
     }
   ~Player() = default;
+
   void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
+  void move(const sf::Vector2f offset) override { rectangle_.move(offset); }
+
+  // Returnerar en mindre bounding box för player än tilesize
+  sf::FloatRect getGlobalBounds() override {
+    sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
+    sf::FloatRect smallerBounds(largeBounds.left+4.0, largeBounds.top,
+				largeBounds.width-8.0, largeBounds.height);
+    return smallerBounds;
+  }
+  virtual const sf::Vector2f getSize(){ return sf::Vector2f(getGlobalBounds().width,
+							    getGlobalBounds().height); }
+
+  //Funktioner unika för Player
   float getGravity() { return gravity_; }
   void setFacingRight(bool facingRight) { facingRight_ = facingRight; }
   bool getFacingRight() { return facingRight_; }
@@ -130,20 +133,6 @@ public:
     return currentSprite_;
   } 
 
-
-  // Returnerar en mindre bounding box för player än tilesize
-  sf::FloatRect getGlobalBounds() override {
-    sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
-    sf::FloatRect smallerBounds(largeBounds.left+4.0, largeBounds.top,
-				largeBounds.width-8.0, largeBounds.height);
-    return smallerBounds;
-  }
-  virtual const sf::Vector2f getSize()
-    {
-      return sf::Vector2f(getGlobalBounds().width, getGlobalBounds().height);
-    }
-
-
 private:
   float gravity_{0.5f};
   bool facingRight_{true};
@@ -168,8 +157,10 @@ public:
       rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
     }
   ~Block() = default;
+
   void setVelocity(sf::Vector2f vel) override { velocity_ = vel; } 
   void setPosition(sf::Vector2f pos) override { rectangle_.setPosition(pos.x, pos.y); }
+  void move(const sf::Vector2f offset) override { rectangle_.move(offset); }
   sf::FloatRect getGlobalBounds() override { return rectangle_.getGlobalBounds(); }
 };
 
@@ -186,8 +177,10 @@ public:
       rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
     }
   ~Ground() = default;
+
   void setVelocity(sf::Vector2f) override { velocity_ = sf::Vector2f(0,0); } 
   void setPosition(sf::Vector2f) override { }
+  void move(const sf::Vector2f offset) override { }
   sf::FloatRect getGlobalBounds() override { return rectangle_.getGlobalBounds(); }
 };
 
@@ -203,8 +196,11 @@ public:
       rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
     }
   ~Door() = default;
+
   void setVelocity(sf::Vector2f) override { sf::Vector2f(0,0); } 
   void setPosition(sf::Vector2f) override { }
+  void move(const sf::Vector2f offset) override { }
+
   // Lillemor: returnerar liten bounding box så att man ser Player "gå in i" dörren
   sf::FloatRect getGlobalBounds() override {
     sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};

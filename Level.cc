@@ -44,8 +44,8 @@ public:
 	    if(level_vector.at(i) != 15)
 	    {
 	      physicalElementVector_.push_back(groundPtrVector_.back());
-	      cout << collBorders.left << " " << collBorders.right << " "
-		   << collBorders.up << " " << collBorders.down << endl;
+//	      cout << collBorders.left << " " << collBorders.right << " "
+//		   << collBorders.up << " " << collBorders.down << endl;
 	    }
 	  }
 
