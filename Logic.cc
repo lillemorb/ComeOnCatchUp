@@ -17,7 +17,8 @@ public:
 
   void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
 
-  ActionResult update(Level &current, Action action, Move move, sf::Clock &clock, GameSounds &gamesounds)
+  ActionResult update(Level &current, Action action, Move move, sf::Clock &clock,
+		      GameSounds &gamesounds)
     {
       // Hämta vektor med objekt i Level
       vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
@@ -102,14 +103,16 @@ public:
 	  {
 	    velYBlock = gravity_;
 	  }
-
-	  levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x,
-					    velYBlock*(dt.asMilliseconds()/10.0)));  
-	  levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
-       
-	  //kollisionshantering
-	  levelVec.at(i)->setOnGround(false);
-	  collisionBlock(levelVec, i, gamesounds);
+	  if(levelVec.at(i)->getBelowWindow() == false)
+	  {
+	    levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x,
+					      velYBlock*(dt.asMilliseconds()/10.0)));  
+	    levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
+	  
+	    //kollisionshantering
+	    levelVec.at(i)->setOnGround(false);
+	    collisionBlock(levelVec, i, gamesounds);
+	  }
 	}
       }
       // Returnera actionResult;
@@ -204,7 +207,25 @@ private:
   void collisionBlock(vector<PhysicalElement*> & levelVec, unsigned int vecLoc, GameSounds gamesounds)
     {
       sf::FloatRect area;
-       Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
+      Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
+
+      //Check for collision against window borders
+      sf::Vector2f blockPos = levelVec.at(vecLoc)->getPosition();
+      sf::Vector2f blockSize = levelVec.at(vecLoc)->getSize();
+
+      //Check left border
+      if(blockPos.x < 0)
+	levelVec.at(vecLoc)->move(sf::Vector2f(-blockPos.x,0));
+      //Check right border
+      else if((blockPos.x + blockSize.x) > xPix_)
+	levelVec.at(vecLoc)->move(sf::Vector2f(xPix_-(blockPos.x + blockSize.x), 0));
+
+      //Check upper border
+      if(blockPos.y < 0)
+	levelVec.at(vecLoc)->move(sf::Vector2f(-blockPos.y,0));
+      //Check lower border and if collision set velocity 0,0
+      else if(blockPos.y > yPix_+33)
+  	levelVec.at(vecLoc)->setBelowWindow(true);
 
       for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
