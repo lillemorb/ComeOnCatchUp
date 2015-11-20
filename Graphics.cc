@@ -29,14 +29,14 @@ public:
 	// return 1;
       }
     sf::Texture spriteSheet_player;
-    if (!spriteSheet_player.loadFromFile("Sprites/Tomato.png")) 
-      //if (!spriteSheet_player.loadFromFile("Sprites/Pirate_spritesheet.png"))
+    //if (!spriteSheet_player.loadFromFile("Sprites/Tomato.png")) 
+    if (!spriteSheet_player.loadFromFile("Sprites/Pirate_spritesheet.png"))
       {
 	cerr << "Kunde inte ladda players sprite" << endl;
 	// Fixa felhantering! 
 	//return 1;
       }
-
+    
 
     // Inläsning av sprites
     sf::Sprite door_sprite;

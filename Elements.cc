@@ -98,13 +98,14 @@ public:
   int getCurrentSprite() { return currentSprite_; }
   void setJump(bool jump) { jump_ = jump; }
   void setWalk(bool walk) { walk_ = walk; }
-  
+
   int getAnimation()
   {
     if (jump_ == true)
       currentSprite_ = 7;
     else if (walk_ == true)
-      {    
+      {
+	// TODO: få in klockan här istället för att göra en egen uppräknare
 	if(spriteDelay_ >= 20)
 	  {
 	    if(spriteNumberWalking_ != 4)
@@ -114,7 +115,7 @@ public:
 	    spriteDelay_ = 0;
 	  }
 	else
-	  spriteDelay_ = spriteDelay_ + 1;
+	  spriteDelay_++;
 
 	currentSprite_ = spriteNumberWalking_;
       }
@@ -130,7 +131,7 @@ public:
 	    spriteDelay_ = 0;
 	  }
 	else
-	  spriteDelay_ = spriteDelay_ + 1;
+	  spriteDelay_++;
 	
 	currentSprite_ = (5 + spriteNumberIdle_);
       }

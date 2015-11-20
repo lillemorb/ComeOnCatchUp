@@ -7,7 +7,6 @@
 #include <vector>
 #include <fstream>
 #include <iterator>
-#include <unistd.h>
 using namespace std;
 
 // TODO: dela upp i .cc/.h-filer
@@ -36,12 +35,7 @@ public:
     GameSounds gamesounds;
     gamesounds.loadSounds();
 
-    // För över Level till vektorn.
-
-    // Lillemor: Här öppnades VScreen.txt istället för Level.txt? Var det meningen?
-    // Oavsett vilket saknas VScreen.txt    
-    //    ifstream is("VScreen.txt");
-
+    // För över Level.txt till vektorn curLevel.
     ifstream is("Level.txt");
     if(!is)
       {
@@ -60,9 +54,6 @@ public:
     while (window.isOpen())
       {
 	sf::Event event;
-	sf::Clock clock;
-	sf::Time dt_{clock.getElapsedTime()};
-
 
 	// Continue to next level
 	if (actionResult_ == Logic::LevelCompleted && (current_level) < (lvl.size()/vector_size))
@@ -97,7 +88,6 @@ public:
 
 	while (window.pollEvent(event))
 	  {
-	    clock.restart();
 	  
 	    if (event.type == sf::Event::Closed || 
 		sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
@@ -285,7 +275,7 @@ public:
 	if (gamestate_ == Playing)
 	  {
 	    // UPPDATERA LOGIC
-	    actionResult_ = logic_.update((*currLevelPtr_), action, move, clock, gamesounds);
+	    actionResult_ = logic_.update((*currLevelPtr_), action, move, gamesounds);
 	    // RITA
 	    graphics_.drawLevel((*currLevelPtr_), window);
 	  }

@@ -17,19 +17,21 @@ public:
 
   void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
 
-  ActionResult update(Level &current, Action action, Move move, sf::Clock &clock,
-		      GameSounds &gamesounds)
+  sf::Clock clock;
+
+  ActionResult update(Level &current, Action action, Move move, GameSounds &gamesounds)
     {
       // Hämta vektor med objekt i Level
       vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
  
       ActionResult result{Continue};
       sf::Time dt{clock.getElapsedTime()};
+      clock.restart();
+
       //TODO: player ska vara playerPtr
       Player* player{dynamic_cast<Player*>(levelVec.at(0))};
-
-      //TODO: gravity_ ska heta gravity ty inte datamedlem
-      float gravity_{player->getGravity()};
+      
+      float gravity{player->getGravity()};
       float distX{};
       float velY{player->getVelocity().y};
 
@@ -62,23 +64,25 @@ public:
 
       if (player->getOnGround() == false)
 	{
-	  velY += gravity_ * (dt.asMilliseconds()/10.0);
+	  velY += gravity * (dt.asMicroseconds()/10000.0);
 	  if (velY >= 8)
 	    velY = 8.0f;
 	}
       else
 	{
 	  player->setJump(false);
-	  velY = gravity_;
+	  velY = gravity;
 	}
       if (!(move == Left || move == Right))
 	{
 	  player->setWalk(false);
 	}
 
+      float y = velY*(dt.asMicroseconds()/10000.0);
+      if (y > 14)
+	y = 14;
       // Förflyttningen i x-led sker statiskt istället för med acceleration.
-      float y = velY*(dt.asMilliseconds()/10.0);
-      player->move(sf::Vector2f(distX, round(y)));
+      player->move(sf::Vector2f(distX, y));
 
       player->setVelocity(sf::Vector2f(distX, velY));
 
@@ -95,18 +99,20 @@ public:
 	{
 	  if (levelVec.at(i)->getOnGround() == false)
 	  {
-	    velYBlock += gravity_ * (dt.asMilliseconds()/10.0);
+	    velYBlock += gravity * (dt.asMilliseconds()/10.0);
 	    if (velYBlock >= 8)
 	      velYBlock = 8.0f;
 	  }
 	  else
 	  {
-	    velYBlock = gravity_;
+	    velYBlock = gravity;
 	  }
 	  if(levelVec.at(i)->getBelowWindow() == false)
 	  {
-	    levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x,
-					      velYBlock*(dt.asMilliseconds()/10.0)));  
+	    float y = velYBlock*(dt.asMicroseconds()/10000.0);
+	    if (y > 14)
+	      y = 14;
+	    levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x, y));  
 	    levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
 	  
 	    //kollisionshantering
