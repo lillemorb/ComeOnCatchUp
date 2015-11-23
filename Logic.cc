@@ -64,7 +64,7 @@ public:
 
       if (player->getOnGround() == false)
 	{
-	  velY += gravity * (dt.asMicroseconds()/10000.0);
+	  velY += gravity * (dt.asMicroseconds()/20000.0);
 	  if (velY >= 8)
 	    velY = 8.0f;
 	}
@@ -78,7 +78,7 @@ public:
 	  player->setWalk(false);
 	}
 
-      float y = velY*(dt.asMicroseconds()/10000.0);
+      float y = velY*(dt.asMicroseconds()/20000.0);
       if (y > 14)
 	y = 14;
       // Förflyttningen i x-led sker statiskt istället för med acceleration.
@@ -99,7 +99,7 @@ public:
 	{
 	  if (levelVec.at(i)->getOnGround() == false)
 	  {
-	    velYBlock += gravity * (dt.asMilliseconds()/10.0);
+	    velYBlock += gravity * (dt.asMicroseconds()/20000.0);
 	    if (velYBlock >= 8)
 	      velYBlock = 8.0f;
 	  }
@@ -109,7 +109,7 @@ public:
 	  }
 	  if(levelVec.at(i)->getBelowWindow() == false)
 	  {
-	    float y = velYBlock*(dt.asMicroseconds()/10000.0);
+	    float y = velYBlock*(dt.asMicroseconds()/20000.0);
 	    if (y > 14)
 	      y = 14;
 	    levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x, y));  
