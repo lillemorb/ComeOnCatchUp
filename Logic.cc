@@ -13,7 +13,7 @@ public:
 
   enum ActionResult { LevelCompleted, Dead, Reset, Continue };
   enum Move { Left, Right, Idle };
-  enum Action { Jump, JumpReleased, NoJump };
+  enum Action { Jump, JumpReleased };
 
   void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
 
@@ -34,19 +34,23 @@ public:
       float gravity{player->getGravity()};
       float distX{};
       float velY{player->getVelocity().y};
+      float gravityBalance {15000.0};
 
-      if (action == Jump && player->getOnGround() == true)
+      if (action == Jump && player->getOnGround() == true && player->getJumpAllowed() == true)
 	{
 	  velY = -9.0f;
 	  player->setOnGround(false);
 	  player->setJump(true);
+	  player->setJumpAllowed(false);
 	  gamesounds.getJumpSound();
 	}
       // Gör att man kan variera hopphöjden genom att släppa knappen tidigare
+      
       if (action == JumpReleased)
 	{
 	  if(velY < -4.0f)
 	    velY = -4.0f;
+	  player->setJumpAllowed(true);
 	}
 
       if (move == Left)
@@ -64,21 +68,23 @@ public:
 
       if (player->getOnGround() == false)
 	{
-	  velY += gravity * (dt.asMicroseconds()/20000.0);
+	  velY += gravity * (dt.asMicroseconds()/gravityBalance);
 	  if (velY >= 8)
 	    velY = 8.0f;
 	}
-      else
+      else if (velY > 0)
 	{
 	  player->setJump(false);
 	  velY = gravity;
 	}
+
       if (!(move == Left || move == Right))
 	{
 	  player->setWalk(false);
 	}
 
-      float y = velY*(dt.asMicroseconds()/20000.0);
+      distX = distX*dt.asMicroseconds()/gravityBalance;
+      float y = velY*(dt.asMicroseconds()/gravityBalance);
       if (y > 14)
 	y = 14;
       // Förflyttningen i x-led sker statiskt istället för med acceleration.
@@ -99,7 +105,7 @@ public:
 	{
 	  if (levelVec.at(i)->getOnGround() == false)
 	  {
-	    velYBlock += gravity * (dt.asMicroseconds()/20000.0);
+	    velYBlock += gravity * (dt.asMicroseconds()/gravityBalance);
 	    if (velYBlock >= 8)
 	      velYBlock = 8.0f;
 	  }
@@ -109,7 +115,7 @@ public:
 	  }
 	  if(levelVec.at(i)->getBelowWindow() == false)
 	  {
-	    float y = velYBlock*(dt.asMicroseconds()/20000.0);
+	    float y = velYBlock*(dt.asMicroseconds()/gravityBalance);
 	    if (y > 14)
 	      y = 14;
 	    levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x, y));  
@@ -281,14 +287,9 @@ private:
 	  // Up side crash => move player down
 	  if(down)
 	    {
-	    offset.y = area.height;
-
-	    /*
-	      // Rasmus: Ifall man vill skippa att man glider i taket används följande
-	      // Nackdelen är att man hoppar efteråt om man inte släpper hopp-knappen
-	    if(element->getVelocity().y < -2.0f)
-	      element->setVelocity(sf::Vector2f(0, -2.0f));
-	    */
+	      offset.y = area.height;
+	      if(element->getVelocity().y < -2.0f)
+		element->setVelocity(sf::Vector2f(0, -2.0f));
 	    }
 	}
 	else

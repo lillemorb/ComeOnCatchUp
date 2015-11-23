@@ -97,6 +97,8 @@ public:
   //int getSpriteNumberWalking() { return spriteNumberWalking_; }
   int getCurrentSprite() { return currentSprite_; }
   void setJump(bool jump) { jump_ = jump; }
+  bool getJumpAllowed() { return jumpAllowed_; }
+  void setJumpAllowed(bool jumpAllowed) { jumpAllowed_ = jumpAllowed; }
   void setWalk(bool walk) { walk_ = walk; }
 
   int getAnimation()
@@ -147,6 +149,7 @@ private:
   int currentSprite_{0};
   bool jump_{false};
   bool walk_{false};
+  bool jumpAllowed_{true};
 };
 
 //---------BLOCK--------------//
