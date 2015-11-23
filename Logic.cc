@@ -21,10 +21,12 @@ public:
 
   ActionResult update(Level &current, Action action, Move move, GameSounds &gamesounds)
     {
+
       // Hämta vektor med objekt i Level
       vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
  
       ActionResult result{Continue};
+
       sf::Time dt{clock.getElapsedTime()};
       clock.restart();
 
@@ -121,6 +123,7 @@ public:
 	  }
 	}
       }
+
       // Returnera actionResult;
       return result;
     }
@@ -191,23 +194,42 @@ private:
 
 	    // If Player collided with a Block on the x-axis, that Block
 	    // will get a velocity and Player will not be moved back
-	    if(offset.x < 0)
+
+	    // Kolla om det finns ett block ovanpå detta block => detta block ska då inte kunna flyttas
+	    bool blockCanBeMoved{true};
+	    if(offset.x != 0)
+	    {
+	      for(unsigned int j{1}; j < levelVec.size(); ++j)
+	      {
+		//Gör rektangel som är som detta block men två pixlar upp
+		sf::FloatRect thisBlock(levelVec.at(i)->getGlobalBounds());		
+		sf::FloatRect thisBlockMovedUp(thisBlock.left, thisBlock.top-2,
+					       thisBlock.width, thisBlock.height);
+		if(levelVec.at(j)->getSpriteID() == "Block" && levelVec.at(j) != levelVec.at(i) &&
+		   thisBlockMovedUp.intersects(levelVec.at(j)->getGlobalBounds(), area))
+		{
+		  blockCanBeMoved = false;
+		}
+	      }    
+	    }
+	    //Flytta block om inget annat block är ovanpå
+	    if(blockCanBeMoved && offset.x < 0)
 	    {
 	      levelVec.at(i)->setVelocity(sf::Vector2f(2, levelVec.at(i)->getVelocity().y));
 	      gamesounds.getBoxSound();
 	    }
-	    else if(offset.x > 0)
+	    else if(blockCanBeMoved && offset.x > 0)
 	    {
 	      levelVec.at(i)->setVelocity(sf::Vector2f(-2, levelVec.at(i)->getVelocity().y));
 	      gamesounds.getBoxSound();
-	    }
+	    }		  
 	    offset.x = 0;
-
+	    
 	    playerPtr->move(offset);
 	  }
 	}
       }
-      return result;
+      return result;      
     }
 
   void collisionBlock(vector<PhysicalElement*> & levelVec, unsigned int vecLoc, GameSounds gamesounds)
@@ -289,6 +311,7 @@ private:
 	    if(element->getVelocity().y < -2.0f)
 	      element->setVelocity(sf::Vector2f(0, -2.0f));
 	    */
+
 	    }
 	}
 	else
