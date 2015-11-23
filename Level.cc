@@ -10,34 +10,6 @@ using namespace std;
 
 class Level
 {
-private:
-  // Håller reda på objekten med dynamiskt allokerat minne
-  // för att inte få minnesfel
-  Player* playerPtr_{};
-  Door* doorPtr_{};
-  vector<Player*> playerPtrVector_{};
-  vector<Door*> doorPtrVector_{};
-  vector<Block*> blockPtrVector_{};
-  vector<Ground*> groundPtrVector_{};
-  vector<Background*> backgroundPtrVector_{};
-  //vector<DrawableElement*> drawableElementVector_{};
-  //vector<PhysicalElement*> physicalElementVector_{}; 
-
-//ordning i vectorn: Player, block, door, ground, background
-  vector<vector<DrawableElement*>> drawableElementVector_(vector<DrawableElement*>(), 
-							   vector<DrawableElement*>(),
-							   vector<DrawableElement*>(),
-							   vector<DrawableElement*>(),
-							   vector<DrawableElement*>());
-//ordning i vectorn: Player, block, door, ground
-  vector<vector<PhysicalElement*>> physicalElementVector_(vector<PhysicalElement*>(),
-							  vector<PhysicalElement*>(),
-							  vector<PhysicalElement*>(),
-							  vector<PhysicalElement*>()); 
-
-
-
-
 public:
   Level(int TILESIZE, int TILES_PER_ROW, vector<int> level_vector)
   {
@@ -65,9 +37,22 @@ public:
 	    if((num >= 14 && num <= 19) || num == 22 || num == 24)
 	      collBorders.down = false;
 
+//TEST
+/*
+	    vector<vector<DrawableElement*>> v{};
+	    v.push_back(vector<DrawableElement*>{new Ground(TILESIZE, x, y, name, collBorders)});
+	    v.at(0).push_back(new Ground(TILESIZE, x, y, name, collBorders));
+*/
 	    //groundPtrVector_.push_back(new Ground(TILESIZE, x, y, name, collBorders));
 	    Ground* G = new Ground(TILESIZE, x, y, name, collBorders);
-	    drawableElementVector_.at(3).push_back(G);
+	    drawableElementVector_.push_back(vector<DrawableElement*>());
+	    drawableElementVector_.push_back(vector<DrawableElement*>());
+	    drawableElementVector_.push_back(vector<DrawableElement*>());
+	    drawableElementVector_.push_back(vector<DrawableElement*>());
+	    drawableElementVector_.at(0).push_back(G);
+
+
+	    
 //drawableElementVector_.at(3).push_back(new Ground(TILESIZE, x, y, name, collBorders));
 
 	    // Lillemor: Ground utan kanter ska inte hanteras av Logic ty ingen kollision
@@ -128,7 +113,7 @@ public:
     return physicalElementVector_;
   }
 
-/*private:
+private:
   // Håller reda på objekten med dynamiskt allokerat minne
   // för att inte få minnesfel
   Player* playerPtr_{};
@@ -151,7 +136,7 @@ public:
   vector<vector<PhysicalElement*>> physicalElementVector_(vector<PhysicalElement*>(),
 							  vector<PhysicalElement*>(),
 							  vector<PhysicalElement*>(),
-							  vector<PhysicalElement*>()); */
+							  vector<PhysicalElement*>()); 
 
 };
 
