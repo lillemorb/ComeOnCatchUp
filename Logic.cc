@@ -18,6 +18,7 @@ public:
   void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
 
   sf::Clock clock;
+  int at{0};
 
   ActionResult update(Level &current, Action action, Move move, GameSounds &gamesounds)
     {
@@ -25,12 +26,19 @@ public:
       vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
  
       ActionResult result{Continue};
-      sf::Time dt{clock.getElapsedTime()};
-      clock.restart();
 
       //TODO: player ska vara playerPtr
       Player* player{dynamic_cast<Player*>(levelVec.at(0))};
-      
+      sf::Time dt{clock.getElapsedTime()};
+      at += dt.asMicroseconds();
+      clock.restart();
+
+      if (at > 200000.0)
+	{
+	  player->setAnimationcycle();
+	  at = 0;
+	}
+
       float gravity{player->getGravity()};
       float distX{};
       float velY{player->getVelocity().y};

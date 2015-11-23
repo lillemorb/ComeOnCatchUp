@@ -94,51 +94,29 @@ public:
   float getGravity() { return gravity_; }
   void setFacingRight(bool facingRight) { facingRight_ = facingRight; }
   bool getFacingRight() { return facingRight_; }
-  //int getSpriteNumberWalking() { return spriteNumberWalking_; }
   int getCurrentSprite() { return currentSprite_; }
   void setJump(bool jump) { jump_ = jump; }
   bool getJumpAllowed() { return jumpAllowed_; }
   void setJumpAllowed(bool jumpAllowed) { jumpAllowed_ = jumpAllowed; }
   void setWalk(bool walk) { walk_ = walk; }
+  void setAnimationcycle() { 
+    if (animationcycle_ == 4)
+      animationcycle_ = 0;
+    else
+      animationcycle_++;
+  }
+
 
   int getAnimation()
   {
     if (jump_ == true)
       currentSprite_ = 7;
     else if (walk_ == true)
-      {
-	// TODO: få in klockan här istället för att göra en egen uppräknare
-	if(spriteDelay_ >= 20)
-	  {
-	    if(spriteNumberWalking_ != 4)
-	      spriteNumberWalking_++;
-	    else
-	      spriteNumberWalking_ = 0;
-	    spriteDelay_ = 0;
-	  }
-	else
-	  spriteDelay_++;
-
-	currentSprite_ = spriteNumberWalking_;
-      }
-    // Idle
+      currentSprite_ = animationcycle_;
     else
-      {
-	if(spriteDelay_ >= 20)
-	  {
-	    if(spriteNumberIdle_ == 0)
-	      spriteNumberIdle_ = 1;
-	    else
-	      spriteNumberIdle_ = 0;
-	    spriteDelay_ = 0;
-	  }
-	else
-	  spriteDelay_++;
-	
-	currentSprite_ = (5 + spriteNumberIdle_);
-      }
+      currentSprite_ = (animationcycle_%2 +5);
     return currentSprite_;
-  } 
+  }
 
 private:
   bool facingRight_{true};
@@ -150,6 +128,7 @@ private:
   bool jump_{false};
   bool walk_{false};
   bool jumpAllowed_{true};
+  int animationcycle_{0};
 };
 
 //---------BLOCK--------------//

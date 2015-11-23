@@ -51,31 +51,8 @@ public:
     sf::Sprite goal_sprite;
     goal_sprite.setTexture(spriteSheet_background);
     goal_sprite.setTextureRect(sf::IntRect(96, 32, TILESIZE, TILESIZE));
-     
-    // Player
-    std::map<int, sf::Sprite> player_sprite;
-    // Innehåller vilka positioner players olika animationer har
-    std::vector<std::pair<int, int>> playerAnimationCoordinates = {
-      {0,0},
-      {32, 0},
-      {64, 0},
-      {96, 0},
-      {128, 0},
-      {160, 0},
-      {192, 0},
-      {224, 0}};
-
-    int playerValue = 0;
-    
-    for(auto it = playerAnimationCoordinates.begin(); it != playerAnimationCoordinates.end(); ++it)
-      {
-	sf::Sprite temp_sprite;
-	temp_sprite.setTexture(spriteSheet_player);
-        temp_sprite.setTextureRect(sf::IntRect(it->first, it->second, TILESIZE, TILESIZE));
-        player_sprite[playerValue] = temp_sprite;
-        ++playerValue;
-      }
- 
+    sf::Sprite player_sprite;
+    player_sprite.setTexture(spriteSheet_player);
 
     // Ground
     // Innehåller vilka positioner som varje unikt sprite har
@@ -151,16 +128,18 @@ public:
     sf::Vector2f tempPos = levelVec.at(0)->getPosition();
     Player* player{dynamic_cast<Player*>(levelVec.at(0))};
     int sprite_position = player->getAnimation();
-    player_sprite[sprite_position].setPosition(tempPos.x, tempPos.y);
+    player_sprite.setTextureRect(sf::IntRect(sprite_position*32, 0, TILESIZE, TILESIZE));
+
+    player_sprite.setPosition(tempPos.x, tempPos.y);
+    //player_sprite[sprite_position].setPosition(tempPos.x, tempPos.y);
     if (player->getFacingRight() == false)
       {
 	//Ändrar origin för korrekt spegling
-	player_sprite[sprite_position].setOrigin(TILESIZE, 0); 
+	player_sprite.setOrigin(TILESIZE, 0); 
 	//speglar spriten
-	player_sprite[sprite_position].setScale(-1.0, 1); 
+	player_sprite.setScale(-1.0, 1); 
       }
-    window.draw(player_sprite[sprite_position]);
+    window.draw(player_sprite); 
 
   }
-
 };
