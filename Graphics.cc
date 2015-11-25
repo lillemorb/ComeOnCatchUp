@@ -12,50 +12,41 @@ class Graphics
 {
 public:
   
-  void drawLevel(Level & current, sf::RenderWindow& window)
+  void initGraphics()
   {
-    vector<DrawableElement*> levelVec(current.getLevelDrawableLayout());
-
-    // Går detta att flytta ut på ett snyggt sätt?
-    int TILESIZE = 32;
-
-    // Dessa ska bara göras en gång
     // Inläsning av texturer
-    sf::Texture spriteSheet_background;
     if (!spriteSheet_background.loadFromFile("Sprites/Tiles.png"))
       {
 	cerr << "Kunde inte ladda backgrounds sprites" << endl;
 	// Fixa felhantering! 
 	// return 1;
       }
-    sf::Texture spriteSheet_player;
-    //if (!spriteSheet_player.loadFromFile("Sprites/Tomato.png")) 
-    if (!spriteSheet_player.loadFromFile("Sprites/Pirate_spritesheet.png"))
+
+    if (!spriteSheet_player.loadFromFile("Sprites/Tomato.png")) 
       {
 	cerr << "Kunde inte ladda players sprite" << endl;
 	// Fixa felhantering! 
 	//return 1;
       }
-    
 
     // Inläsning av sprites
-    sf::Sprite door_sprite;
+    // door_sprite
     door_sprite.setTexture(spriteSheet_background);
     door_sprite.setTextureRect(sf::IntRect(96, 0, TILESIZE, TILESIZE));
-    sf::Sprite block_sprite;
+    // block_sprite
     block_sprite.setTexture(spriteSheet_background);
     block_sprite.setTextureRect(sf::IntRect(0, 0, TILESIZE, TILESIZE));
-    sf::Sprite start_sprite;
+    // start_sprite
     start_sprite.setTexture(spriteSheet_background);
     start_sprite.setTextureRect(sf::IntRect(96, 64, TILESIZE, TILESIZE));
-    sf::Sprite goal_sprite;
+    // goal_sprite
     goal_sprite.setTexture(spriteSheet_background);
     goal_sprite.setTextureRect(sf::IntRect(96, 32, TILESIZE, TILESIZE));
-    sf::Sprite player_sprite;
+    // player_sprite
     player_sprite.setTexture(spriteSheet_player);
 
     // Ground
-    // Innehåller vilka positioner som varje unikt sprite har
+    // Innehåller vilka positioner som varje unik sprite har
     std::vector<std::pair<int, int>> groundCoordinates = {
       {32, 0},
       {0, 128},
@@ -75,8 +66,7 @@ public:
       {96, 128}};
 
     // Map från 10-25 som innhåller grounds olika värden
-    std::map<int, sf::Sprite> ground_sprite;
-
+    //std::map<int, sf::Sprite> ground_sprite;
     int groundValue = 10;
     for(auto it = groundCoordinates.begin(); it != groundCoordinates.end(); ++it)
       {
@@ -86,7 +76,12 @@ public:
         ground_sprite[groundValue] = temp_sprite;
         ++groundValue;
       }
+  }
+  
 
+  void drawLevel(Level & current, sf::RenderWindow& window)
+  {
+    vector<DrawableElement*> levelVec(current.getLevelDrawableLayout());
 
     // Rita ut allt utom Player
     for(unsigned int i{1}; i < levelVec.size(); i++)
@@ -139,7 +134,24 @@ public:
 	//speglar spriten
 	player_sprite.setScale(-1.0, 1); 
       }
+    else
+      {
+      player_sprite.setOrigin(0, 0); 
+      player_sprite.setScale(1, 1);
+      }
     window.draw(player_sprite); 
 
   }
+
+private:
+
+  const int TILESIZE{32};
+  sf::Sprite door_sprite;
+  sf::Sprite block_sprite;
+  sf::Sprite start_sprite;
+  sf::Sprite goal_sprite;
+  sf::Sprite player_sprite;
+  std::map<int, sf::Sprite> ground_sprite;
+  sf::Texture spriteSheet_background;
+  sf::Texture spriteSheet_player;
 };

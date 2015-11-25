@@ -31,7 +31,7 @@ public:
     logic_.setPix(xPix_, yPix_);
  
     window.setVerticalSyncEnabled(true);
-
+    graphics_.initGraphics();
     GameSounds gamesounds;
     gamesounds.loadSounds();
 
