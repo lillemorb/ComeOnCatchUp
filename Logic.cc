@@ -17,9 +17,6 @@ public:
 
   void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
 
-  sf::Clock clock;
-  int at{0};
-
   ActionResult update(Level &current, Action action, Move move, GameSounds &gamesounds)
     {
 
@@ -40,9 +37,8 @@ public:
 	}
 
       float gravity{playerPtr->getGravity()};
-      float distX{};
       float velY{playerPtr->getVelocity().y};
-      float gravityBalance {15000.0};
+      float distX{0};
 
       if (action == Jump && playerPtr->getOnGround() == true && playerPtr->getJumpAllowed() == true)
 	{
@@ -144,13 +140,18 @@ private:
   int xPix_{768};
   int yPix_{576};
 
+  sf::Clock clock;
+  int at{0};
+  const float gravityBalance {15000.0};
+
   //Lillemor: observera att vid kollisionshantering är det alltid getGlobalBounds som måste
   //användas och inte getPosition (åtminstone för Player och Door), eftersom deras bounding box
   //inte är lika stor som en tile
   ActionResult collisionHandlingPlayer (vector<PhysicalElement*> & levelVec, GameSounds &gamesounds)
     {
       ActionResult result{Continue};
-       Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
+      Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
+      sf::Time dt{clock.getElapsedTime()};
 
       //Check for collision against window borders
       sf::Vector2f playerPos = sf::Vector2f(playerPtr->getGlobalBounds().left, 
@@ -171,6 +172,9 @@ private:
       else if(playerPos.y > yPix_)
       {
 	gamesounds.getDeathSound();
+	// 0.5 s delay
+	while(dt.asSeconds() < 0.5)
+	    dt = clock.getElapsedTime();
 	return Dead;
       }
    
@@ -181,6 +185,9 @@ private:
 	{
 	  if(levelVec.at(i)->getElementID() == "Door")
 	  {
+	    // 0.5 s delay
+	    while(dt.asSeconds() < 0.5)
+	      dt = clock.getElapsedTime();
      	    result = LevelCompleted;
 	  }
 	  else if(dynamic_cast<Ground*>(levelVec.at(i)))
@@ -221,15 +228,19 @@ private:
 		}
 	      }    
 	    }
+	    float boxX = dt.asMicroseconds();
+	    if (boxX > 2)
+	      boxX = 2;
+
 	    //Move block if no block on top
 	    if(blockCanBeMoved && offset.x < 0)
 	    {
-	      levelVec.at(i)->setVelocity(sf::Vector2f(2, levelVec.at(i)->getVelocity().y));
+	      levelVec.at(i)->setVelocity(sf::Vector2f(boxX, levelVec.at(i)->getVelocity().y));
 	      gamesounds.getBoxSound();
 	    }
 	    else if(blockCanBeMoved && offset.x > 0)
 	    {
-	      levelVec.at(i)->setVelocity(sf::Vector2f(-2, levelVec.at(i)->getVelocity().y));
+	      levelVec.at(i)->setVelocity(sf::Vector2f(-boxX, levelVec.at(i)->getVelocity().y));
 	      gamesounds.getBoxSound();
 	    }		  
 	    offset.x = 0;

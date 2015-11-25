@@ -194,8 +194,8 @@ public:
   // Lillemor: returnerar liten bounding box så att man ser Player "gå in i" dörren
   sf::FloatRect getGlobalBounds() override {
     sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
-    sf::FloatRect smallerBounds(largeBounds.left+12.0, largeBounds.top,
-				largeBounds.width-24.0, largeBounds.height);
+    sf::FloatRect smallerBounds(largeBounds.left+15.0, largeBounds.top+26.0,
+				largeBounds.width-30.0, largeBounds.height-26.0);
     return smallerBounds;
   }
 };
