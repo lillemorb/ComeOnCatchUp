@@ -110,7 +110,7 @@ public:
       {
 	float velYBlock{levelVec.at(i)->getVelocity().y};
 
-	if(levelVec.at(i)->getSpriteID() == "Block")
+	if(levelVec.at(i)->getElementID() == "Block")
 	{
 	  if (levelVec.at(i)->getOnGround() == false)
 	  {
@@ -175,14 +175,13 @@ private:
 	gamesounds.getDeathSound();
 	return Dead;
       }
-      // TODO: GetSpriteID ska vara getPhysicalID när den funktionen är implementerad - tänkte
-      // vi förut. Vad behövs egentligen för Logic resp Graphics, tänk lite mer //Lillemor
+   
       for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	sf::FloatRect area;
 	if(playerPtr->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
 	{
-	  if(levelVec.at(i)->getSpriteID() == "Door")
+	  if(levelVec.at(i)->getElementID() == "Door")
 	  {
 	    cout << "Kollision med Door" << endl;
      	    result = LevelCompleted;
@@ -196,7 +195,7 @@ private:
 	      playerPtr->setOnGround(true);
 	    playerPtr->move(offset);
 	  }
-	  else if(levelVec.at(i)->getSpriteID() == "Block")
+	  else if(levelVec.at(i)->getElementID() == "Block")
 	  {
 	    // Kollisionshantering i y-led, spelare flyttas, block flyttas inte
 	    sf::Vector2f offset {0,0};
@@ -218,7 +217,7 @@ private:
 		sf::FloatRect thisBlock(levelVec.at(i)->getGlobalBounds());		
 		sf::FloatRect thisBlockMovedUp(thisBlock.left, thisBlock.top-2,
 					       thisBlock.width, thisBlock.height);
-		if(levelVec.at(j)->getSpriteID() == "Block" && levelVec.at(j) != levelVec.at(i) &&
+		if(levelVec.at(j)->getElementID() == "Block" && levelVec.at(j) != levelVec.at(i) &&
 		   thisBlockMovedUp.intersects(levelVec.at(j)->getGlobalBounds(), area))
 		{
 		  blockCanBeMoved = false;
@@ -275,7 +274,7 @@ private:
 	    levelVec.at(vecLoc)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
 	{
 	  //Lillemor: Kollar mot första bokstaven för olika Ground-objekt
-	  if(levelVec.at(i)->getSpriteID().at(0) == 'G' || levelVec.at(i)->getSpriteID() == "Block")
+	  if(levelVec.at(i)->getElementID().at(0) == 'G' || levelVec.at(i)->getElementID() == "Block")
 	  {
 	    sf::Vector2f offset {0,0};
 

@@ -87,7 +87,7 @@ public:
     // Rita ut allt utom Player
     for(unsigned int i{1}; i < levelVec.size(); i++)
       {
-	string tempID = levelVec.at(i)->getSpriteID();
+	string tempID = levelVec.at(i)->getElementID();
 	sf::Vector2f tempPos = levelVec.at(i)->getPosition();
 	
 	if (tempID == "Door") 
