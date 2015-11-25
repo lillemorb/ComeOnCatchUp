@@ -12,13 +12,13 @@ using namespace std;
 class DrawableElement
 {
 public:
-  DrawableElement(string spriteID) : spriteID_{spriteID} {};
+  DrawableElement(string elementID) : elementID_{elementID} {};
   virtual ~DrawableElement() = default;
-  string getSpriteID(){ return spriteID_; }
+  string getElementID(){ return elementID_; }
   sf::Vector2f getPosition() { return rectangle_.getPosition(); }
 
 protected:
-  string spriteID_{};
+  string elementID_{};
   sf::RectangleShape rectangle_;
 };
 
@@ -26,10 +26,9 @@ protected:
 class PhysicalElement : public DrawableElement
 {
 public:
-  PhysicalElement(string spriteID): DrawableElement(spriteID){}
+  PhysicalElement(string elementID): DrawableElement(elementID){}
   virtual ~PhysicalElement() = default;
-  //virtual string getPhysicalID()=0; 
-
+ 
   struct CollisionBorders
   { bool left{true}; bool right{true}; bool up{true}; bool down{true}; };
 
@@ -56,7 +55,6 @@ public:
   CollisionBorders getCollisionBorders() { return collisionBorders_; }
 
 protected:
-  enum PhysicalID_{Player, Door, Block, Ground};
   CollisionBorders collisionBorders_{};
   float gravity_{0.5f};
   sf::Vector2f velocity_{sf::Vector2f (0,gravity_)};
@@ -161,8 +159,8 @@ class Ground : public PhysicalElement
 {
 public:
   
-  Ground(int TILESIZE, int x, int y, string spriteID, CollisionBorders collisionBorders)
-    : PhysicalElement(spriteID)
+  Ground(int TILESIZE, int x, int y, string elementID, CollisionBorders collisionBorders)
+    : PhysicalElement(elementID)
     { 
       collisionBorders_ = collisionBorders;
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE); 
@@ -207,8 +205,8 @@ class Background : public DrawableElement
 {
 public:
 
-  Background(int TILESIZE, int x, int y, string typeID)
-    : DrawableElement(typeID)
+  Background(int TILESIZE, int x, int y, string elementID)
+    : DrawableElement(elementID)
     {
       rectangle_.setPosition(x*TILESIZE, y*TILESIZE);
       rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
