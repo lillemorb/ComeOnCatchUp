@@ -22,6 +22,7 @@ public:
 	// return 1;
       }
 
+    //if (!spriteSheet_player.loadFromFile("Sprites/Pirate_spritesheet.png"))
     if (!spriteSheet_player.loadFromFile("Sprites/Tomato.png")) 
       {
 	cerr << "Kunde inte ladda players sprite" << endl;
