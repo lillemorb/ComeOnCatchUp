@@ -23,59 +23,58 @@ public:
   ActionResult update(Level &current, Action action, Move move, GameSounds &gamesounds)
     {
 
-      // Hämta vektor med objekt i Level
+      // Fetch vector with objects in Level
       vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
  
       ActionResult result{Continue};
 
-      //TODO: player ska vara playerPtr
-      Player* player{dynamic_cast<Player*>(levelVec.at(0))};
+      Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
       sf::Time dt{clock.getElapsedTime()};
       at += dt.asMicroseconds();
       clock.restart();
 
       if (at > 200000.0)
 	{
-	  player->setAnimationcycle();
+	  playerPtr->setAnimationcycle();
 	  at = 0;
 	}
 
-      float gravity{player->getGravity()};
+      float gravity{playerPtr->getGravity()};
       float distX{};
-      float velY{player->getVelocity().y};
+      float velY{playerPtr->getVelocity().y};
       float gravityBalance {15000.0};
 
-      if (action == Jump && player->getOnGround() == true && player->getJumpAllowed() == true)
+      if (action == Jump && playerPtr->getOnGround() == true && playerPtr->getJumpAllowed() == true)
 	{
 	  velY = -9.0f;
-	  player->setOnGround(false);
-	  player->setJump(true);
-	  player->setJumpAllowed(false);
+	  playerPtr->setOnGround(false);
+	  playerPtr->setJump(true);
+	  playerPtr->setJumpAllowed(false);
 	  gamesounds.getJumpSound();
 	}
-      // Gör att man kan variera hopphöjden genom att släppa knappen tidigare
-      
+
+      // Make it possible to vary the jumping height depending on when the jumpbutton is realeased
       if (action == JumpReleased)
 	{
 	  if(velY < -4.0f)
 	    velY = -4.0f;
-	  player->setJumpAllowed(true);
+	  playerPtr->setJumpAllowed(true);
 	}
 
       if (move == Left)
 	{
 	  distX = -4;
-	  player->setFacingRight(false);
-	  player->setWalk(true);
+	  playerPtr->setFacingRight(false);
+	  playerPtr->setWalk(true);
 	}
       if (move == Right)
 	{
 	  distX = 4;
-	  player->setFacingRight(true);
-	  player->setWalk(true);
+	  playerPtr->setFacingRight(true);
+	  playerPtr->setWalk(true);
 	}
 
-      if (player->getOnGround() == false)
+      if (playerPtr->getOnGround() == false)
 	{
 	  velY += gravity * (dt.asMicroseconds()/gravityBalance);
 	  if (velY >= 8)
@@ -83,29 +82,29 @@ public:
 	}
       else if (velY > 0)
 	{
-	  player->setJump(false);
+	  playerPtr->setJump(false);
 	  velY = gravity;
 	}
 
       if (!(move == Left || move == Right))
 	{
-	  player->setWalk(false);
+	  playerPtr->setWalk(false);
 	}
 
       distX = distX*dt.asMicroseconds()/gravityBalance;
       float y = velY*(dt.asMicroseconds()/gravityBalance);
       if (y > 14)
 	y = 14;
-      // Förflyttningen i x-led sker statiskt istället för med acceleration.
-      player->move(sf::Vector2f(distX, y));
+      // Movement on x-axis is static, not with acceleration.
+      playerPtr->move(sf::Vector2f(distX, y));
 
-      player->setVelocity(sf::Vector2f(distX, velY));
+      playerPtr->setVelocity(sf::Vector2f(distX, velY));
 
-      // kollisionshantering spelare
-      player->setOnGround(false);
+      // collisionhandling player
+      playerPtr->setOnGround(false);
       result = collisionHandlingPlayer(levelVec, gamesounds);
  
-      // Uppdatera position för block ett och ett, med kollisionshantering för vardera block
+      // Update position for block one by one, with collision handling for each block
       for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
 	float velYBlock{levelVec.at(i)->getVelocity().y};
@@ -130,7 +129,7 @@ public:
 	    levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x, y));  
 	    levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
 	  
-	    //kollisionshantering
+	    //collisionhandling
 	    levelVec.at(i)->setOnGround(false);
 	    collisionBlock(levelVec, i, gamesounds);
 	  }
@@ -171,7 +170,6 @@ private:
       //Check lower border and if collision return Dead
       else if(playerPos.y > yPix_)
       {
-	cout << "dead" << endl;
 	gamesounds.getDeathSound();
 	return Dead;
       }
@@ -183,7 +181,6 @@ private:
 	{
 	  if(levelVec.at(i)->getElementID() == "Door")
 	  {
-	    cout << "Kollision med Door" << endl;
      	    result = LevelCompleted;
 	  }
 	  else if(dynamic_cast<Ground*>(levelVec.at(i)))
@@ -197,7 +194,7 @@ private:
 	  }
 	  else if(levelVec.at(i)->getElementID() == "Block")
 	  {
-	    // Kollisionshantering i y-led, spelare flyttas, block flyttas inte
+	    // Collision in y-axis, player is moved, block is not moved
 	    sf::Vector2f offset {0,0};
 
 	    offset = collisionDisplacement(playerPtr, levelVec.at(i), area);
@@ -207,13 +204,13 @@ private:
 	    // If Player collided with a Block on the x-axis, that Block
 	    // will get a velocity and Player will not be moved back
 
-	    // Kolla om det finns ett block ovanpå detta block => detta block ska då inte kunna flyttas
+	    // Check if there is a block on top on this block => this block shall then not be moved
 	    bool blockCanBeMoved{true};
 	    if(offset.x != 0)
 	    {
 	      for(unsigned int j{1}; j < levelVec.size(); ++j)
 	      {
-		//Gör rektangel som är som detta block men två pixlar upp
+		//Make rectangle like this block but two pixels up
 		sf::FloatRect thisBlock(levelVec.at(i)->getGlobalBounds());		
 		sf::FloatRect thisBlockMovedUp(thisBlock.left, thisBlock.top-2,
 					       thisBlock.width, thisBlock.height);
@@ -224,7 +221,7 @@ private:
 		}
 	      }    
 	    }
-	    //Flytta block om inget annat block är ovanpå
+	    //Move block if no block on top
 	    if(blockCanBeMoved && offset.x < 0)
 	    {
 	      levelVec.at(i)->setVelocity(sf::Vector2f(2, levelVec.at(i)->getVelocity().y));
@@ -269,7 +266,7 @@ private:
 
       for(unsigned int i{1}; i < levelVec.size(); ++i)
       {
-	// Första villkoret kollar att man inte försöker kollisionshantera kollision med sig själv
+	//Check so that you're not trying to do a collision with oneself
 	if( levelVec.at(vecLoc) != levelVec.at(i) &&
 	    levelVec.at(vecLoc)->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
 	{
@@ -285,7 +282,8 @@ private:
 	  }	
 	}
       }
-      //Flytta tillbaka spelare om Block:et inte gick att flytta
+     
+      //Move back player if the block couldn't be moved
       if(playerPtr->getGlobalBounds().intersects(levelVec.at(vecLoc)->getGlobalBounds(), area))
       {
 	sf::Vector2f offset {0,0};
