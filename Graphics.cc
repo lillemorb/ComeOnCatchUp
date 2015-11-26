@@ -22,8 +22,7 @@ public:
 	// return 1;
       }
 
-    //if (!spriteSheet_player.loadFromFile("Sprites/Pirate_spritesheet.png"))
-    if (!spriteSheet_player.loadFromFile("Sprites/Tomato.png")) 
+      if (!spriteSheet_player.loadFromFile("Sprites/Tomato_spritesheet.png")) 
       {
 	cerr << "Kunde inte ladda players sprite" << endl;
 	// Fixa felhantering! 
@@ -123,11 +122,18 @@ public:
     
     sf::Vector2f tempPos = levelVec.at(0)->getPosition();
     Player* player{dynamic_cast<Player*>(levelVec.at(0))};
-    int sprite_position = player->getAnimation();
-    player_sprite.setTextureRect(sf::IntRect(sprite_position*32, 0, TILESIZE, TILESIZE));
+    sf::Vector2f sprite_position = player->getAnimation();
+    if (player->getDeath() == true)
+      {
+	player_sprite.setTextureRect(sf::IntRect(deathCounter*32, sprite_position.y, TILESIZE, TILESIZE));
+	deathCounter++;
+	if (deathCounter > 5)
+	  deathCounter = 0;
+      }
+    else
+      player_sprite.setTextureRect(sf::IntRect(sprite_position.x, sprite_position.y, TILESIZE, TILESIZE));
 
     player_sprite.setPosition(tempPos.x, tempPos.y);
-    //player_sprite[sprite_position].setPosition(tempPos.x, tempPos.y);
     if (player->getFacingRight() == false)
       {
 	//Ändrar origin för korrekt spegling
@@ -147,6 +153,7 @@ public:
 private:
 
   const int TILESIZE{32};
+  int deathCounter{0};
   sf::Sprite door_sprite;
   sf::Sprite block_sprite;
   sf::Sprite start_sprite;

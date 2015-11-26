@@ -15,6 +15,7 @@ public:
   enum Move { Left, Right, Idle };
   enum Action { Jump, JumpReleased };
 
+  sf::Clock clock;
   void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
 
   ActionResult update(Level &current, Action action, Move move, GameSounds &gamesounds)
@@ -26,6 +27,7 @@ public:
       ActionResult result{Continue};
 
       Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
+      playerPtr->setDeath(false);
       sf::Time dt{clock.getElapsedTime()};
       at += dt.asMicroseconds();
       clock.restart();
@@ -87,6 +89,11 @@ public:
 	  playerPtr->setWalk(false);
 	}
 
+      if (velY > 0)
+	{
+	  playerPtr->setJump(false);
+	  playerPtr->setFalling(true);
+	}
       distX = distX*dt.asMicroseconds()/gravityBalance;
       float y = velY*(dt.asMicroseconds()/gravityBalance);
       if (y > 14)
@@ -139,8 +146,6 @@ public:
 private:
   int xPix_{768};
   int yPix_{576};
-
-  sf::Clock clock;
   int at{0};
   const float gravityBalance {15000.0};
 
@@ -171,10 +176,9 @@ private:
       //Check lower border and if collision return Dead
       else if(playerPos.y > yPix_)
       {
+	playerPtr->resetCurrentSprite();
+	playerPtr->setDeath(true);
 	gamesounds.getDeathSound();
-	// 0.5 s delay
-	while(dt.asSeconds() < 0.5)
-	    dt = clock.getElapsedTime();
 	return Dead;
       }
    
@@ -196,7 +200,10 @@ private:
 
 	    offset = collisionDisplacement(playerPtr, levelVec.at(i), area);
 	    if(offset.y < 0)
+	      {
 	      playerPtr->setOnGround(true);
+	      playerPtr->setFalling(false);
+	      }
 	    playerPtr->move(offset);
 	  }
 	  else if(levelVec.at(i)->getElementID() == "Block")
@@ -206,7 +213,10 @@ private:
 
 	    offset = collisionDisplacement(playerPtr, levelVec.at(i), area);
 	    if(offset.y < 0)
+	      {
 	      playerPtr->setOnGround(true);
+	      playerPtr->setFalling(false);
+	      }
 
 	    // If Player collided with a Block on the x-axis, that Block
 	    // will get a velocity and Player will not be moved back
@@ -229,8 +239,8 @@ private:
 	      }    
 	    }
 	    float boxX = dt.asMicroseconds();
-	    if (boxX > 2)
-	      boxX = 2;
+	    if (boxX > 2.0)
+	      boxX = 2.0;
 
 	    //Move block if no block on top
 	    if(blockCanBeMoved && offset.x < 0)
@@ -244,7 +254,6 @@ private:
 	      gamesounds.getBoxSound();
 	    }		  
 	    offset.x = 0;
-	    
 	    playerPtr->move(offset);
 	  }
 	}

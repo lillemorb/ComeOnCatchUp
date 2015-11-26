@@ -92,8 +92,12 @@ public:
   float getGravity() { return gravity_; }
   void setFacingRight(bool facingRight) { facingRight_ = facingRight; }
   bool getFacingRight() { return facingRight_; }
-  int getCurrentSprite() { return currentSprite_; }
+  void resetCurrentSprite() { currentSprite_.x = 0; }
+  sf::Vector2f getCurrentSprite() { return currentSprite_; }
   void setJump(bool jump) { jump_ = jump; }
+  void setFalling(bool falling) { falling_ = falling; }
+  void setDeath(bool death) { death_ = death; }
+  bool getDeath() { return death_; }
   bool getJumpAllowed() { return jumpAllowed_; }
   void setJumpAllowed(bool jumpAllowed) { jumpAllowed_ = jumpAllowed; }
   void setWalk(bool walk) { walk_ = walk; }
@@ -105,14 +109,33 @@ public:
   }
 
 
-  int getAnimation()
+  sf::Vector2f getAnimation()
   {
-    if (jump_ == true)
-      currentSprite_ = 7;
-    else if (walk_ == true)
-      currentSprite_ = animationcycle_;
+    if (death_ == true)
+      {
+	currentSprite_.x = animationcycle_*32;
+	currentSprite_.y = 96;
+      }
+    else if (jump_ == true)
+      {
+	currentSprite_.x = 0;
+	currentSprite_.y = 64;
+      }
+    else if (falling_ == true)
+      {
+	currentSprite_.x = 32;
+	currentSprite_.y = 64;
+      }
+    else if (walk_ == true && jump_ == false && falling_ == false)
+      {
+      currentSprite_.x = animationcycle_*32;
+      currentSprite_.y = 0;
+      }
     else
-      currentSprite_ = (animationcycle_%2 +5);
+      {
+      currentSprite_.x = animationcycle_*32;
+      currentSprite_.y = 32;
+      }
     return currentSprite_;
   }
 
@@ -122,9 +145,11 @@ private:
   int spriteNumberIdle_{0};
   int walkCycle_{0};
   int spriteDelay_{0};
-  int currentSprite_{0};
+  sf::Vector2f currentSprite_{0, 0};
   bool jump_{false};
+  bool falling_{false};
   bool walk_{false};
+  bool death_{false};
   bool jumpAllowed_{true};
   int animationcycle_{0};
 };

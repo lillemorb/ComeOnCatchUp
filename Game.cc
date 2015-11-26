@@ -17,7 +17,9 @@ class Game
 {
 public:
   ~Game() { delete currLevelPtr_; }
-
+  
+  int deathCounter{0};
+  
   int run()
   {
     Logic::Action action{Logic::JumpReleased};
@@ -79,12 +81,27 @@ public:
 	    menu_player_pos = 500;
 	    gamestate_ = VictoryScreen;    
 	  }
-     
 	//Dead
-	if(actionResult_ == Logic::Dead)
-	  {	
-	    load_level(lvl, current_level);	    
+	else if(actionResult_ == Logic::Dead)
+	  {
+	    gamestate_ = Dead;
+	    clock.restart();
+	    sf::Time dt{clock.getElapsedTime()};
+	    if (deathCounter < 6)
+	      {
+		deathCounter++;
+		while(dt.asSeconds() < 0.2)
+		  {
+		    dt = clock.getElapsedTime();
+		  }
+		if (deathCounter == 5) 
+		  {
+		    load_level(lvl, current_level);
+		    deathCounter++;
+		  }
+	      }
 	  }
+
 
 	if (gamestate_ == Playing)
 	  {	      
@@ -119,6 +136,7 @@ public:
 		move = Logic::Idle;
 	      }
 	  }
+
 	else if (gamestate_ == Menu || gamestate_ == VictoryScreen || gamestate_ == LevelSel) 
 	  {	
 	    menu(lvl);
@@ -172,6 +190,7 @@ public:
 	      }
 	  }
 
+
 	// clear the window with black color
 	window.clear(sf::Color(200, 255, 255, 255));
 	if (gamestate_ == Playing)
@@ -180,6 +199,15 @@ public:
 	    actionResult_ = logic_.update((*currLevelPtr_), action, move, gamesounds);
 	    // RITA
 	    graphics_.drawLevel((*currLevelPtr_), window);
+	  }
+	else if (gamestate_ == Dead)
+	  {
+	    graphics_.drawLevel((*currLevelPtr_), window);
+	    if (deathCounter > 5)
+	      {
+		deathCounter = 0;
+		gamestate_ = Playing;
+	      }
 	  }
 	// Drawing menus
 	// Mycket av detta antar jag ska göras på annat ställe men för snabb fix så gör jag detta här
@@ -355,7 +383,7 @@ private:
   unsigned int menu_row{3};
   unsigned int menu_player_pos{500};
   int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
-  enum GameState{Playing, VictoryScreen, Pause, LevelSel, Menu, Exit}; 
+  enum GameState{Playing, Dead, VictoryScreen, Pause, LevelSel, Menu, Exit}; 
   GameState gamestate_{Playing};
   Logic::ActionResult actionResult_= Logic::Continue;
   Level* currLevelPtr_{};
@@ -364,6 +392,7 @@ private:
   int xPix_{768};
   int yPix_{576};
   bool jumping_{false};
+  sf::Clock clock;
 
 };
 
