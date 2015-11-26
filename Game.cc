@@ -7,7 +7,6 @@
 #include <vector>
 #include <fstream>
 #include <iterator>
-#include <unistd.h>
 using namespace std;
 
 // TODO: dela upp i .cc/.h-filer
@@ -244,7 +243,7 @@ public:
 	    menu_player_pos = menu_player_pos - 100;
 	  }
 	cout << current_menu << endl;
-	sleep(1);
+	delayTime();
 	cout << "upp i menyn" << endl;
 	current_menu_row = current_menu_row + 1;
       }
@@ -254,7 +253,7 @@ public:
 	if (current_menu == 3) {menu_player_pos = menu_player_pos + 50;} 
 	else {	menu_player_pos = menu_player_pos + 100; }
 	
-	sleep(1);
+	delayTime();
 	
 	cout << "ner i menyn" << endl;
 	current_menu_row = current_menu_row - 1;
@@ -266,29 +265,29 @@ public:
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && current_menu == 1)
       {
-	sleep(1);
+	delayTime();
 	// Main menu
-
-	    cout << "Du är nu i huvudmenyn" << endl;
-	    switch (current_menu_row)
-	      {
-	      case 1:
-		cout << "Exit" << endl;
-		gamestate_ = Exit;
-		break;		     
-	      case 2:
-		cout << "Går till level menyn" << endl;
-		menu_player_pos = 500;
-		current_menu_row = 1; 
-		current_menu = 3;
-		menu_row = 5;
-		break;
-	      case 3:
-		cout << "Start på level 1" << endl;
-		current_level = 1;
 	
-		load_level(lvl, current_level);
-		break;
+	cout << "Du är nu i huvudmenyn" << endl;
+	switch (current_menu_row)
+	  {
+	  case 1:
+	    cout << "Exit" << endl;
+	    gamestate_ = Exit;
+	    break;		     
+	  case 2:
+	    cout << "Går till level menyn" << endl;
+	    menu_player_pos = 500;
+	    current_menu_row = 1; 
+	    current_menu = 3;
+	    menu_row = 5;
+	    break;
+	  case 3:
+	    cout << "Start på level 1" << endl;
+	    current_level = 1;
+	
+	    load_level(lvl, current_level);
+	    break;
 
 	      
 	  }	   
@@ -297,23 +296,23 @@ public:
       // Victory_screen
       {
 
-	    cout << "Du är nu i victory menyn" << endl;
-	    switch (current_menu_row)
-	      {
-	      case 1:
-		cout << "Exit" << endl;
-		gamestate_ = Exit;
-		break;
-	      case 2:
-		cout << "Går till main menyn" << endl;
-		menu_player_pos = 500;
-		current_menu_row = 1; 
-		current_menu = 1;
-		menu_row = 3;
-	      case 3:
-		cout << "Börja om från level 1" << endl;
-		current_level = 1;
-		load_level(lvl, current_level);			
+	cout << "Du är nu i victory menyn" << endl;
+	switch (current_menu_row)
+	  {
+	  case 1:
+	    cout << "Exit" << endl;
+	    gamestate_ = Exit;
+	    break;
+	  case 2:
+	    cout << "Går till main menyn" << endl;
+	    menu_player_pos = 500;
+	    current_menu_row = 1; 
+	    current_menu = 1;
+	    menu_row = 3;
+	  case 3:
+	    cout << "Börja om från level 1" << endl;
+	    current_level = 1;
+	    load_level(lvl, current_level);			
 		
 	      
 	  }
@@ -321,43 +320,48 @@ public:
     // Level menu
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && current_menu == 3)
       {	
-	sleep(1);
-	
-	    cout << "Du är nu i level menyn" << endl;
-	    switch (current_menu_row)
-	      {
-	      case 1:
-		cout << "Går till main menyn" << endl;
-		menu_player_pos = 500;
-		current_menu_row = 1; 
-		current_menu = 1;
-		menu_row = 3;
-	      case 2:
-		cout << "Du försökte gå till level 1" << endl;
-		current_level = 1;
-		load_level(lvl, current_level);
-		break;
-	      case 3:	
-		cout << "Du försökte gå till level 2" << endl;
-		current_level = 2;
-		load_level(lvl, current_level);
-		break;
-	      case 4:
-		cout << "Du försökte gå till level 3" << endl;
-		current_level = 3;
-		load_level(lvl, current_level);
-		break;
-	      case 5:
-		cout << "Du försökte gå till level 4" << endl;
-		current_level = 4;
-		load_level(lvl, current_level);
-		break;
-	      }	
-			  
-	  
-		
-      	  
-	   
+	delayTime();
+
+	cout << "Du är nu i level menyn" << endl;
+	switch (current_menu_row)
+	  {
+	  case 1:
+	    cout << "Går till main menyn" << endl;
+	    menu_player_pos = 500;
+	    current_menu_row = 1; 
+	    current_menu = 1;
+	    menu_row = 3;
+	  case 2:
+	    cout << "Du försökte gå till level 1" << endl;
+	    current_level = 1;
+	    load_level(lvl, current_level);
+	    break;
+	  case 3:	
+	    cout << "Du försökte gå till level 2" << endl;
+	    current_level = 2;
+	    load_level(lvl, current_level);
+	    break;
+	  case 4:
+	    cout << "Du försökte gå till level 3" << endl;
+	    current_level = 3;
+	    load_level(lvl, current_level);
+	    break;
+	  case 5:
+	    cout << "Du försökte gå till level 4" << endl;
+	    current_level = 4;
+	    load_level(lvl, current_level);
+	    break;
+	  }	   
+      }
+  }
+
+  void delayTime()
+  {
+    clock.restart();
+    sf::Time dt{clock.getElapsedTime()};
+    while(dt.asSeconds() < 0.5)
+      {
+	dt = clock.getElapsedTime();
       }
   }
   
