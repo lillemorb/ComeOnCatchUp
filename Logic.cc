@@ -29,8 +29,10 @@ public:
       Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
       playerPtr->setDeath(false);
       sf::Time dt{clock.getElapsedTime()};
-      at += dt.asMicroseconds();
       clock.restart();
+      if(dt.asMicroseconds() > 20000)
+	dt = clock.getElapsedTime();
+      at += dt.asMicroseconds();
 
       if (at > 200000.0)
 	{
