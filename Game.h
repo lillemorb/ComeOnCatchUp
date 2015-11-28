@@ -1,102 +1,53 @@
-// ANVÄNDS EJ! Inkluderingsfel, därför ligger allt i Game.cc
-// tills vidare
-
+//Game.cc
 #ifndef GAME_H
 #define GAME_H
 
 #include <SFML/Graphics.hpp>
-//#include "Level.cc"
-#include "Graphics.cc"
-
+#include "Logic.h"
+#include "Graphics.h"
+#include "GameSounds.h"
 #include <vector>
+#include <fstream>
+#include <iterator>
 using namespace std;
+
+// TODO: dela upp i .cc/.h-filer
+// undersöka var liten minnesläcka finns (kolla mha valgrind)
 
 class Game
 {
 public:
-//  int run();
-int run()
-{
-//  Graphics graphics_;
-    
-  //INITIERING
-  // create the window
-  sf::RenderWindow window(sf::VideoMode(768, 576), "Come on, catch up!", sf::Style::Titlebar | sf::Style::Close);
-  vector<int> level1{
-    00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
-      00, 00, 00, 00, 00, 00, 00, 00, 00, 02, 00, 00, 04, 00, 00, 00, 00, 03, 00, 00, 00, 00, 00, 00,
-      01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01,
-      01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01,
-      01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01, 01
-      };
+  ~Game() { delete currLevelPtr_; }
   
-  level_vector_.push_back(Level(TILESIZE, TILES_PER_ROW, TILES_PER_COLUMN, level1));
+  int deathCounter{0};
 
-  //LOOP
-  // run the program as long as the window is open
-  while (window.isOpen())
-    {
-      // check all the window's events that were triggered since the last iteration of the loop
-      sf::Event event;
-
-      // TA IN INPUT
-      while (window.pollEvent(event))
-	{
-	  // "close requested" event: we close the window
-	  if (event.type == sf::Event::Closed)
-	    window.close();
-	}
-      
-      // clear the window with black color
-      window.clear(sf::Color(200, 255, 255, 255));
-      
-      // UPPDATERA LOGIC
-
-      // RITA
-      // draw everything here...
-      // window.draw(...);
-      graphics_.drawLevel(level_vector_.at(0), window);
-      //level_vector_.at(0).draw(window);
-      
-      // end the current frame
-      window.display();
-    }
-  
-  return 0;
-}
-
-
+  int run();
+  void menu(vector<int> lvl);
+	void delayTime();
+	void load_level(vector<int> lvl, int current_level);
 
 private:
+
   const int TILESIZE{32};
   const int TILES_PER_ROW{24};
   const int TILES_PER_COLUMN{18};
-  unsigned int current_level{0};
-  enum GameState{Playing, ShowScreen, Exit};
-  enum ActionResult{Nothing, GameCompleted, LevelCompleted, Dead, Reset, Quit};
+  unsigned int current_level{1};
+  unsigned int current_menu{1};
+  unsigned int current_menu_row{1};
+  unsigned int menu_row{3};
+  unsigned int menu_player_pos{500};
+  int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
+  enum GameState{Playing, Dead, VictoryScreen, Pause, LevelSel, Menu, Exit}; 
   GameState gamestate_{Playing};
-  ActionResult actionResult_{Nothing};
-  vector<Level> level_vector_{};
-  /*
-  GameLogic gameLogic_;
-  */
+  Logic::ActionResult actionResult_= Logic::Continue;
+  Level* currLevelPtr_{};
+  Logic logic_;
   Graphics graphics_;
- 
+  int xPix_{768};
+  int yPix_{576};
+  bool jumping_{false};
+  sf::Clock clock;
 
 };
-
 
 #endif

@@ -1,25 +1,21 @@
-#ifndef LEVEL_CC
-#define LEVEL_CC
-
 #include <vector>
-#include "Elements.cc"
+#include "Elements.h"
+#include "Level.h"
 //TODO: ta bort efter spårutskrift tagits bort
 #include <iostream>
 
 using namespace std;
 
-class Level
-{
-public:
-  Level(int TILESIZE, int TILES_PER_ROW, vector<int> level_vector)
-  {
-    for(unsigned int i{}; i < level_vector.size(); i++)
-      {
-	int x = i%TILES_PER_ROW;
-	int y = i/TILES_PER_ROW;
 
-	// Kontrollerar ground-objekten
-	if(level_vector.at(i) >= 10 && level_vector.at(i) <= 25)
+Level::Level(int TILESIZE, int TILES_PER_ROW, vector<int> level_vector)
+{
+	for(unsigned int i{}; i < level_vector.size(); i++)
+	{
+		int x = i%TILES_PER_ROW;
+		int y = i/TILES_PER_ROW;
+
+		// Kontrollerar ground-objekten
+		if(level_vector.at(i) >= 10 && level_vector.at(i) <= 25)
 	  {	    
 	    int num{level_vector.at(i)};
 	    string name = "G" + to_string(num);
@@ -44,25 +40,23 @@ public:
 	    if(level_vector.at(i) != 15)
 	    {
 	      physicalElementVector_.push_back(groundPtrVector_.back());
-//	      cout << collBorders.left << " " << collBorders.right << " "
-//		   << collBorders.up << " " << collBorders.down << endl;
 	    }
 	  }
 
-	switch(level_vector.at(i))
+		switch(level_vector.at(i))
 	  {
 	  case 01:
 	    playerPtr_ = new Player(TILESIZE, x, y);
 	    if(drawableElementVector_.size() == 0 )
-	      {
-		drawableElementVector_.push_back(playerPtr_);
-		physicalElementVector_.push_back(playerPtr_);
-	      }
+			{
+				drawableElementVector_.push_back(playerPtr_);
+				physicalElementVector_.push_back(playerPtr_);
+			}
 	    else
-	      {
-		drawableElementVector_.insert(drawableElementVector_.begin(), playerPtr_);
-		physicalElementVector_.insert(physicalElementVector_.begin(), playerPtr_);
-	      }
+			{
+				drawableElementVector_.insert(drawableElementVector_.begin(), playerPtr_);
+				physicalElementVector_.insert(physicalElementVector_.begin(), playerPtr_);
+			}
 	    break;
 	  case 02:
 	    doorPtr_ = new Door(TILESIZE, x, y);
@@ -85,42 +79,18 @@ public:
 	  default:
 	    break;
 	  }
-      }
-  }
+	}
+}
 
-  // Frigör minne genom att deleta pekare till alla objekt i Level
-  ~Level()
-  {
-    delete playerPtr_;
-    delete doorPtr_;
-    for(unsigned int i{}; i < groundPtrVector_.size(); ++i)
-      delete groundPtrVector_.at(i);
-    for(unsigned int i{}; i < blockPtrVector_.size(); ++i)
-      delete blockPtrVector_.at(i);
-    for(unsigned int i{}; i < backgroundPtrVector_.size(); ++i)
-      delete backgroundPtrVector_.at(i);
-  };
-
-  vector<DrawableElement*> &  getLevelDrawableLayout()
-  {
-    return drawableElementVector_;
-  }
-
-  vector<PhysicalElement*> & getLevelPhysicalLayout()
-  {
-    return physicalElementVector_;
-  }
-
-private:
-  // Håller reda på objekten med dynamiskt allokerat minne
-  // för att inte få minnesfel
-  Player* playerPtr_{};
-  Door* doorPtr_{};
-  vector<Block*> blockPtrVector_{};
-  vector<Ground*> groundPtrVector_{};
-  vector<Background*> backgroundPtrVector_{};
-  vector<DrawableElement*> drawableElementVector_{};
-  vector<PhysicalElement*> physicalElementVector_{}; 
-};
-
-#endif
+// Frigör minne genom att deleta pekare till alla objekt i Level
+Level::~Level()
+{
+	delete playerPtr_;
+	delete doorPtr_;
+	for(unsigned int i{}; i < groundPtrVector_.size(); ++i)
+		delete groundPtrVector_.at(i);
+	for(unsigned int i{}; i < blockPtrVector_.size(); ++i)
+		delete blockPtrVector_.at(i);
+	for(unsigned int i{}; i < backgroundPtrVector_.size(); ++i)
+		delete backgroundPtrVector_.at(i);
+}
