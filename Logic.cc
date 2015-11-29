@@ -209,24 +209,34 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 				// If Player collided with a Block on the x-axis, that Block
 				// will get a velocity and Player will not be moved back
 
-				// Check if there is a block on top on this block => this block shall then not be moved
+				// Lillemor:
+				// Check if there is a block on top on this block or if this
+				// block is falling => then this block shall not be moved				
 				bool blockCanBeMoved{true};
 				if(offset.x != 0)
 				{
-					for(unsigned int j{1}; j < levelVec.size(); ++j)
+					// Check if block is on ground
+					if(!levelVec.at(i)->getOnGround())
+						blockCanBeMoved = false;
+					// Check if block has another block on top of it
+					else
 					{
-						// Make rectangle like this block but two pixels up
-						sf::FloatRect thisBlock(levelVec.at(i)->getGlobalBounds());		
-						sf::FloatRect thisBlockMovedUp(thisBlock.left, thisBlock.top-2,
-																					 thisBlock.width, thisBlock.height);
-						if(levelVec.at(j)->getElementID() == "Block" &&
-							 levelVec.at(j) != levelVec.at(i) &&
-							 thisBlockMovedUp.intersects(levelVec.at(j)->getGlobalBounds(), area))
+						for(unsigned int j{1}; j < levelVec.size(); ++j)
 						{
-							blockCanBeMoved = false;
-						}
-					}    
+							// Make rectangle like this block but two pixels up
+							sf::FloatRect thisBlock(levelVec.at(i)->getGlobalBounds());		
+							sf::FloatRect thisBlockMovedUp(thisBlock.left, thisBlock.top-2,
+																						 thisBlock.width, thisBlock.height);
+							if(levelVec.at(j)->getElementID() == "Block" &&
+								 levelVec.at(j) != levelVec.at(i) &&
+								 thisBlockMovedUp.intersects(levelVec.at(j)->getGlobalBounds(), area))
+							{
+								blockCanBeMoved = false;
+							}
+						}  
+					}  
 				}
+
 				float boxX = dt.asMicroseconds();
 				if (boxX > 2.0)
 					boxX = 2.0;
@@ -277,10 +287,11 @@ void Logic::collisionBlock(
 	else if(blockPos.y > yPix_+33)
   	levelVec.at(vecLoc)->setBelowWindow(true);
 
+	sf::Vector2f offset {0,0};
 	for(unsigned int i{1}; i < levelVec.size(); ++i)
 	{
 		// Check so that you're not trying to do a collision with oneself
-		if( levelVec.at(vecLoc) != levelVec.at(i) &&
+		if( levelVec.at(vecLoc) != levelVec.at(i) && 
 				levelVec.at(vecLoc)->getGlobalBounds().intersects(
 					levelVec.at(i)->getGlobalBounds(), area))
 		{
@@ -288,7 +299,7 @@ void Logic::collisionBlock(
 			if(levelVec.at(i)->getElementID().at(0) == 'G' ||
 				 levelVec.at(i)->getElementID() == "Block")
 			{
-				sf::Vector2f offset {0,0};
+				offset = sf::Vector2f(0,0);
 
 				offset = collisionDisplacement(levelVec.at(vecLoc), levelVec.at(i), area);
 				if(offset.y < 0)
@@ -296,6 +307,23 @@ void Logic::collisionBlock(
 				levelVec.at(vecLoc)->move(offset);
 			}	
 		}
+	}
+	// Lillemor: Om block faller ska de falla rakt nedåt => x ska vara en multipel
+	// av vår tilsize. Offset.y == 0 innebär att blocket inte har kolliderat nedåt
+	// Kan snyggas till, orkar inte nu
+	if(offset.y == 0)
+	{
+		blockPos = levelVec.at(vecLoc)->getPosition();
+		int tilesize{static_cast<int>(levelVec.at(vecLoc)->getSize().x)};
+		int xCorrection{};	
+
+		if(blockPos.x - (tilesize * (static_cast<int>(blockPos.x)/tilesize)) <= tilesize/2)
+			xCorrection = -(blockPos.x - (tilesize * (static_cast<int>(blockPos.x)/tilesize)));
+		else
+			xCorrection = (tilesize * ((static_cast<int>(blockPos.x)/tilesize)+1) - blockPos.x);
+
+		levelVec.at(vecLoc)->move(sf::Vector2f(xCorrection,0));
+		levelVec.at(vecLoc)->setVelocity(sf::Vector2f(0,levelVec.at(vecLoc)->getVelocity().y));
 	}
      
 	// Move back player if the block couldn't be moved
