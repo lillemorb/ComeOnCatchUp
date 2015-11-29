@@ -7,6 +7,7 @@
 #include <vector>
 #include <fstream>
 #include <iterator>
+#include <iostream>
 using namespace std;
 
 //---------RUN--------------// 

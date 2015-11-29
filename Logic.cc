@@ -5,6 +5,8 @@
 #include "GameSounds.h"
 #include <vector>
 
+using namespace std;
+
 //---------UPDATE--------------//
 
 Logic::ActionResult Logic::update(

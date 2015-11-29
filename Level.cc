@@ -7,7 +7,7 @@
 using namespace std;
 
 
-Level::Level(int TILESIZE, int TILES_PER_ROW, vector<int> level_vector)
+Level::Level(int TILESIZE, int TILES_PER_ROW, const vector<int> & level_vector)
 {
 	for(unsigned int i{}; i < level_vector.size(); i++)
 	{

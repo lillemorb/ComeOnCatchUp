@@ -19,9 +19,9 @@ public:
   int deathCounter{0};
 
   int run();
-  void menu(const vector<int> & lvl);
+  void menu(const std::vector<int> & lvl);
 	void delayTime();
-	void load_level(const vector<int> & lvl, int current_level);
+	void load_level(const std::vector<int> & lvl, int current_level);
 
 private:
 
