@@ -157,8 +157,9 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	if(playerPos.y < 0)
 		playerPtr->move(sf::Vector2f(0,-playerPos.y));
 	// Check lower border and if collision return Dead
-	else if(playerPos.y > yPix_)
+	else if(playerPos.y + playerSize.y > yPix_)
 	{
+		playerPtr->move(sf::Vector2f(0,yPix_-(playerPos.y + playerSize.y)));
 		playerPtr->resetCurrentSprite();
 		playerPtr->setDeath(true);
 		gamesounds.getDeathSound();
