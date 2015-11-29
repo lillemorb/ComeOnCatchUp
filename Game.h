@@ -1,4 +1,4 @@
-//Game.cc
+//Game.h
 #ifndef GAME_H
 #define GAME_H
 
@@ -7,24 +7,21 @@
 #include "Graphics.h"
 #include "GameSounds.h"
 #include <vector>
-#include <fstream>
-#include <iterator>
-using namespace std;
 
-// TODO: dela upp i .cc/.h-filer
-// undersöka var liten minnesläcka finns (kolla mha valgrind)
+// TODO: undersöka var liten minnesläcka finns (kolla mha valgrind)
 
 class Game
 {
 public:
   ~Game() { delete currLevelPtr_; }
   
+	//Lillemor: när behövs den här, varför är den public?
   int deathCounter{0};
 
   int run();
-  void menu(vector<int> lvl);
+  void menu(const vector<int> & lvl);
 	void delayTime();
-	void load_level(vector<int> lvl, int current_level);
+	void load_level(const vector<int> & lvl, int current_level);
 
 private:
 

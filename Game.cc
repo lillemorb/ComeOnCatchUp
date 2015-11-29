@@ -9,7 +9,7 @@
 #include <iterator>
 using namespace std;
 
- 
+//---------RUN--------------// 
 int Game::run()
 {
 	Logic::Action action{Logic::JumpReleased};
@@ -47,7 +47,6 @@ int Game::run()
 	vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), 
 											 lvl.begin() + vector_size*current_level);
 	currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
-
 
 	//LOOP
 	// run the program as long as the window is open
@@ -137,7 +136,8 @@ int Game::run()
 	  }
 
 
-		// check all the window's events that were triggered since the last iteration of the loop
+		// check all the window's events that were triggered since the last iteration
+		// of the loop
 		// TA IN INPUT
 
 		while (window.pollEvent(event))
@@ -202,8 +202,10 @@ int Game::run()
 			}
 	  }
 		// Drawing menus
-		// Mycket av detta antar jag ska göras på annat ställe men för snabb fix så gör jag detta här
-		else if (gamestate_ == Menu || gamestate_ == VictoryScreen || gamestate_ == LevelSel)
+		// Mycket av detta antar jag ska göras på annat ställe men för snabb fix
+		// så gör jag detta här
+		else if (gamestate_ == Menu || gamestate_ == VictoryScreen
+						 || gamestate_ == LevelSel)
 	  {
 	    menu_sprite.setTexture(spritesheet_menu);
 	    menu_sprite.setTextureRect(sf::IntRect(96, 0, 32, 32));
@@ -216,10 +218,11 @@ int Game::run()
 	return 0;
 }
 
-
-void Game::menu(vector<int> lvl)
+//---------MENU--------------//
+void Game::menu(const vector<int> & lvl)
 {  
-	// "OBS! du är i menu tryck upp en gång och sen enter för att spela, ner och enter för att avsluta"
+	// "OBS! du är i menu tryck upp en gång och sen enter för att spela,
+	// ner och enter för att avsluta"
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && current_menu_row < menu_row)
 	{
 		if (current_menu == 3) 
@@ -252,7 +255,8 @@ void Game::menu(vector<int> lvl)
 	}
 	// Rasmus: Gör en koll ifall man tryckt enter, se därefter vilken av menyerna det var
 	// det optimerar koden mer och utför samma sak som nu.
-	// Daniel: Problemet är att case 2 i main menu ändrar current_menu till 3 och det fuckar, 
+	// Daniel: Problemet är att case 2 i main menu ändrar current_menu till 3
+	// och det fuckar, 
 	// men detta kanske funkar?
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && current_menu == 1)
@@ -345,6 +349,7 @@ void Game::menu(vector<int> lvl)
 	}
 }
 
+//---------DELAYTIME--------------//
 void Game::delayTime()
 {
 	clock.restart();
@@ -355,8 +360,9 @@ void Game::delayTime()
 	}
 }
   
+//---------LOAD_LEVEL--------------//
 //Load current_level
-void Game::load_level(vector<int> lvl, int current_level)
+void Game::load_level(const vector<int> & lvl, int current_level)
 {
 	delete currLevelPtr_;
 	vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), 

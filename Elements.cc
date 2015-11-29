@@ -1,3 +1,4 @@
+//Elements.cc
 #include "Elements.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -77,8 +78,8 @@ Block::Block(int TILESIZE, int x, int y)
 }
 
 //---------GROUND--------------//
-Ground::Ground(int TILESIZE, int x, int y, string elementID,
-							 CollisionBorders collisionBorders)
+Ground::Ground(int TILESIZE, int x, int y, const string & elementID,
+							 const CollisionBorders & collisionBorders)
 	: PhysicalElement(elementID)
 { 
 	collisionBorders_ = collisionBorders;
@@ -103,7 +104,7 @@ sf::FloatRect Door::getGlobalBounds() const {
 }
 
 //---------BACKGROUND--------//
-Background::Background(int TILESIZE, int x, int y, string elementID)
+Background::Background(int TILESIZE, int x, int y, const string & elementID)
 	: DrawableElement(elementID)
 {
 	rectangle_.setPosition(x*TILESIZE, y*TILESIZE);

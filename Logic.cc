@@ -5,8 +5,10 @@
 #include "GameSounds.h"
 #include <vector>
 
+//---------UPDATE--------------//
+
 Logic::ActionResult Logic::update(
-	Level &current, Action action, Move move, GameSounds &gamesounds)
+	Level & current, Action action, Move move, GameSounds & gamesounds)
 {
 	// Fetch vector with objects in Level
 	vector<PhysicalElement*> levelVec(current.getLevelPhysicalLayout());
@@ -134,8 +136,10 @@ Logic::ActionResult Logic::update(
 return result;
 }
 
+
+//---------COLLISIONSHANDLINGPLAYER--------------//
 Logic::ActionResult Logic::collisionHandlingPlayer (
-	vector<PhysicalElement*> & levelVec,GameSounds &gamesounds)
+	const vector<PhysicalElement*> & levelVec,GameSounds & gamesounds)
 {
 	ActionResult result{Continue};
 	Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
@@ -248,8 +252,9 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	return result;      
 }
 
+//---------COLLISIONBLOCK--------------//
 void Logic::collisionBlock(
-	vector<PhysicalElement*> & levelVec, unsigned int vecLoc, GameSounds gamesounds)
+	const vector<PhysicalElement*> & levelVec, unsigned int vecLoc, GameSounds & gamesounds)
 {
 	sf::FloatRect area;
 	Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
@@ -306,8 +311,10 @@ void Logic::collisionBlock(
 	} 
 }	  
 
+//---------COLLISIONDISPLACEMENT--------------//
 sf::Vector2f Logic::collisionDisplacement(
-	PhysicalElement* element, PhysicalElement* collidingElement, sf::FloatRect area)
+	PhysicalElement* const element, PhysicalElement* const collidingElement,
+	const sf::FloatRect & area)
 {
 	sf::Vector2f offset{0,0};
 	PhysicalElement::CollisionBorders collBorders(collidingElement->getCollisionBorders());

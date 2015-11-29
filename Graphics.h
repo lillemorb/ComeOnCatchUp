@@ -10,8 +10,8 @@ class Graphics
 {
 public:
   
-  void initGraphics();
-  void drawLevel(Level & current, sf::RenderWindow& window);
+  int initGraphics();
+  void drawLevel(Level & current, sf::RenderWindow & window);
 
 private:
 

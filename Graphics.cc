@@ -8,21 +8,20 @@
 
 using namespace std;
 
-void Graphics::initGraphics()
+//---------INITGRAPHICS--------------//
+int Graphics::initGraphics()
 {
 	// Inläsning av texturer
 	if (!spriteSheet_background.loadFromFile("Sprites/Tiles.png"))
 	{
 		cerr << "Kunde inte ladda backgrounds sprites" << endl;
-		// Fixa felhantering! 
-		// return 1;
+		return 1;
 	}
 
 	if (!spriteSheet_player.loadFromFile("Sprites/Tomato_spritesheet.png")) 
 	{
 		cerr << "Kunde inte ladda players sprite" << endl;
-		// Fixa felhantering! 
-		//return 1;
+		return 1;
 	}
 
 	// Inläsning av sprites
@@ -75,6 +74,7 @@ void Graphics::initGraphics()
 	}
 } 
 
+//---------DRAWLEVEL--------------//
 void Graphics::drawLevel(Level & current, sf::RenderWindow& window)
 {
 	vector<DrawableElement*> levelVec(current.getLevelDrawableLayout());
@@ -121,13 +121,15 @@ void Graphics::drawLevel(Level & current, sf::RenderWindow& window)
 	sf::Vector2f sprite_position = player->getAnimation();
 	if (player->getDeath() == true)
 	{
-		player_sprite.setTextureRect(sf::IntRect(deathCounter*32, sprite_position.y, TILESIZE, TILESIZE));
+		player_sprite.setTextureRect(
+			sf::IntRect(deathCounter*32, sprite_position.y, TILESIZE, TILESIZE));
 		deathCounter++;
 		if (deathCounter > 5)
 			deathCounter = 0;
 	}
 	else
-		player_sprite.setTextureRect(sf::IntRect(sprite_position.x, sprite_position.y, TILESIZE, TILESIZE));
+		player_sprite.setTextureRect(
+			sf::IntRect(sprite_position.x, sprite_position.y, TILESIZE, TILESIZE));
 
 	player_sprite.setPosition(tempPos.x, tempPos.y);
 	if (player->getFacingRight() == false)
