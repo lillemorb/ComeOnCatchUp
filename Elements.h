@@ -10,11 +10,11 @@ class DrawableElement
 public:
 DrawableElement(const std::string & elementID) : elementID_{elementID} {};
   virtual ~DrawableElement() = 0;
-	std::string getElementID() const { return elementID_; }
+  std::string getElementID() const { return elementID_; }
   sf::Vector2f getPosition() const { return rectangle_.getPosition(); }
 
 protected:
-	std::string elementID_{};
+  std::string elementID_{};
   sf::RectangleShape rectangle_;
 };
 
@@ -65,14 +65,14 @@ public:
 
   //Funktioner unika för Player
   float getGravity() const { return gravity_; }
-  void setFacingRight( bool facingRight ) { facingRight_ = facingRight; }
   bool getFacingRight() const { return facingRight_; }
-  void resetCurrentSprite(){ currentSprite_.x = 0; }
+  void setFacingRight( bool facingRight ) { facingRight_ = facingRight; }
   sf::Vector2f getCurrentSprite() const { return currentSprite_; }
+  void resetCurrentSprite(){ currentSprite_.x = 0; }
   void setJump( bool jump ) { jump_ = jump; }
   void setFalling( bool falling ) { falling_ = falling; }
-  void setDeath( bool death ) { death_ = death; }
   bool getDeath() const { return death_; }
+  void setDeath( bool death ) { death_ = death; }
   bool getJumpAllowed() const { return jumpAllowed_; }
   void setJumpAllowed( bool jumpAllowed ) { jumpAllowed_ = jumpAllowed; }
   void setWalk( bool walk ) { walk_ = walk; }
@@ -106,8 +106,8 @@ public:
   void setPosition(const sf::Vector2f & pos) override { rectangle_.setPosition(pos.x, pos.y); }
   void move(const sf::Vector2f & offset) override { rectangle_.move(offset); }
 
-  void setBelowWindow( bool out ) override { belowWindow_=out; }
   bool getBelowWindow() const override { return belowWindow_; }
+  void setBelowWindow( bool out ) override { belowWindow_=out; }
 
 private:
   bool belowWindow_{false};

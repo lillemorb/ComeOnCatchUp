@@ -4,7 +4,7 @@
 #include <iostream>
 
 using namespace std;
-
+//Anna: Varför ligger dessa destuktorer här, när övriga ligger i .h-filen?
 //---------DRAWABLE--------------//
 DrawableElement::~DrawableElement() = default;
 
@@ -19,7 +19,7 @@ Player::Player(int TILESIZE, float x, float y)
 	rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
 }
 
-// Returnerar en mindre bounding box för player än tilesize
+//Returns a smaller bounding box for player then tilesize
 sf::FloatRect Player::getGlobalBounds() const {
 	sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
 	sf::FloatRect smallerBounds(largeBounds.left+4.0, largeBounds.top,
@@ -95,11 +95,10 @@ Door::Door(int TILESIZE, int x, int y)
 	rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
 }
 
-// returnerar liten bounding box så att man ser Player "gå in i" dörren
+//returns a small bounding box so that you can see Player "entering" the door
 sf::FloatRect Door::getGlobalBounds() const {
 	sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
-	sf::FloatRect smallerBounds(largeBounds.left+15.0, largeBounds.top+26.0,
-															largeBounds.width-30.0, largeBounds.height-26.0);
+	sf::FloatRect smallerBounds(largeBounds.left+15.0, largeBounds.top+26.0,						largeBounds.width-30.0, largeBounds.height-26.0);
 	return smallerBounds;
 }
 

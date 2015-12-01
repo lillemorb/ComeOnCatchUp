@@ -29,7 +29,8 @@ int Game::run()
 	sf::RenderWindow window(sf::VideoMode(xPix_, yPix_), "Come on, catch up!", 
 													sf::Style::Titlebar | sf::Style::Close);
 	//Skicka pixelvärden till logic så den vet hur stort fönstret är
-	logic_.setPix(xPix_, yPix_);
+	//Anna:flyttat till konstruktorn
+	//logic_.setPix(xPix_, yPix_);
  
 	window.setVerticalSyncEnabled(true);
 	graphics_.initGraphics();

@@ -13,6 +13,9 @@
 class Game
 {
 public:
+  //Anna ev bara en konstruktor med x=768 osv?
+  Game (){logic_.setPix(xPix_, yPix_);};
+  Game (int x, int y): xPix_{x}, yPix_{y} {logic_.setPix(xPix_, yPix_);};
   ~Game() { delete currLevelPtr_; }
   
 	//Lillemor: när behövs den här, varför är den public?

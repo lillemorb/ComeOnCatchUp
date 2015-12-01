@@ -21,8 +21,8 @@ public:
 											GameSounds & gamesounds);
 
 private:
-  int xPix_{768};
-  int yPix_{576};
+  int xPix_{};
+  int yPix_{};
   int at{0};
   const float gravityBalance {15000.0};
 
