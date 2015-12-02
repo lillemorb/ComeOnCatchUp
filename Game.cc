@@ -36,6 +36,7 @@ int Game::run()
 	graphics_.initGraphics();
 	GameSounds gamesounds;
 	gamesounds.loadSounds();
+	gamesounds.startBackgroundMusic();
 
 	// För över Level.txt till vektorn curLevel.
 	ifstream is("Level.txt");

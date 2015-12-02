@@ -179,10 +179,18 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 		{
 			if(levelVec.at(i)->getElementID() == "Door")
 			{
-				//0.5 s delay
-				while(dt.asSeconds() < 0.5)
-					dt = clock.getElapsedTime();
-				result = LevelCompleted;
+			  gamesounds.pauseBackgroundMusic();
+			  gamesounds.getLevelClearedSound();
+			  //0.5 s delay
+/*
+			  while(dt.asSeconds() < 0.7)
+			    dt = clock.getElapsedTime();
+*/
+			  //Delay the duration of level cleared sound
+			  while(gamesounds.isLevelClearedSoundPlaying())
+			  { }
+			  result = LevelCompleted;
+			  gamesounds.startBackgroundMusic();
 			}
 			else if(dynamic_cast<Ground*>(levelVec.at(i)))
 			{
