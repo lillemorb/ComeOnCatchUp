@@ -18,13 +18,13 @@ public:
   Game (int x, int y): xPix_{x}, yPix_{y} {logic_.setPix(xPix_, yPix_);};
   ~Game() { delete currLevelPtr_; }
   
-	//Lillemor: när behövs den här, varför är den public?
+  //Lillemor: när behövs den här, varför är den public?
   int deathCounter{0};
 
   int run();
   void menu(const std::vector<int> & lvl);
-	void delayTime();
-	void load_level(const std::vector<int> & lvl, int current_level);
+  void delayTime();
+  void load_level(const std::vector<int> & lvl, int current_level);
 
 private:
 

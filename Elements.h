@@ -26,7 +26,7 @@ PhysicalElement(const std::string & elementID): DrawableElement(elementID){}
   virtual ~PhysicalElement() = 0;
  
   struct CollisionBorders
-	{ bool left{true}; bool right{true}; bool up{true}; bool down{true}; };
+  { bool left{true}; bool right{true}; bool up{true}; bool down{true}; };
 
   //Implementeras här men ärvande klasser kan implementera egen variant
   virtual void setVelocity(const sf::Vector2f & vel){ velocity_ = sf::Vector2f(0,gravity_); }
@@ -119,7 +119,7 @@ class Ground : public PhysicalElement
 public:
   
   Ground(int TILESIZE, int x, int y, const std::string & elementID,
-				 const CollisionBorders & collisionBorders);
+	 const CollisionBorders & collisionBorders);
   ~Ground() = default;
 };
 
