@@ -95,3 +95,7 @@ void GameSounds::resumeBackgroundMusic()
     music_.play();
 }
 
+bool GameSounds::isBackgroundMusicPlaying()
+{
+  return music_.getStatus() == sf::SoundSource::Playing;
+}  

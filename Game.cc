@@ -144,20 +144,24 @@ int Game::run()
 	  sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
       {
 	// "close requested" event: we close the window
+	cerr << "Exit!!" << endl;
 	window.close();
       }
-      /*
-      // Rasmus: Eventuellt för senare bruk, Lillemor: gärna inte spela musik/hantera knapptryckningar
-      // när spelet inte är i fokus
+      //Lillemor: påbörjat paus-läge, spelar inte musik,
+      //hanterar inte knapptryckningar när spelet inte är i fokus
       else if (event.type == sf::Event::LostFocus)
       {
-      GameState = Pause;
+	cout << "Paus" << endl;
+	gamestate_ = Pause;	
       }
       else if (event.type == sf::Event::GainedFocus)
       {
-      GameState = Playing;
+	//TODO Lillemor: Nej, återgå till tidigare gamestate_,
+	//om man var i menyn när fokus förloras blir det playing nu
+	cout << "Tillbaka från paus" << endl;
+	gamestate_ = Playing;
       }
-      */
+
       if (gamestate_ == Playing)
       {
 	if (event.type == sf::Event::KeyPressed && 
@@ -185,8 +189,18 @@ int Game::run()
     window.clear(sf::Color(200, 255, 255, 255));
     if (gamestate_ == Playing)
     {
+      //if music not playing (paused), play
+      if(!gamesounds.isBackgroundMusicPlaying())
+	gamesounds.resumeBackgroundMusic();
       // update logic
       actionResult_ = logic_.update((*currLevelPtr_), action, move, gamesounds);
+      // draw
+      graphics_.drawLevel((*currLevelPtr_), window);
+    }
+    else if (gamestate_ == Pause)
+    {
+      //pause music
+      gamesounds.pauseBackgroundMusic();
       // draw
       graphics_.drawLevel((*currLevelPtr_), window);
     }
