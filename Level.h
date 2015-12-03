@@ -14,6 +14,9 @@ public:
   std::vector<PhysicalElement*> & getLevelPhysicalLayout(){ return physicalElementVector_; }
 
 private:
+  Level(const Level&) = delete;
+  Level& operator=(const Level&) = delete;
+
   Player* playerPtr_{};
   Door* doorPtr_{};
   std::vector<Block*> blockPtrVector_{};

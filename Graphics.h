@@ -10,6 +10,7 @@ class Graphics
 {
 public:
   Graphics() { initGraphics(); }
+  ~Graphics() = default;
 
   void drawMenu(int posY, sf::RenderWindow & window);
   void drawLevel(Level & current, sf::RenderWindow & window);
@@ -18,6 +19,8 @@ public:
   int getDeathCounter() { return deathCounter; }
 
 private:
+  Graphics(const Graphics&) = delete;
+  Graphics& operator=(const Graphics&) = delete;
 
   const int TILESIZE{32};
   int deathCounter{0};

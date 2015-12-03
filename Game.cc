@@ -23,7 +23,6 @@ int Game::run()
  
   window.setVerticalSyncEnabled(true);
   GameSounds gamesounds;
-  gamesounds.loadSounds();
   gamesounds.startBackgroundMusic();
 
   // För över Level.txt till vektorn curLevel.
