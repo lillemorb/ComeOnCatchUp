@@ -12,7 +12,9 @@ public:
   Graphics() { initGraphics(); }
   ~Graphics() = default;
 
-  void drawMenu(int posY, sf::RenderWindow & window);
+  enum CurrentMenu{MainMenu, VictoryMenu, LevelMenu};
+
+  void drawMenu(int posY, sf::RenderWindow & window, CurrentMenu currentMenu);
   void drawLevel(Level & current, sf::RenderWindow & window);
 
   void setDeathCounter(int value) { deathCounter = value; }
@@ -30,10 +32,14 @@ private:
   sf::Sprite goal_sprite;
   sf::Sprite player_sprite;
   std::map<int, sf::Sprite> ground_sprite;
+  sf::Sprite token_sprite;
   sf::Sprite menu_sprite;
+  sf::Sprite victory_sprite;
   sf::Texture spriteSheet_background;
   sf::Texture spriteSheet_player;
+  sf::Texture spriteSheet_token;
   sf::Texture spriteSheet_menu;
+  sf::Texture spriteSheet_victory;
 
   int initGraphics();
 };

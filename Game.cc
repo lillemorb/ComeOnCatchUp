@@ -60,7 +60,7 @@ int Game::run()
     { 
       menu_row_count = 3;
       current_menu_row = 1;
-      currentmenu_ = VictoryMenu;
+      currentmenu_ = Graphics::VictoryMenu;
       menu_player_pos = 300;
       gamestate_ = VictoryScreen;
     }
@@ -91,9 +91,9 @@ int Game::run()
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
       {
 	menu_row_count = 3;
-	currentmenu_ = MainMenu;
+	currentmenu_ = Graphics::MainMenu;
 	current_menu_row = 1;
-	menu_player_pos = 300;
+	menu_player_pos = token_pos_menu_;
 	gamestate_ = Menu;
       }
 
@@ -194,7 +194,7 @@ int Game::run()
     else if (gamestate_ == Menu || gamestate_ == VictoryScreen
 	     || gamestate_ == LevelSel)
     {
-      graphics_.drawMenu(menu_player_pos, window);
+      graphics_.drawMenu(menu_player_pos, window, currentmenu_);
     }
     // end the current frame
     window.display();	  
@@ -209,11 +209,11 @@ void Game::menu(const vector<int> & lvl)
   // ner och enter för att avsluta"
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && current_menu_row > 1)
   {
-    if (currentmenu_ == MainMenu)
-      menu_player_pos = menu_player_pos - 75; 
-    else if (currentmenu_ == VictoryMenu)
-      menu_player_pos = menu_player_pos - 75;
-    else if (currentmenu_ == LevelMenu) 
+    if (currentmenu_ == Graphics::MainMenu)
+      menu_player_pos = menu_player_pos - 82; 
+    else if (currentmenu_ == Graphics::VictoryMenu)
+      menu_player_pos = menu_player_pos - 82;
+    else if (currentmenu_ == Graphics::LevelMenu) 
       menu_player_pos = menu_player_pos - 50;
     delayTime();
     current_menu_row = current_menu_row - 1;
@@ -221,18 +221,18 @@ void Game::menu(const vector<int> & lvl)
 		  
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && current_menu_row < menu_row_count)
   { 	
-    if (currentmenu_ == MainMenu)
-      menu_player_pos = menu_player_pos + 75; 
-    else if (currentmenu_ == VictoryMenu)
-      menu_player_pos = menu_player_pos + 75;
-    else if (currentmenu_ == LevelMenu) 
+    if (currentmenu_ == Graphics::MainMenu)
+      menu_player_pos = menu_player_pos + 82; 
+    else if (currentmenu_ == Graphics::VictoryMenu)
+      menu_player_pos = menu_player_pos + 82;
+    else if (currentmenu_ == Graphics::LevelMenu) 
       menu_player_pos = menu_player_pos + 50;
     delayTime();
     current_menu_row = current_menu_row + 1;
   }
 
   // Main menu
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && currentmenu_ == MainMenu)
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && currentmenu_ == Graphics::MainMenu)
   {
 
     switch (current_menu_row)
@@ -245,9 +245,9 @@ void Game::menu(const vector<int> & lvl)
 	}
       gamestate_ = Playing;	     
     case 2:
-      menu_player_pos = 200;
+      menu_player_pos = token_pos_level_;
       current_menu_row = 1; 
-      currentmenu_ = LevelMenu;
+      currentmenu_ = Graphics::LevelMenu;
       menu_row_count = 5;
       delayTime();
       break;
@@ -258,17 +258,18 @@ void Game::menu(const vector<int> & lvl)
   }
 
   // Victory_screen
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && currentmenu_ == VictoryMenu)
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && currentmenu_ == Graphics::VictoryMenu)
   {
     switch (current_menu_row)
     {
     case 1:
       current_level = 1;
       load_level(lvl, current_level);
+      // Rasmus: Osäker på om man kommer hit
     case 2:
-      menu_player_pos = 200;
+      menu_player_pos = token_pos_menu_;
       current_menu_row = 1; 
-      currentmenu_ = MainMenu;
+      currentmenu_ = Graphics::MainMenu;
       menu_row_count = 3;
       delayTime();
     case 4:
@@ -277,15 +278,15 @@ void Game::menu(const vector<int> & lvl)
     }
   } 
   // Level menu
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && currentmenu_ == LevelMenu)
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && currentmenu_ == Graphics::LevelMenu)
   {	
 
     switch (current_menu_row)
     {
     case 1:
-      menu_player_pos = 300;
+      menu_player_pos = token_pos_menu_;
       current_menu_row = 1; 
-      currentmenu_ = MainMenu;
+      currentmenu_ = Graphics::MainMenu;
       menu_row_count = 3;
       delayTime();
     case 2:

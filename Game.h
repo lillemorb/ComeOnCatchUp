@@ -35,9 +35,8 @@ private:
   unsigned int menu_player_pos{};
   int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
   enum GameState{Playing, Dead, VictoryScreen, Pause, LevelSel, Menu, Exit};
-  enum CurrentMenu{MainMenu, VictoryMenu, LevelMenu};
   GameState gamestate_{Playing};
-  CurrentMenu currentmenu_{};
+  Graphics::CurrentMenu currentmenu_= Graphics::MainMenu;
   Logic::ActionResult actionResult_= Logic::Continue;
   Level* currLevelPtr_{};
   Logic logic_;
@@ -46,6 +45,9 @@ private:
   int yPix_{576};
   bool jumping_{false};
   sf::Clock clock;
+  int token_pos_menu_{190};
+  int token_pos_victory_{180};
+  int token_pos_level_{200};
 };
 
 #endif

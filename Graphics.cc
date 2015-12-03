@@ -26,9 +26,23 @@ int Graphics::initGraphics()
     return 1;
   }
 
-  if (!spriteSheet_menu.loadFromFile("Sprites/Tomato.png")) 
+  if (!spriteSheet_token.loadFromFile("Sprites/Tomato.png")) 
   {
-    cerr << "Kunde inte ladda menu sprite" << endl;
+    cerr << "Kunde inte ladda token sprite" << endl;
+    //Felhantering
+    return 1;
+  }
+
+  if (!spriteSheet_menu.loadFromFile("Sprites/Menu.png")) 
+  {
+    cerr << "Kunde inte ladda Menu sprite" << endl;
+    //Felhantering
+    return 1;
+  }
+
+  if (!spriteSheet_victory.loadFromFile("Sprites/Victory.png")) 
+  {
+    cerr << "Kunde inte ladda Victory sprite" << endl;
     //Felhantering
     return 1;
   }
@@ -46,9 +60,15 @@ int Graphics::initGraphics()
   // goal_sprite
   goal_sprite.setTexture(spriteSheet_background);
   goal_sprite.setTextureRect(sf::IntRect(96, 32, TILESIZE, TILESIZE));
+  // token_sprite
+  token_sprite.setTexture(spriteSheet_token);
+  token_sprite.setTextureRect(sf::IntRect(96, 0, 32, 32));
   // menu_sprite
   menu_sprite.setTexture(spriteSheet_menu);
-  menu_sprite.setTextureRect(sf::IntRect(96, 0, 32, 32));
+  menu_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
+  // victory_sprite
+  victory_sprite.setTexture(spriteSheet_victory);
+  victory_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
   // player_sprite
   player_sprite.setTexture(spriteSheet_player);
 
@@ -86,11 +106,22 @@ int Graphics::initGraphics()
   }
 } 
 
-//---------DRAWLEVEL--------------//
-void Graphics::drawMenu(int posY, sf::RenderWindow& window)
+//---------DRAWMENU--------------//
+void Graphics::drawMenu(int posY, sf::RenderWindow& window, CurrentMenu currentMenu)
 {
-  menu_sprite.setPosition(sf::Vector2f(200, posY));
-  window.draw(menu_sprite);
+  token_sprite.setPosition(sf::Vector2f(200, posY));
+  if(currentMenu == MainMenu)
+    {
+      window.draw(menu_sprite);
+    }
+  else if(currentMenu == VictoryMenu)
+    {
+      window.draw(victory_sprite);
+    }
+  else if(currentMenu == LevelMenu)
+    {
+    }
+  window.draw(token_sprite);
 }
 
 //---------DRAWLEVEL--------------//
