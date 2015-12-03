@@ -26,6 +26,13 @@ int Graphics::initGraphics()
     return 1;
   }
 
+  if (!spriteSheet_menu.loadFromFile("Sprites/Tomato.png")) 
+  {
+    cerr << "Kunde inte ladda menu sprite" << endl;
+    //Felhantering
+    return 1;
+  }
+
   // Inläsning av sprites
   // door_sprite
   door_sprite.setTexture(spriteSheet_background);
@@ -39,6 +46,9 @@ int Graphics::initGraphics()
   // goal_sprite
   goal_sprite.setTexture(spriteSheet_background);
   goal_sprite.setTextureRect(sf::IntRect(96, 32, TILESIZE, TILESIZE));
+  // menu_sprite
+  menu_sprite.setTexture(spriteSheet_menu);
+  menu_sprite.setTextureRect(sf::IntRect(96, 0, 32, 32));
   // player_sprite
   player_sprite.setTexture(spriteSheet_player);
 
@@ -75,6 +85,13 @@ int Graphics::initGraphics()
     ++groundValue;
   }
 } 
+
+//---------DRAWLEVEL--------------//
+void Graphics::drawMenu(int posY, sf::RenderWindow& window)
+{
+  menu_sprite.setPosition(sf::Vector2f(200, posY));
+  window.draw(menu_sprite);
+}
 
 //---------DRAWLEVEL--------------//
 void Graphics::drawLevel(Level & current, sf::RenderWindow& window)
@@ -117,17 +134,14 @@ void Graphics::drawLevel(Level & current, sf::RenderWindow& window)
   }
 
   // Utritning av Player
-    
+
   sf::Vector2f tempPos = levelVec.at(0)->getPosition();
   Player* player{dynamic_cast<Player*>(levelVec.at(0))};
   sf::Vector2f sprite_position = player->getAnimation();
   if (player->getDeath() == true)
   {
-    player_sprite.setTextureRect(
-      sf::IntRect(deathCounter*32, sprite_position.y, TILESIZE, TILESIZE));
-    deathCounter++;
-    if (deathCounter > 5)
-      deathCounter = 0;
+    player_sprite.setTextureRect(sf::IntRect(getDeathCounter()*32, sprite_position.y, TILESIZE, TILESIZE));
+    setDeathCounter(getDeathCounter()+1);
   }
   else
     player_sprite.setTextureRect(

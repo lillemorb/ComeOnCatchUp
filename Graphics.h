@@ -11,7 +11,11 @@ class Graphics
 public:
   Graphics() { initGraphics(); }
 
+  void drawMenu(int posY, sf::RenderWindow & window);
   void drawLevel(Level & current, sf::RenderWindow & window);
+
+  void setDeathCounter(int value) { deathCounter = value; }
+  int getDeathCounter() { return deathCounter; }
 
 private:
 
@@ -23,8 +27,10 @@ private:
   sf::Sprite goal_sprite;
   sf::Sprite player_sprite;
   std::map<int, sf::Sprite> ground_sprite;
+  sf::Sprite menu_sprite;
   sf::Texture spriteSheet_background;
   sf::Texture spriteSheet_player;
+  sf::Texture spriteSheet_menu;
 
   int initGraphics();
 };

@@ -16,9 +16,6 @@ public:
   Game() { logic_.setPix(xPix_, yPix_); }
   ~Game() { delete currLevelPtr_; }
 
-  //Lillemor: skriv en set och get för denna och gör den privat
-  int deathCounter{0};
-
   int run();
   void menu(const std::vector<int> & lvl);
   void delayTime();
@@ -30,13 +27,15 @@ private:
   const int TILES_PER_ROW{24};
   const int TILES_PER_COLUMN{18};
   unsigned int current_level{1};
-  unsigned int current_menu{1};
   unsigned int current_menu_row{1};
-  unsigned int menu_row{3};
-  unsigned int menu_player_pos{500};
+  // Number of rows for the specifik menu
+  unsigned int menu_row_count{3};
+  unsigned int menu_player_pos{};
   int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
-  enum GameState{Playing, Dead, VictoryScreen, Pause, LevelSel, Menu, Exit}; 
+  enum GameState{Playing, Dead, VictoryScreen, Pause, LevelSel, Menu, Exit};
+  enum CurrentMenu{MainMenu, VictoryMenu, LevelMenu};
   GameState gamestate_{Playing};
+  CurrentMenu currentmenu_{};
   Logic::ActionResult actionResult_= Logic::Continue;
   Level* currLevelPtr_{};
   Logic logic_;
@@ -45,7 +44,6 @@ private:
   int yPix_{576};
   bool jumping_{false};
   sf::Clock clock;
-
 };
 
 #endif
