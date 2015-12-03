@@ -25,6 +25,8 @@ public:
   void load_level(const std::vector<int> & lvl, int current_level);
 
 private:
+  Game(const Game&) = delete;
+  Game& operator=(const Game&) = delete;
 
   const int TILESIZE{32};
   const int TILES_PER_ROW{24};

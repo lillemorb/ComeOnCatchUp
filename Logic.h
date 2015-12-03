@@ -10,6 +10,7 @@ class Logic
 {
 public:
   Logic() = default;
+  ~Logic() = default;
 
   enum ActionResult { LevelCompleted, Dead, Reset, Continue };
   enum Move { Left, Right, Idle };
@@ -21,6 +22,11 @@ public:
 		      GameSounds & gamesounds);
 
 private:
+  Logic(const Logic&) = delete;
+  Logic(Logic&&) = delete;
+  Logic& operator=(const Logic&) = delete;
+  Logic& operator=(Logic&&) = delete;
+
   int xPix_{};
   int yPix_{};
   int at{0};

@@ -10,10 +10,13 @@ class Graphics
 {
 public:
   Graphics() { initGraphics(); }
+  ~Graphics() = default;
 
   void drawLevel(Level & current, sf::RenderWindow & window);
 
 private:
+  Graphics(const Graphics&) = delete;
+  Graphics& operator=(const Graphics&) = delete;
 
   const int TILESIZE{32};
   int deathCounter{0};

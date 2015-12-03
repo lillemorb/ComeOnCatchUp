@@ -6,12 +6,9 @@
 class GameSounds
 {
 public:
-
-  //Lillemor: Initiera variabler i konstruktor? Se .cc-filen
-  GameSounds() = default;
+  GameSounds() { loadSounds(); }
   ~GameSounds() = default;
 
-  void loadSounds(); 
   void getDeathSound() { death_sound_.play(); }
   void getJumpSound() { jump_sound_.play(); }
   void getBoxSound();
@@ -22,6 +19,11 @@ public:
   void resumeBackgroundMusic();
   
 private:
+  GameSounds(const GameSounds&) = delete;
+  GameSounds& operator=(const GameSounds&) = delete;
+
+  void loadSounds(); 
+
   sf::SoundBuffer death_soundBuffer_;
   sf::SoundBuffer jump_soundBuffer_;
   sf::SoundBuffer box_soundBuffer_;
