@@ -16,24 +16,19 @@ int Game::run()
   Logic::Action action{Logic::JumpReleased};
   Logic::Move move{Logic::Idle};    
 
-
-  // ska nog fixas på annat ställe
+  // Daniel: sprites/textures ska nog fixas på annat ställe
   // Menu sprites and textures
   sf::Sprite menu_sprite;
   sf::Texture spritesheet_menu;
   spritesheet_menu.loadFromFile("Sprites/Tomato.png");
 
 
-  //INITIERING
+  // Init
   // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
   sf::RenderWindow window(sf::VideoMode(xPix_, yPix_), "Come on, catch up!", 
 			  sf::Style::Titlebar | sf::Style::Close);
-  //Skicka pixelvärden till logic så den vet hur stort fönstret är
-  //Anna:flyttat till konstruktorn
-  //logic_.setPix(xPix_, yPix_);
  
   window.setVerticalSyncEnabled(true);
-  graphics_.initGraphics();
   GameSounds gamesounds;
   gamesounds.loadSounds();
   gamesounds.startBackgroundMusic();
@@ -47,6 +42,7 @@ int Game::run()
   }
   istream_iterator<int> start(is), end;
   vector<int> lvl(start, end);
+  // Lillemor: använd load_level
   vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), 
 		       lvl.begin() + vector_size*current_level);
   currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
@@ -104,6 +100,7 @@ int Game::run()
       {
 	load_level(lvl, current_level);
       }
+      //Menu
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
       {
 	menu_row = 3;
@@ -112,25 +109,25 @@ int Game::run()
 	menu_player_pos = 500;
 	gamestate_ = Menu;
       }
-	  
+
+      //Move left	  
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
 	  sf::Keyboard::isKeyPressed(sf::Keyboard::A))
       {
-	//Flytta vänster
 	move = Logic::Left;
       }
+      //Move right
       else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || 
 	       sf::Keyboard::isKeyPressed(sf::Keyboard::D))
       {
-	//Flytta höger
 	move = Logic::Right;
       }
+      //Idle
       else
       {
 	move = Logic::Idle;
       }
     }
-
     else if (gamestate_ == Menu || gamestate_ == VictoryScreen || gamestate_ == LevelSel) 
     {	
       menu(lvl);
@@ -141,11 +138,9 @@ int Game::run()
 
     // check all the window's events that were triggered since the last iteration
     // of the loop
-    // TA IN INPUT
-
+    // INPUT
     while (window.pollEvent(event))
-    {
-	  
+    { 
       if (event.type == sf::Event::Closed || 
 	  sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
       {
@@ -153,7 +148,8 @@ int Game::run()
 	window.close();
       }
       /*
-      // Rasmus: Eventuellt för senare bruk
+      // Rasmus: Eventuellt för senare bruk, Lillemor: gärna inte spela musik/hantera knapptryckningar
+      // när spelet inte är i fokus
       else if (event.type == sf::Event::LostFocus)
       {
       GameState = Pause;
@@ -190,9 +186,9 @@ int Game::run()
     window.clear(sf::Color(200, 255, 255, 255));
     if (gamestate_ == Playing)
     {
-      // UPPDATERA LOGIC
+      // update logic
       actionResult_ = logic_.update((*currLevelPtr_), action, move, gamesounds);
-      // RITA
+      // draw
       graphics_.drawLevel((*currLevelPtr_), window);
     }
     else if (gamestate_ == Dead)

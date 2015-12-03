@@ -15,12 +15,14 @@ int Graphics::initGraphics()
   if (!spriteSheet_background.loadFromFile("Sprites/Tiles.png"))
   {
     cerr << "Kunde inte ladda backgrounds sprites" << endl;
+    //Felhantering
     return 1;
   }
 
   if (!spriteSheet_player.loadFromFile("Sprites/Tomato_spritesheet.png")) 
   {
     cerr << "Kunde inte ladda players sprite" << endl;
+    //Felhantering
     return 1;
   }
 

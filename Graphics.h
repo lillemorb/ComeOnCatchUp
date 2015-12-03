@@ -9,8 +9,8 @@
 class Graphics
 {
 public:
-  
-  int initGraphics();
+  Graphics() { initGraphics(); }
+
   void drawLevel(Level & current, sf::RenderWindow & window);
 
 private:
@@ -25,5 +25,7 @@ private:
   std::map<int, sf::Sprite> ground_sprite;
   sf::Texture spriteSheet_background;
   sf::Texture spriteSheet_player;
+
+  int initGraphics();
 };
 #endif

@@ -8,7 +8,7 @@ SFMLLIBS = -lsfml-system -lsfml-audio -lsfml-graphics -lsfml-window
 
 # 'make' kör detta, bygger hela programmet
 all: Project.cc Elements.o Game.o GameSounds.o Graphics.o Level.o Logic.o 
-	$(CCC) $(CCFLAGS) $(FILES) -o project $(OBJECTS) $(SFMLLIBS)
+	$(CCC) $(CCFLAGS) $(FILES) -o comeoncatchup $(OBJECTS) $(SFMLLIBS)
 
 Elements.o: Elements.h Elements.cc
 	$(CCC) $(CCFLAGS) -c Elements.cc -o Elements.o

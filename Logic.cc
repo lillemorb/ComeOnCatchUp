@@ -124,6 +124,7 @@ Logic::ActionResult Logic::update(
 	float y = velYBlock*(dt.asMicroseconds()/gravityBalance);
 	if (y > 14)
 	  y = 14;
+	//Fixa så att x-förflyttning är relaterat till tid
 	levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x, y));  
 	levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
 	  
@@ -181,11 +182,7 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
       {
 	gamesounds.pauseBackgroundMusic();
 	gamesounds.getLevelClearedSound();
-	//0.5 s delay
-/*
-  while(dt.asSeconds() < 0.7)
-  dt = clock.getElapsedTime();
-*/
+
 	//Delay the duration of level cleared sound
 	while(gamesounds.isLevelClearedSoundPlaying())
 	{ }

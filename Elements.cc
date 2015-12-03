@@ -4,11 +4,6 @@
 #include <iostream>
 
 using namespace std;
-//Anna: Varför ligger dessa destuktorer här, när övriga ligger i .h-filen?
-//Lillemors svar: Därför att destruktorerna är nu de enda pure virtual-funktionerna
-//i dessa två klasser, vilket behövs för att göra dem abstrakta. Eftersom det nedan
-//är definitioner så ligger de i .cc-filen. De skulle kanske kunna ligga utanför
-//klassdeklarationen i .h-filen, men det känns lite inkonsekvent.
 //---------DRAWABLE--------------//
 DrawableElement::~DrawableElement() = default;
 

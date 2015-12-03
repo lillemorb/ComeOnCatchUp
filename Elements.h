@@ -29,6 +29,8 @@ PhysicalElement(const std::string & elementID): DrawableElement(elementID){}
   { bool left{true}; bool right{true}; bool up{true}; bool down{true}; };
 
   //Implementeras här men ärvande klasser kan implementera egen variant
+  // Anna o Lillemor: skriv vilka klasser som har egna implementationer för
+  // respektive funktion
   virtual void setVelocity(const sf::Vector2f & vel){ velocity_ = sf::Vector2f(0,gravity_); }
   virtual void setPosition(const sf::Vector2f & pos) {}
   virtual void move(const sf::Vector2f & offset) {} 
