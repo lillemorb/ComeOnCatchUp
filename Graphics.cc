@@ -47,6 +47,13 @@ int Graphics::initGraphics()
     return 1;
   }
 
+  if (!spriteSheet_paused.loadFromFile("Sprites/Paused.png")) 
+  {
+    cerr << "Kunde inte ladda sprite: \"Sprites/Paused.png\"." << endl;
+    //Felhantering
+    return 1;
+  }
+
   // Inläsning av sprites
   // door_sprite
   door_sprite.setTexture(spriteSheet_background);
@@ -69,6 +76,9 @@ int Graphics::initGraphics()
   // victory_sprite
   victory_sprite.setTexture(spriteSheet_victory);
   victory_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
+  // paused_sprite
+  paused_sprite.setTexture(spriteSheet_paused);
+  paused_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
   // player_sprite
   player_sprite.setTexture(spriteSheet_player);
 

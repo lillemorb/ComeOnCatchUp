@@ -39,6 +39,13 @@ void GameSounds::loadSounds()
     // return 1;
   }
 
+  if (!pause_soundBuffer_.loadFromFile("Sounds/Pause.wav"))
+  {
+    cerr << "Kunde inte ladda \"Sounds/Pause.wav\"." << endl;
+    // Fixa felhantering
+    // return 1;
+  }
+
   if(!music_.openFromFile("Sounds/background_music.wav"))
   {
     cerr << "Kunde inte ladda \"Sounds/background_music.wav\"." 
@@ -55,6 +62,7 @@ void GameSounds::loadSounds()
   jump_sound_.setBuffer(jump_soundBuffer_);
   box_sound_.setBuffer(box_soundBuffer_);
   levelCleared_sound_.setBuffer(levelCleared_soundBuffer_);
+  pause_sound_.setBuffer(pause_soundBuffer_);
 }
 
 void GameSounds::getBoxSound() 
@@ -72,6 +80,11 @@ bool GameSounds::isLevelClearedSoundPlaying()
 {
   return levelCleared_sound_.getStatus() == sf::SoundSource::Playing;
 }  
+
+bool GameSounds::isPauseSoundPlaying()
+{
+  return pause_sound_.getStatus() == sf::SoundSource::Playing;
+}
 
 void GameSounds::startBackgroundMusic()
 {

@@ -96,7 +96,6 @@ int Game::run()
 	menu_player_pos = token_pos_menu_;
 	gamestate_ = Menu;
       }
-
       //Move left	  
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || 
 	  sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -128,31 +127,37 @@ int Game::run()
     // INPUT
     while (window.pollEvent(event))
     { 
+      // "close requested" event: we close the window
       if (event.type == sf::Event::Closed || 
 	  sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
       {
-	// "close requested" event: we close the window
-	cerr << "Exit!!" << endl;
 	window.close();
       }
-      //Lillemor: påbörjat paus-läge, spelar inte musik,
-      //hanterar inte knapptryckningar när spelet inte är i fokus
+      // Pause when moving focus from window 
       else if (event.type == sf::Event::LostFocus)
       {
-	cout << "Paus" << endl;
 	oldgamestate_ = gamestate_;
 	gamestate_ = Pause;
       }
+      // Continue (from pause) when moving focus to window
       else if (event.type == sf::Event::GainedFocus)
       {
-	//TODO Lillemor: Nej, återgå till tidigare gamestate_,
-	//om man var i menyn när fokus förloras blir det playing nu
-	//Rasmus: Jag löste det åt dig! Nu saknas bara en pausskärm
-	//och att man kan pausa med P-knappen (lätt att fixa, men blir senare).
-	cout << "Tillbaka från paus" << endl;
 	gamestate_ = oldgamestate_;
       }
-
+      // Pause/continue with 'P'-key
+      else if (event.type == sf::Event::KeyReleased && 
+	       (event.key.code == sf::Keyboard::P)) 
+      {
+	if(gamestate_ != Pause)
+	{
+	  oldgamestate_ = gamestate_;
+	  gamestate_ = Pause;
+	}
+	else
+	{
+	  gamestate_ = oldgamestate_;
+	}
+      }
       if (gamestate_ == Playing)
       {
 	if (event.type == sf::Event::KeyPressed && 
@@ -160,7 +165,7 @@ int Game::run()
 	     (event.key.code == sf::Keyboard::W) || 
 	     (event.key.code == sf::Keyboard::Space)) && jumping_ == false)
 	{ 
-	  //Hoppa
+	  //Jump
 	  jumping_ = true;
 	  action = Logic::Jump;
 	}
@@ -175,14 +180,21 @@ int Game::run()
       }
     }
 
-
     // clear the window with black color
     window.clear(sf::Color(200, 255, 255, 255));
     if (gamestate_ == Playing)
     {
+      //TODO Lillemor: gör ev en funktion av detta (används även nedan ännu en gång)
       //if music not playing (paused), play
       if(!gamesounds.isBackgroundMusicPlaying())
+      {
+	while(gamesounds.isPauseSoundPlaying())
+	{ }
+	gamesounds.getPauseSound();
+	while(gamesounds.isPauseSoundPlaying())
+	{ }
 	gamesounds.resumeBackgroundMusic();
+      }
       // update logic
       actionResult_ = logic_.update((*currLevelPtr_), action, move, gamesounds);
       // draw
@@ -190,10 +202,21 @@ int Game::run()
     }
     else if (gamestate_ == Pause)
     {
-      //pause music
-      gamesounds.pauseBackgroundMusic();
-      // draw
-      graphics_.drawLevel((*currLevelPtr_), window);
+      //Pause music and play pause sound
+      if(gamesounds.isBackgroundMusicPlaying())
+      {
+	gamesounds.pauseBackgroundMusic();
+	gamesounds.getPauseSound();
+      }
+      // Draw
+      if(oldgamestate_ == Playing)
+	graphics_.drawLevel((*currLevelPtr_), window);
+      else if(oldgamestate_ == Menu || oldgamestate_ == VictoryScreen ||
+	      gamestate_ == LevelSel)
+	graphics_.drawMenu(menu_player_pos, window, currentmenu_);
+
+      // Draw 'Paused' over current graphics in window
+      graphics_.drawPaused(window);
     }
     else if (gamestate_ == Dead)
     {
@@ -206,11 +229,19 @@ int Game::run()
       }
     }
     // Drawing menus
-    // Mycket av detta antar jag ska göras på annat ställe men för snabb fix
-    // så gör jag detta här
     else if (gamestate_ == Menu || gamestate_ == VictoryScreen
 	     || gamestate_ == LevelSel)
     {
+      //if music not playing (paused), play 
+      if(!gamesounds.isBackgroundMusicPlaying())
+      {
+	while(gamesounds.isPauseSoundPlaying())
+	{ }
+	gamesounds.getPauseSound();
+	while(gamesounds.isPauseSoundPlaying())
+	{ }
+	gamesounds.resumeBackgroundMusic();
+      }
       graphics_.drawMenu(menu_player_pos, window, currentmenu_);
     }
     // end the current frame

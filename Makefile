@@ -19,7 +19,7 @@ Level.o: Level.h Level.cc Elements.h
 Graphics.o: Graphics.h Graphics.cc Elements.h Level.h
 	$(CCC) $(CCFLAGS) -c Graphics.cc -o Graphics.o
 
-Logic.o: Logic.h Logic.cc Elements.h Level.h
+Logic.o: Logic.h Logic.cc Elements.h Level.h GameSounds.h
 	$(CCC) $(CCFLAGS) -c Logic.cc -o Logic.o
 
 Game.o: Game.h Game.cc Elements.h Level.h Logic.h Graphics.h GameSounds.h
