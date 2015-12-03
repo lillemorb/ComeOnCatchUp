@@ -140,14 +140,17 @@ int Game::run()
       else if (event.type == sf::Event::LostFocus)
       {
 	cout << "Paus" << endl;
-	gamestate_ = Pause;	
+	oldgamestate_ = gamestate_;
+	gamestate_ = Pause;
       }
       else if (event.type == sf::Event::GainedFocus)
       {
 	//TODO Lillemor: Nej, återgå till tidigare gamestate_,
 	//om man var i menyn när fokus förloras blir det playing nu
+	//Rasmus: Jag löste det åt dig! Nu saknas bara en pausskärm
+	//och att man kan pausa med P-knappen (lätt att fixa, men blir senare).
 	cout << "Tillbaka från paus" << endl;
-	gamestate_ = Playing;
+	gamestate_ = oldgamestate_;
       }
 
       if (gamestate_ == Playing)
