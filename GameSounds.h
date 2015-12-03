@@ -17,6 +17,7 @@ public:
   void startBackgroundMusic();
   void pauseBackgroundMusic();
   void resumeBackgroundMusic();
+  bool isBackgroundMusicPlaying();
   
 private:
   GameSounds(const GameSounds&) = delete;
