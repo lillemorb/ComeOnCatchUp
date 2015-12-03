@@ -16,6 +16,10 @@ DrawableElement(const std::string & elementID) : elementID_{elementID} {};
 protected:
   std::string elementID_{};
   sf::RectangleShape rectangle_;
+
+private:
+  DrawableElement(const DrawableElement&) = delete;
+  DrawableElement& operator=(const DrawableElement&) = delete;
 };
 
 //---------PHYSICAL--------------//
@@ -50,6 +54,10 @@ protected:
   float gravity_{0.5f};
   sf::Vector2f velocity_{sf::Vector2f (0,gravity_)};
   bool onGround_{false};
+
+private:
+  PhysicalElement(const PhysicalElement&) = delete;
+  PhysicalElement& operator=(const PhysicalElement&) = delete;
 };
 
 //---------PLAYER--------------//
@@ -82,6 +90,9 @@ public:
   sf::Vector2f getAnimation();
 
 private:
+  Player(const Player&) = delete;
+  Player& operator=(const Player&) = delete;
+
   bool facingRight_{true};
   int spriteNumberWalking_{0};
   int spriteNumberIdle_{0};
@@ -112,6 +123,9 @@ public:
   void setBelowWindow( bool out ) override { belowWindow_=out; }
 
 private:
+  Block(const Block&) = delete;
+  Block& operator=(const Block&) = delete;
+
   bool belowWindow_{false};
 };
 
@@ -123,6 +137,10 @@ public:
   Ground(int TILESIZE, int x, int y, const std::string & elementID,
 	 const CollisionBorders & collisionBorders);
   ~Ground() = default;
+
+private:
+  Ground(const Ground&) = delete;
+  Ground& operator=(const Ground&) = delete;
 };
 
 //---------DOOR--------------//
@@ -134,6 +152,10 @@ public:
   ~Door() = default;
 
   sf::FloatRect getGlobalBounds() const override;
+
+private:
+  Door(const Door&) = delete;
+  Door& operator=(const Door&) = delete;
 };
 
 //---------BACKGROUND--------//
@@ -143,6 +165,10 @@ public:
 
   Background(int TILESIZE, int x, int y, const std::string & elementID);
   ~Background() = default;
+
+private:
+  Background(const Background&) = delete;
+  Background& operator=(const Background&) = delete;
 };
 
 #endif
