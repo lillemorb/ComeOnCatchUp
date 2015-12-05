@@ -58,10 +58,6 @@ int Game::run()
 	     (current_level) >= (lvl.size()/vector_size) &&
 	     gamestate_ == Playing )
     { 
-      menu_row_count = 3;
-      current_menu_row = 1;
-      currentmenu_ = Graphics::VictoryMenu;
-      menu_player_pos = 300;
       gamestate_ = VictoryScreen;
     }
     //Dead
@@ -114,7 +110,7 @@ int Game::run()
 	move = Logic::Idle;
       }
     }
-    else if (gamestate_ == Menu || gamestate_ == VictoryScreen || gamestate_ == LevelSel) 
+    else if (gamestate_ == Menu || gamestate_ == Victory || gamestate_ == LevelSel) 
     {	
       menu(lvl);
       if (gamestate_ == Exit)
@@ -178,6 +174,18 @@ int Game::run()
 	  jumping_ = false;
 	}
       }
+      else if (gamestate_ == VictoryScreen)
+	{
+	if (event.type == sf::Event::KeyReleased && 
+	    (event.key.code == sf::Keyboard::Return))
+	  {
+	    gamestate_ = Victory;
+	    menu_row_count = 3;
+	    current_menu_row = 1;
+	    currentmenu_ = Graphics::VictoryMenu;
+	    menu_player_pos = 300;
+	  }
+	}
     }
 
     // clear the window with black color
@@ -211,9 +219,11 @@ int Game::run()
       // Draw
       if(oldgamestate_ == Playing)
 	graphics_.drawLevel((*currLevelPtr_), window);
-      else if(oldgamestate_ == Menu || oldgamestate_ == VictoryScreen ||
+      else if(oldgamestate_ == Menu || oldgamestate_ == Victory ||
 	      gamestate_ == LevelSel)
 	graphics_.drawMenu(menu_player_pos, window, currentmenu_);
+      else if(oldgamestate_ == VictoryScreen)
+	graphics_.drawVictoryScreen(window);
 
       // Draw 'Paused' over current graphics in window
       graphics_.drawPaused(window);
@@ -228,8 +238,22 @@ int Game::run()
 	actionResult_ = Logic::Continue;
       }
     }
+    // Drawing VictoryScreen
+    else if (gamestate_ == VictoryScreen)
+      {
+	if(!gamesounds.isBackgroundMusicPlaying())
+	  {
+	    while(gamesounds.isPauseSoundPlaying())
+	      { }
+	    gamesounds.getPauseSound();
+	    while(gamesounds.isPauseSoundPlaying())
+	      { }
+	    gamesounds.resumeBackgroundMusic();
+	  }
+	graphics_.drawVictoryScreen(window);
+      }
     // Drawing menus
-    else if (gamestate_ == Menu || gamestate_ == VictoryScreen
+    else if (gamestate_ == Menu || gamestate_ == Victory
 	     || gamestate_ == LevelSel)
     {
       //if music not playing (paused), play 
@@ -286,7 +310,7 @@ void Game::menu(const vector<int> & lvl)
     switch (current_menu_row)
     {
     case 1:
-      if (gamestate_ == VictoryScreen)
+      if (gamestate_ == Victory)
 	{
 	  current_level = 1;
 	  load_level(lvl, current_level);

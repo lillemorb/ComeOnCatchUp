@@ -27,6 +27,7 @@ private:
   Logic& operator=(const Logic&) = delete;
   Logic& operator=(Logic&&) = delete;
 
+  bool trigger{false};
   int xPix_{};
   int yPix_{};
   int at{0};

@@ -34,7 +34,7 @@ private:
   unsigned int menu_row_count{3};
   unsigned int menu_player_pos{};
   int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
-  enum GameState{Playing, Dead, VictoryScreen, Pause, LevelSel, Menu, Exit};
+  enum GameState{Playing, Dead, VictoryScreen, Victory, Pause, LevelSel, Menu, Exit};
   GameState gamestate_{Playing};
   GameState oldgamestate_{Playing};
   Graphics::CurrentMenu currentmenu_= Graphics::MainMenu;

@@ -76,6 +76,26 @@ Level::Level(int TILESIZE, int TILES_PER_ROW, const vector<int> & level_vector)
       backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "Goal"));
       drawableElementVector_.push_back(backgroundPtrVector_.back());
       break;
+    case 32: 
+      backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "Tomato2"));
+      drawableElementVector_.push_back(backgroundPtrVector_.back());
+      break;
+    case 33: 
+      backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "Sign"));
+      drawableElementVector_.push_back(backgroundPtrVector_.back());
+      break;
+    case 34: 
+      backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "KeyboardMove"));
+      drawableElementVector_.push_back(backgroundPtrVector_.back());
+      break;
+    case 35: 
+      backgroundPtrVector_.push_back(new Background(TILESIZE, x, y, "KeyboardJump"));
+      drawableElementVector_.push_back(backgroundPtrVector_.back());
+      break;
+    case 36:
+      triggerPtrVector_.push_back(new Trigger(TILESIZE, x, y));
+      physicalElementVector_.push_back(triggerPtrVector_.back());
+      break;
     default:
       break;
     }
@@ -93,4 +113,6 @@ Level::~Level()
     delete blockPtrVector_.at(i);
   for(unsigned int i{}; i < backgroundPtrVector_.size(); ++i)
     delete backgroundPtrVector_.at(i);
+  for(unsigned int i{}; i < triggerPtrVector_.size(); ++i)
+    delete triggerPtrVector_.at(i);
 }

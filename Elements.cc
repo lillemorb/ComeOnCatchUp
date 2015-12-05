@@ -108,3 +108,11 @@ Background::Background(int TILESIZE, int x, int y, const string & elementID)
   rectangle_.setPosition(x*TILESIZE, y*TILESIZE);
   rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
 }
+
+//---------TRIGGER-----------//
+Trigger::Trigger(int TILESIZE, int x, int y)
+  : PhysicalElement("Trigger")
+{
+  rectangle_.setPosition(x*TILESIZE, y*TILESIZE);
+  rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
+}

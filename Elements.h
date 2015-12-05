@@ -88,6 +88,18 @@ public:
   void setWalk( bool walk ) { walk_ = walk; }
   void setAnimationcycle();
   sf::Vector2f getAnimation();
+  void setStoryAnimation(int x)
+  {
+    if (x == 0)
+      if (storyAnimation_ == 0)
+	storyAnimation_ = 1;
+      else
+	storyAnimation_ = 0;
+    else if (storyAnimation_ < 4)
+      storyAnimation_++;
+  }
+  int getStoryAnimation() { return storyAnimation_; }
+
 
 private:
   Player(const Player&) = delete;
@@ -105,6 +117,7 @@ private:
   bool death_{false};
   bool jumpAllowed_{true};
   int animationcycle_{0};
+  int storyAnimation_{0};
 };
 
 //---------BLOCK--------------//
@@ -169,6 +182,19 @@ public:
 private:
   Background(const Background&) = delete;
   Background& operator=(const Background&) = delete;
+};
+
+//---------TRIGGER-----------//
+class Trigger : public PhysicalElement
+{
+public:
+
+  Trigger(int TILESIZE, int x, int y);
+  ~Trigger() = default;
+
+private:
+  Trigger(const Trigger&) = delete;
+  Trigger& operator=(const Trigger&) = delete;
 };
 
 #endif

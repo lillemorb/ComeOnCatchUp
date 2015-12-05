@@ -22,6 +22,7 @@ private:
   std::vector<Block*> blockPtrVector_{};
   std::vector<Ground*> groundPtrVector_{};
   std::vector<Background*> backgroundPtrVector_{};
+  std::vector<Trigger*> triggerPtrVector_{};
   std::vector<DrawableElement*> drawableElementVector_{};
   std::vector<PhysicalElement*> physicalElementVector_{}; 
 };

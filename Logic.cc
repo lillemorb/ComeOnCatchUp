@@ -27,6 +27,12 @@ Logic::ActionResult Logic::update(
 
   if (at > 200000.0)
   {
+    if (trigger == true)
+      {
+      playerPtr->setStoryAnimation(1);
+      }
+    else
+      playerPtr->setStoryAnimation(0);
     playerPtr->setAnimationcycle();
     at = 0;
   }
@@ -170,6 +176,7 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
     playerPtr->resetCurrentSprite();
     playerPtr->setDeath(true);
     gamesounds.getDeathSound();
+    trigger = false;
     return Dead;
   }
    
@@ -182,12 +189,17 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
       {
 	gamesounds.pauseBackgroundMusic();
 	gamesounds.getLevelClearedSound();
+	trigger = false;
 
 	//Delay the duration of level cleared sound
 	while(gamesounds.isLevelClearedSoundPlaying())
 	{ }
 	result = LevelCompleted;
 	gamesounds.startBackgroundMusic();
+      }
+      else if(levelVec.at(i)->getElementID() == "Trigger")
+      {
+	trigger = true;
       }
       else if(dynamic_cast<Ground*>(levelVec.at(i)))
       {
@@ -302,6 +314,9 @@ void Logic::collisionBlock(
 	levelVec.at(vecLoc)->getGlobalBounds().intersects(
 	  levelVec.at(i)->getGlobalBounds(), area))
     {
+      // Triggar ett event när block faller igenom ett trigger-block (sker på sista banan).
+      if(levelVec.at(i)->getElementID() == "Trigger")
+	trigger = true;
       // Lillemor: Kollar mot första bokstaven för olika Ground-objekt
       if(levelVec.at(i)->getElementID().at(0) == 'G' ||
 	 levelVec.at(i)->getElementID() == "Block")
