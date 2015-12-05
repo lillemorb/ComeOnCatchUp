@@ -310,27 +310,30 @@ void Logic::collisionBlock(
 
 	offset = collisionDisplacement(levelVec.at(vecLoc), levelVec.at(i), area);
 	if(offset.y < 0)
+	{
 	  levelVec.at(vecLoc)->setOnGround(true);
+	  //
+	}
 	levelVec.at(vecLoc)->move(offset);
       }	
     }
   }
   // Lillemor: Om block faller ska de falla rakt nedåt => x ska vara en multipel
   // av vår tilsize. Offset.y == 0 innebär att blocket inte har kolliderat nedåt
-  // Kan snyggas till, orkar inte nu
   if(offset.y == 0)
   {
     blockPos = levelVec.at(vecLoc)->getPosition();
     int tilesize{static_cast<int>(levelVec.at(vecLoc)->getSize().x)};
     int xCorrection{};	
 
-    if(blockPos.x - (tilesize * (static_cast<int>(blockPos.x)/tilesize)) <= tilesize/2)
-      xCorrection = -(blockPos.x - (tilesize * (static_cast<int>(blockPos.x)/tilesize)));
-    else
-      xCorrection = (tilesize * ((static_cast<int>(blockPos.x)/tilesize)+1) - blockPos.x);
+    cout << "offset.y är 0, blockPos.x är" << blockPos.x <<  endl;
+
+    xCorrection = getNearestTilePosXDiff_(static_cast<int>(blockPos.x), tilesize);
 
     levelVec.at(vecLoc)->move(sf::Vector2f(xCorrection,0));
     levelVec.at(vecLoc)->setVelocity(sf::Vector2f(0,levelVec.at(vecLoc)->getVelocity().y));
+
+    cout << "Ny blockpos.x: " <<  levelVec.at(vecLoc)->getPosition().x << endl << endl;
   }
      
   // Move back player if the block couldn't be moved
@@ -395,3 +398,20 @@ sf::Vector2f Logic::collisionDisplacement(
   }  
   return offset;
 }  
+
+int Logic::getNearestTilePosXDiff_(int currentXPos, int tilesize)
+{
+  int xCorrection{};
+  if( currentXPos % tilesize   <= tilesize/2)
+  {
+    xCorrection = -(currentXPos % tilesize);
+    cout << "Flytta till vänster" << endl;
+  }
+  else
+  {
+    xCorrection = tilesize - (currentXPos % tilesize);
+    cout << "Flytta till höger" << endl;
+  }
+  cout << "xCorrection: " << xCorrection << endl;
+  return xCorrection;
+}
