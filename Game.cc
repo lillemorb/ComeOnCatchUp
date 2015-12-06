@@ -22,6 +22,8 @@ int Game::run()
 			  sf::Style::Titlebar | sf::Style::Close);
  
   window.setVerticalSyncEnabled(true);
+  //Lillemor: del av försök till att göra allt tidsberoende, låt stå
+//  window.setFramerateLimit(60);
   GameSounds gamesounds;
   gamesounds.startBackgroundMusic();
 
@@ -204,7 +206,8 @@ int Game::run()
 	gamesounds.resumeBackgroundMusic();
       }
       // update logic
-      actionResult_ = logic_.update((*currLevelPtr_), action, move, gamesounds);
+      actionResult_ = logic_.update((*currLevelPtr_), action, move, gamesounds, clock);
+      clock.restart();
       // draw
       graphics_.drawLevel((*currLevelPtr_), window);
     }
@@ -269,7 +272,11 @@ int Game::run()
       graphics_.drawMenu(menu_player_pos, window, currentmenu_);
     }
     // end the current frame
-    window.display();	  
+    window.display();
+
+    //Lillemor: del av försök till att göra allt tidsberoende, låt stå
+    while(clock.getElapsedTime().asMicroseconds() < 16667)
+    { }
   }
   return 0;
 }

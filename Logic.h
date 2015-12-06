@@ -16,10 +16,10 @@ public:
   enum Move { Left, Right, Idle };
   enum Action { Jump, JumpReleased };
 
-  sf::Clock clock;
+
   void setPix(int x, int y) { xPix_ = x; yPix_ = y;}
   ActionResult update(Level &current, Action action, Move move,
-		      GameSounds & gamesounds);
+		      GameSounds & gamesounds, sf::Clock & clock);
 
 private:
   Logic(const Logic&) = delete;
@@ -27,6 +27,8 @@ private:
   Logic& operator=(const Logic&) = delete;
   Logic& operator=(Logic&&) = delete;
 
+//Lillemor: flyttas till game som del av försök till att göra allt tidsberoende
+//  sf::Clock clock;
   bool trigger{false};
   int xPix_{};
   int yPix_{};
