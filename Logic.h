@@ -32,6 +32,7 @@ private:
   int yPix_{};
   int at{0};
   const float gravityBalance {15000.0};
+  sf::Time dt{};
 
   ActionResult collisionHandlingPlayer (
     const std::vector<PhysicalElement*> & levelVec, GameSounds & gamesounds);

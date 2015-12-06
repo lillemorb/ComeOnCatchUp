@@ -4,6 +4,7 @@
 #include "Level.h"
 #include "GameSounds.h"
 #include <vector>
+#include <iomanip>
 
 using namespace std;
 
@@ -19,7 +20,10 @@ Logic::ActionResult Logic::update(
 
   Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
   playerPtr->setDeath(false);
-  sf::Time dt{clock.getElapsedTime()};
+
+//  sf::Time dt{clock.getElapsedTime()};
+  //dt ska bara uppdateras en gång per update-loop
+  dt = clock.getElapsedTime();
   clock.restart();
   if(dt.asMicroseconds() > 20000)
     dt = clock.getElapsedTime();
@@ -96,6 +100,7 @@ Logic::ActionResult Logic::update(
     playerPtr->setFalling(true);
   }
   distX = distX*dt.asMicroseconds()/gravityBalance;
+
   float y = velY*(dt.asMicroseconds()/gravityBalance);
   if (y > 14)
     y = 14;
@@ -134,6 +139,11 @@ Logic::ActionResult Logic::update(
 	int oldBlockVelocity = levelVec.at(i)->getVelocity().x;
 	//TODO: Fixa så att x-förflyttning är relaterat till tid
 	float distXBlock{levelVec.at(i)->getVelocity().x*dt.asMicroseconds()/gravityBalance};
+	
+	if(distXBlock != 0)
+	  cout << "dt: " << setw(5) << dt.asMicroseconds() << " distX: " << setw(10) << distX << " distXBlock: " << setw(10) << distXBlock << " block vel: " << levelVec.at(i)->getVelocity().x << endl;
+
+//	cout << "dt block: " << setw(7) << dt.asMicroseconds() << endl;
 //	levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x, y));  
 	levelVec.at(i)->move(sf::Vector2f(distXBlock, y));  
 	levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
@@ -156,7 +166,8 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 {
   ActionResult result{Continue};
   Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
-  sf::Time dt{clock.getElapsedTime()};
+//  sf::Time dt{clock.getElapsedTime()};
+//  cout << endl << "dt player: " << setw(7) << dt.asMicroseconds() << endl;
 
   // Check for collision against window borders
   sf::Vector2f playerPos = sf::Vector2f(playerPtr->getGlobalBounds().left, 
@@ -260,19 +271,27 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	  }  
 	}
 
-	float boxX = dt.asMicroseconds();
+	// Lillemor: Vad är det här?
+	float boxX = 2 * dt.asMicroseconds() / gravityBalance;
+//	distX = distX*dt.asMicroseconds()/gravityBalance;
 	if (boxX > 2.0)
 	  boxX = 2.0;
 
 	// Move block if no block on top
+	// Move block to the right
 	if(blockCanBeMoved && offset.x < 0)
 	{
+	  cout << "offset.x: " << setw(8) << offset.x 
+	       << " boxX (right): " << setw(8) << boxX << endl;
 	  levelVec.at(i)->setVelocity(
 	    sf::Vector2f(boxX,levelVec.at(i)->getVelocity().y));
 	  gamesounds.getBoxSound();
 	}
+	// Move block to the left
 	else if(blockCanBeMoved && offset.x > 0)
 	{
+	  cout << "offset.x: " << setw(8) << offset.x
+	       << " boxX (left): " << setw(8) << -boxX << endl;
 	  levelVec.at(i)->setVelocity(
 	    sf::Vector2f(-boxX, levelVec.at(i)->getVelocity().y));
 	  gamesounds.getBoxSound();
@@ -342,7 +361,7 @@ void Logic::collisionBlock(
 	if(offset.y < 0)
 	{
 	  levelVec.at(vecLoc)->setOnGround(true);
-
+/*
 	  //Check if a block is only a few pixels from the edge of a Ground element
 	  //If so (and other conditions met), move block on the x axis to an even tile
 	  //Prevents being able to push a Block over a one tile wide hole in the ground
@@ -371,6 +390,7 @@ void Logic::collisionBlock(
 	    offset.x = xCorrection;
 	    levelVec.at(vecLoc)->setVelocity(sf::Vector2f(0,levelVec.at(vecLoc)->getVelocity().y));
 	  }
+*/
 	}
 	levelVec.at(vecLoc)->move(offset);
       }	
@@ -443,12 +463,25 @@ sf::Vector2f Logic::collisionDisplacement(
       //Right side crash
       if(left)
 	offset.x = -area.width;
+
+      if(collidingElement->getElementID() == "Block")
+      {
+	cout << "Right, element: " << element->getGlobalBounds().left + element->getGlobalBounds().width - 1.f
+	     << " area: " << area.top + 1.f << endl;
+      }
+
     }
     else
     {
       //Left side crash
       if(right)
 	offset.x = area.width;
+
+      if(collidingElement->getElementID() == "Block")
+      {
+	cout << "Left,  element: " << element->getGlobalBounds().left + element->getGlobalBounds().width - 1.f
+	     << " area: " << area.top + 1.f << endl;
+      }
     }
   }  
   return offset;
