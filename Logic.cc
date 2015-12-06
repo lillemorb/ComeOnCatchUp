@@ -321,8 +321,18 @@ void Logic::collisionBlock(
       if(levelVec.at(i)->getElementID() == "Trigger")
 	trigger = true;
 
-      if(levelVec.at(i)->getElementID().at(0) == 'G' ||
-	 levelVec.at(i)->getElementID() == "Block")
+      if(levelVec.at(i)->getElementID() == "Block")
+      {
+	offset = sf::Vector2f(0,0);
+
+	offset = collisionDisplacement(levelVec.at(vecLoc), levelVec.at(i), area);
+
+	if(offset.y < 0)
+	  levelVec.at(vecLoc)->setOnGround(true);
+
+	levelVec.at(vecLoc)->move(offset);	  
+      }
+      else if(levelVec.at(i)->getElementID().at(0) == 'G')	 
       {
 	offset = sf::Vector2f(0,0);
 
@@ -331,9 +341,9 @@ void Logic::collisionBlock(
 	{
 	  levelVec.at(vecLoc)->setOnGround(true);
 
-	  //Check if a block is only a few pixels from the edge of a Ground or Block Element
-	  //if so (and other conditions met), move block on the x axis to an even tile
-	  //To prevent being able to push a Block over a one tile wide hole in the ground
+	  //Check if a block is only a few pixels from the edge of a Ground element
+	  //If so (and other conditions met), move block on the x axis to an even tile
+	  //Prevents being able to push a Block over a one tile wide hole in the ground
 	  PhysicalElement::CollisionBorders collBorders(
 	    levelVec.at(i)->getCollisionBorders());
 	  if(area.width <= 4)
@@ -342,26 +352,18 @@ void Logic::collisionBlock(
 	    int tilesize{static_cast<int>(levelVec.at(vecLoc)->getSize().x)};	    
 	    int xCorrection{getNearestTilePosXDiff_(
 		static_cast<int>(blockPos.x), tilesize)};
-	    cout << "xCorrection: " << xCorrection << endl;
-	    if(xCorrection > 0 && xCorrection <= 4 &&
-	       (collBorders.right == false  || (collBorders.right == true && oldVelocity < 0)))
-	    {
-	      xCorrection = 0;
-	    }
-	    else if(xCorrection < 0 && xCorrection >= -4 &&
-		    (collBorders.left == false || (collBorders.left == true && oldVelocity > 0)))
+
+	    if((xCorrection > 0 && xCorrection <= 4 &&
+		(collBorders.right == false  || (collBorders.right == true && oldVelocity < 0))) ||
+	       (xCorrection < 0 && xCorrection >= -4 &&
+		(collBorders.left == false || (collBorders.left == true && oldVelocity > 0))))
 	    {
 	      xCorrection = 0;
 	    }
 	    else
 	    {
-	      cout << "Justering görs, area för smal" << endl;
-	      cout << "old velocity: " << oldVelocity << endl;
-	      cout << "left: " << collBorders.left << " right: "
-		   << collBorders.right << endl;
 	      levelVec.at(vecLoc)->setOnGround(false);
 	    }
-	    cout << "Aktuell xCorrection: " << xCorrection << endl << endl;
 	    
 	    offset.x = xCorrection;
 	    levelVec.at(vecLoc)->setVelocity(sf::Vector2f(0,levelVec.at(vecLoc)->getVelocity().y));
@@ -380,14 +382,10 @@ void Logic::collisionBlock(
     int tilesize{static_cast<int>(levelVec.at(vecLoc)->getSize().x)};
     int xCorrection{};	
 
-//    cout << "offset.y är 0, blockPos.x är" << blockPos.x <<  endl;
-
     xCorrection = getNearestTilePosXDiff_(static_cast<int>(blockPos.x), tilesize);
 
     levelVec.at(vecLoc)->move(sf::Vector2f(xCorrection,0));
     levelVec.at(vecLoc)->setVelocity(sf::Vector2f(0,levelVec.at(vecLoc)->getVelocity().y));
-
-//    cout << "Ny blockpos.x: " <<  levelVec.at(vecLoc)->getPosition().x << endl << endl;
   }
      
   // Move back player if the block couldn't be moved
