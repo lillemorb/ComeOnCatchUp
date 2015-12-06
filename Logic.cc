@@ -133,7 +133,9 @@ Logic::ActionResult Logic::update(
 
 	int oldBlockVelocity = levelVec.at(i)->getVelocity().x;
 	//TODO: Fixa så att x-förflyttning är relaterat till tid
-	levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x, y));  
+	float distXBlock{levelVec.at(i)->getVelocity().x*dt.asMicroseconds()/gravityBalance};
+//	levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x, y));  
+	levelVec.at(i)->move(sf::Vector2f(distXBlock, y));  
 	levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
 	  
 	// collisionhandling
@@ -353,6 +355,7 @@ void Logic::collisionBlock(
 	    int xCorrection{getNearestTilePosXDiff_(
 		static_cast<int>(blockPos.x), tilesize)};
 
+	    //TODO Lillemor: gör så att detta villkor beror av tid
 	    if((xCorrection > 0 && xCorrection <= 4 &&
 		(collBorders.right == false  || (collBorders.right == true && oldVelocity < 0))) ||
 	       (xCorrection < 0 && xCorrection >= -4 &&
