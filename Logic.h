@@ -37,7 +37,7 @@ private:
     const std::vector<PhysicalElement*> & levelVec, GameSounds & gamesounds);
   void collisionBlock(
     const std::vector<PhysicalElement*> & levelVec, unsigned int vecLoc,
-    GameSounds & gamesounds);
+    int oldVelocity, GameSounds & gamesounds);
   sf::Vector2f collisionDisplacement (
     PhysicalElement* const element, PhysicalElement* const collidingElement,
     const sf::FloatRect & area);
