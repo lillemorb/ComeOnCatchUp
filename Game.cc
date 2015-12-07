@@ -185,7 +185,7 @@ int Game::run()
 	    menu_row_count = 3;
 	    current_menu_row = 1;
 	    currentmenu_ = Graphics::VictoryMenu;
-	    menu_player_pos = 300;
+	    menu_player_pos = token_pos_victory_;
 	  }
 	}
     }
@@ -207,7 +207,7 @@ int Game::run()
       }
       // update logic
       actionResult_ = logic_.update((*currLevelPtr_), action, move, gamesounds, clock);
-      clock.restart();
+      logicClock_.restart();
       // draw
       graphics_.drawLevel((*currLevelPtr_), window);
     }
@@ -275,7 +275,7 @@ int Game::run()
     window.display();
 
     //Lillemor: del av försök till att göra allt tidsberoende, låt stå
-    while(clock.getElapsedTime().asMicroseconds() < 16667)
+    while(logicClock_.getElapsedTime().asMicroseconds() < 16667)
     { }
   }
   return 0;
@@ -293,7 +293,7 @@ void Game::menu(const vector<int> & lvl)
     else if (currentmenu_ == Graphics::VictoryMenu)
       menu_player_pos = menu_player_pos - 82;
     else if (currentmenu_ == Graphics::LevelMenu) 
-      menu_player_pos = menu_player_pos - 50;
+      menu_player_pos = menu_player_pos - 36;
     delayTime();
     current_menu_row = current_menu_row - 1;
   }
@@ -305,7 +305,7 @@ void Game::menu(const vector<int> & lvl)
     else if (currentmenu_ == Graphics::VictoryMenu)
       menu_player_pos = menu_player_pos + 82;
     else if (currentmenu_ == Graphics::LevelMenu) 
-      menu_player_pos = menu_player_pos + 50;
+      menu_player_pos = menu_player_pos + 36;
     delayTime();
     current_menu_row = current_menu_row + 1;
   }
@@ -327,7 +327,7 @@ void Game::menu(const vector<int> & lvl)
       menu_player_pos = token_pos_level_;
       current_menu_row = 1; 
       currentmenu_ = Graphics::LevelMenu;
-      menu_row_count = 5;
+      menu_row_count = 7;
       delayTime();
       break;
     case 3:
@@ -336,7 +336,7 @@ void Game::menu(const vector<int> & lvl)
     }       
   }
 
-  // Victory_screen
+  // Victory_menu
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && currentmenu_ == Graphics::VictoryMenu)
   {
     switch (current_menu_row)
@@ -345,13 +345,16 @@ void Game::menu(const vector<int> & lvl)
       current_level = 1;
       load_level(lvl, current_level);
       // Rasmus: Osäker på om man kommer hit
+      // Lillemor: hade bara glömt break, så att man alltid hamnade i Exit
+      break;
     case 2:
       menu_player_pos = token_pos_menu_;
       current_menu_row = 1; 
       currentmenu_ = Graphics::MainMenu;
       menu_row_count = 3;
       delayTime();
-    case 4:
+      break;
+    case 3:
       gamestate_ = Exit;
       break;
     }
@@ -363,27 +366,35 @@ void Game::menu(const vector<int> & lvl)
     switch (current_menu_row)
     {
     case 1:
+      current_level = 1;
+      load_level(lvl, current_level);
+      break;
+    case 2:	
+      current_level = 2;
+      load_level(lvl, current_level);
+      break;
+    case 3:
+      current_level = 3;
+      load_level(lvl, current_level);
+      break;
+    case 4:
+      current_level = 4;
+      load_level(lvl, current_level);
+      break;
+    case 5:
+      current_level = 5;
+      load_level(lvl, current_level);
+      break;
+    case 6:
+      current_level = 6;
+      load_level(lvl, current_level);
+      break;
+    case 7:
       menu_player_pos = token_pos_menu_;
       current_menu_row = 1; 
       currentmenu_ = Graphics::MainMenu;
       menu_row_count = 3;
       delayTime();
-    case 2:
-      current_level = 1;
-      load_level(lvl, current_level);
-      break;
-    case 3:	
-      current_level = 2;
-      load_level(lvl, current_level);
-      break;
-    case 4:
-      current_level = 3;
-      load_level(lvl, current_level);
-      break;
-    case 5:
-      current_level = 4;
-      load_level(lvl, current_level);
-      break;
     }	   
   }
 }

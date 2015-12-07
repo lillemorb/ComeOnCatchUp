@@ -17,10 +17,8 @@ public:
   void drawVictoryScreen(sf::RenderWindow & window);
   void drawMenu(int posY, sf::RenderWindow & window, CurrentMenu currentMenu);
   void drawLevel(Level & current, sf::RenderWindow & window);
-  void drawPaused(sf::RenderWindow & window)
-  {
-    window.draw(paused_sprite);
-  }
+  void drawPaused(sf::RenderWindow & window){ window.draw(paused_sprite); }
+  void drawLevelSel(sf::RenderWindow & window){ window.draw(levelSel_sprite);}
 
   void setDeathCounter(int value) { deathCounter = value; }
   int getDeathCounter() { return deathCounter; }
@@ -39,6 +37,7 @@ private:
   std::map<int, sf::Sprite> ground_sprite;
   sf::Sprite token_sprite;
   sf::Sprite menu_sprite;
+  sf::Sprite levelSel_sprite;
   sf::Sprite victory_sprite;
   sf::Sprite victoryScreen_sprite;
   sf::Sprite paused_sprite;
@@ -50,6 +49,7 @@ private:
   sf::Texture spriteSheet_player;
   sf::Texture spriteSheet_token;
   sf::Texture spriteSheet_menu;
+  sf::Texture spriteSheet_levelSel;
   sf::Texture spriteSheet_victory;
   sf::Texture spriteSheet_victoryScreen;
   sf::Texture spriteSheet_paused;

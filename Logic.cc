@@ -473,7 +473,7 @@ sf::Vector2f Logic::collisionDisplacement(
   else if ((left || right) && area.width < area.height)
   {
     if (area.contains( element->getGlobalBounds().left + 
-		       element->getGlobalBounds().width - 0.001, area.top + 0.001 ))
+		       element->getGlobalBounds().width - 0.1, area.top + 0.1 ))
     {
       //Right side crash
       if(left)

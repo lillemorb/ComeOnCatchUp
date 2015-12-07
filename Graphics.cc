@@ -40,6 +40,13 @@ int Graphics::initGraphics()
     return 1;
   }
 
+  if (!spriteSheet_levelSel.loadFromFile("Sprites/LevelSel.png")) 
+  {
+    cerr << "Kunde inte ladda \"Sprites/LevelSel.png\"" << endl;
+    //Felhantering
+    return 1;
+  }
+
   if (!spriteSheet_victory.loadFromFile("Sprites/Victory.png")) 
   {
     cerr << "Kunde inte ladda Victory sprite" << endl;
@@ -95,6 +102,9 @@ int Graphics::initGraphics()
   // menu_sprite
   menu_sprite.setTexture(spriteSheet_menu);
   menu_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
+  // levelSel_sprite
+  levelSel_sprite.setTexture(spriteSheet_levelSel);
+  levelSel_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
   // victoryScreen_sprite
   victoryScreen_sprite.setTexture(spriteSheet_victoryScreen);
   victoryScreen_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
@@ -163,6 +173,7 @@ void Graphics::drawMenu(int posY, sf::RenderWindow& window, CurrentMenu currentM
     }
   else if(currentMenu == LevelMenu)
     {
+      window.draw(levelSel_sprite);
     }
   window.draw(token_sprite);
 }

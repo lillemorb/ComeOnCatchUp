@@ -47,11 +47,11 @@ private:
   bool jumping_{false};
   sf::Clock clock;
   int token_pos_menu_{190};
-  int token_pos_victory_{180};
-  int token_pos_level_{200};
-//Lillemor: flyttas till game som del av försök till att göra allt tidsberoende
-//men nu har vi visst två klockor....
-  sf::Clock clock_;
+  int token_pos_victory_{194};
+  int token_pos_level_{190};
+//Lillemor: flyttats till game från logic som del av försök
+//till att göra allt tidsberoende
+  sf::Clock logicClock_;
 };
 
 #endif
