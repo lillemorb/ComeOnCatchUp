@@ -44,7 +44,7 @@ private:
   sf::Vector2f collisionDisplacement (
     PhysicalElement* const element, PhysicalElement* const collidingElement,
     const sf::FloatRect & area);
-  int getNearestTilePosXDiff_(int currentXPos, int tilesize);
+  float getNearestTilePosXDiff_(float currentXPos, int tilesize);
 };
 
 #endif

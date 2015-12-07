@@ -389,8 +389,7 @@ void Logic::collisionBlock(
 	  {
 	    blockPos = levelVec.at(vecLoc)->getPosition();
 	    int tilesize{static_cast<int>(levelVec.at(vecLoc)->getSize().x)};	    
-	    int xCorrection{getNearestTilePosXDiff_(
-		static_cast<int>(blockPos.x), tilesize)};
+	    float xCorrection{getNearestTilePosXDiff_(blockPos.x, tilesize)};
 
 	    //TODO Lillemor: gör så att detta villkor beror av tid
 	    if((xCorrection > 0 && xCorrection <= 4 &&
@@ -420,10 +419,9 @@ void Logic::collisionBlock(
   {
     blockPos = levelVec.at(vecLoc)->getPosition();
     int tilesize{static_cast<int>(levelVec.at(vecLoc)->getSize().x)};
-    int xCorrection{};	
+    float xCorrection{};	
 
-    xCorrection = getNearestTilePosXDiff_(static_cast<int>(blockPos.x), tilesize);
-
+    xCorrection = getNearestTilePosXDiff_(blockPos.x, tilesize);
     levelVec.at(vecLoc)->move(sf::Vector2f(xCorrection,0));
     levelVec.at(vecLoc)->setVelocity(sf::Vector2f(0,levelVec.at(vecLoc)->getVelocity().y));
   }
@@ -512,16 +510,22 @@ sf::Vector2f Logic::collisionDisplacement(
   return offset;
 }  
 
-int Logic::getNearestTilePosXDiff_(int currentXPos, int tilesize)
+//---------GETNERARESTTILEPOSXDIFF--------------//
+float Logic::getNearestTilePosXDiff_(float currentXPos, int tilesize)
 {
-  int xCorrection{};
-  if(currentXPos % tilesize   <= tilesize/2)
+  float xCorrection{};
+  // How many whole tiles is to the left of currentXPos
+  int integerDivResult{ static_cast<int>(currentXPos / tilesize)};
+
+  // Workaround to get the same result as currentXPos%tilesize,
+  // which is not a legal operation for float%integer
+  if((currentXPos - integerDivResult * tilesize) <= tilesize/2) 
   {
-    xCorrection = -(currentXPos % tilesize);
+    xCorrection = -(currentXPos - integerDivResult * tilesize);
   }
   else
   {
-    xCorrection = tilesize - (currentXPos % tilesize);
+    xCorrection = tilesize - (currentXPos - integerDivResult * tilesize);
   }
 
   return xCorrection;
