@@ -46,9 +46,9 @@ private:
   int yPix_{576};
   bool jumping_{false};
   sf::Clock clock;
-  int token_pos_menu_{190};
-  int token_pos_victory_{194};
-  int token_pos_level_{190};
+  int token_pos_menu_{270};
+  int token_pos_victory_{270};
+  int token_pos_level_{260};
 //Lillemor: flyttats till game från logic som del av försök
 //till att göra allt tidsberoende
   sf::Clock logicClock_;

@@ -289,11 +289,11 @@ void Game::menu(const vector<int> & lvl)
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && current_menu_row > 1)
   {
     if (currentmenu_ == Graphics::MainMenu)
-      menu_player_pos = menu_player_pos - 82; 
+      menu_player_pos = menu_player_pos - 46; 
     else if (currentmenu_ == Graphics::VictoryMenu)
-      menu_player_pos = menu_player_pos - 82;
+      menu_player_pos = menu_player_pos - 46;
     else if (currentmenu_ == Graphics::LevelMenu) 
-      menu_player_pos = menu_player_pos - 36;
+      menu_player_pos = menu_player_pos - 37;
     delayTime();
     current_menu_row = current_menu_row - 1;
   }
@@ -301,11 +301,11 @@ void Game::menu(const vector<int> & lvl)
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && current_menu_row < menu_row_count)
   { 	
     if (currentmenu_ == Graphics::MainMenu)
-      menu_player_pos = menu_player_pos + 82; 
+      menu_player_pos = menu_player_pos + 46; 
     else if (currentmenu_ == Graphics::VictoryMenu)
-      menu_player_pos = menu_player_pos + 82;
+      menu_player_pos = menu_player_pos + 46;
     else if (currentmenu_ == Graphics::LevelMenu) 
-      menu_player_pos = menu_player_pos + 36;
+      menu_player_pos = menu_player_pos + 37;
     delayTime();
     current_menu_row = current_menu_row + 1;
   }

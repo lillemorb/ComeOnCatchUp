@@ -33,21 +33,21 @@ int Graphics::initGraphics()
     return 1;
   }
 
-  if (!spriteSheet_menu.loadFromFile("Sprites/Menu.png")) 
+  if (!spriteSheet_menu.loadFromFile("Sprites/Menu_pause.png")) 
   {
     cerr << "Kunde inte ladda Menu sprite" << endl;
     //Felhantering
     return 1;
   }
 
-  if (!spriteSheet_levelSel.loadFromFile("Sprites/LevelSel.png")) 
+  if (!spriteSheet_levelSel.loadFromFile("Sprites/Menu_level_select.png")) 
   {
-    cerr << "Kunde inte ladda \"Sprites/LevelSel.png\"" << endl;
+    cerr << "Kunde inte ladda \"Sprites/Menu_level_select.png\"" << endl;
     //Felhantering
     return 1;
   }
 
-  if (!spriteSheet_victory.loadFromFile("Sprites/Victory.png")) 
+  if (!spriteSheet_victory.loadFromFile("Sprites/Menu_victory.png")) 
   {
     cerr << "Kunde inte ladda Victory sprite" << endl;
     //Felhantering
@@ -162,7 +162,7 @@ void Graphics::drawVictoryScreen(sf::RenderWindow& window)
 //---------DRAWMENU--------------//
 void Graphics::drawMenu(int posY, sf::RenderWindow& window, CurrentMenu currentMenu)
 {
-  token_sprite.setPosition(sf::Vector2f(200, posY));
+  token_sprite.setPosition(sf::Vector2f(280, posY));
   if(currentMenu == MainMenu)
     {
       window.draw(menu_sprite);
