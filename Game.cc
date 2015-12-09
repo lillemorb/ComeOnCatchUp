@@ -37,7 +37,12 @@ int Game::run()
   istream_iterator<int> start(is), end;
   vector<int> lvl(start, end);
 
-  load_level(lvl, current_level);
+  //Initiate main menu (which is the same as victory menu)
+  gamestate_ = Victory;
+  menu_row_count = 3;
+  current_menu_row = 1;
+  currentmenu_ = Graphics::VictoryMenu;
+  menu_player_pos = token_pos_victory_;
 
   //LOOP
   //Run the program as long as the window is open
@@ -91,6 +96,7 @@ int Game::run()
 	currentmenu_ = Graphics::MainMenu;
 	current_menu_row = 1;
 	menu_player_pos = token_pos_menu_;
+	oldgamestate_ = gamestate_;
 	gamestate_ = Menu;
       }
       //Move left	  
@@ -321,12 +327,14 @@ void Game::menu(const vector<int> & lvl)
 	  current_level = 1;
 	  load_level(lvl, current_level);
 	}
-      gamestate_ = Playing;	     
+      gamestate_ = Playing;
+      break;	     
     case 2:
       menu_player_pos = token_pos_level_;
       current_menu_row = 1; 
       currentmenu_ = Graphics::LevelMenu;
       menu_row_count = 7;
+      gamestate_ = LevelSel;
       delayTime();
       break;
     case 3:
@@ -346,10 +354,12 @@ void Game::menu(const vector<int> & lvl)
       load_level(lvl, current_level);
       break;
     case 2:
-      menu_player_pos = token_pos_menu_;
+      menu_player_pos = token_pos_level_;
       current_menu_row = 1; 
-      currentmenu_ = Graphics::MainMenu;
-      menu_row_count = 3;
+      currentmenu_ = Graphics::LevelMenu;
+      menu_row_count = 7;
+      oldgamestate_ = gamestate_;
+      gamestate_ = LevelSel;
       delayTime();
       break;
     case 3:
@@ -390,8 +400,17 @@ void Game::menu(const vector<int> & lvl)
       break;
     case 7:
       menu_player_pos = token_pos_menu_;
-      current_menu_row = 1; 
-      currentmenu_ = Graphics::MainMenu;
+      current_menu_row = 1;
+      if(oldgamestate_== Victory)
+      {
+	currentmenu_ = Graphics::VictoryMenu;
+	gamestate_ = Victory;
+      }
+      else
+      {
+	currentmenu_ = Graphics::MainMenu;
+	gamestate_ = Menu;
+      }
       menu_row_count = 3;
       delayTime();
     }	   

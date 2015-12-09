@@ -39,8 +39,8 @@ private:
   int vector_size{TILES_PER_ROW*TILES_PER_COLUMN};
 
   enum GameState{Playing, Dead, VictoryScreen, Victory, Pause, LevelSel, Menu, Exit};
-  GameState gamestate_{Playing};
-  GameState oldgamestate_{Playing};
+  GameState gamestate_{Victory};
+  GameState oldgamestate_{Victory};
 
   Graphics::CurrentMenu currentmenu_= Graphics::MainMenu;
   Logic::ActionResult actionResult_= Logic::Continue;
