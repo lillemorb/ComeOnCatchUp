@@ -32,18 +32,23 @@ PhysicalElement(const std::string & elementID): DrawableElement(elementID){}
   struct CollisionBorders
   { bool left{true}; bool right{true}; bool up{true}; bool down{true}; };
 
-  //Implementeras här men ärvande klasser kan implementera egen variant
-  // Anna o Lillemor: skriv vilka klasser som har egna implementationer för
-  // respektive funktion
+  //Implemented here, inherited classes can implement their own version.
+  //Implemented in: Player, Block
   virtual void setVelocity(const sf::Vector2f & vel){ velocity_ = sf::Vector2f(0,gravity_); }
+  //Implemented in: Player, Block
   virtual void setPosition(const sf::Vector2f & pos) {}
+  //Implemented in: Player, Block
   virtual void move(const sf::Vector2f & offset) {} 
+  //Implemented in: Player, Door
   virtual sf::FloatRect getGlobalBounds() const { return rectangle_.getGlobalBounds(); }
+  //Implemented in: Player
   virtual sf::Vector2f getSize() const { return rectangle_.getSize();}
+  //Implemented in: Block
   virtual void setBelowWindow( bool out ) {}
+  //Implemented in: Block
   virtual bool getBelowWindow() const { return false; }
 
-  //Implementeras här och ärvs sedan utan polymorfi
+  //Implemented here, inherited classes do not implement own version
   sf::Vector2f getVelocity() const { return velocity_; }
   void setOnGround( bool onGround ) { onGround_ = onGround; }
   bool getOnGround() const { return onGround_; }
@@ -88,16 +93,7 @@ public:
   void setWalk( bool walk ) { walk_ = walk; }
   void setAnimationcycle();
   sf::Vector2f getAnimation();
-  void setStoryAnimation(int x)
-  {
-    if (x == 0)
-      if (storyAnimation_ == 0)
-	storyAnimation_ = 1;
-      else
-	storyAnimation_ = 0;
-    else if (storyAnimation_ < 4)
-      storyAnimation_++;
-  }
+  void setStoryAnimation(int x);
   int getStoryAnimation() { return storyAnimation_; }
 
 

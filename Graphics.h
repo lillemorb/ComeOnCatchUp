@@ -2,7 +2,6 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 #include <SFML/Graphics.hpp>
-
 #include "Level.h"
 #include <vector>
 
@@ -28,7 +27,9 @@ private:
   Graphics& operator=(const Graphics&) = delete;
 
   const int TILESIZE{32};
+
   int deathCounter{0};
+
   sf::Sprite door_sprite;
   sf::Sprite block_sprite;
   sf::Sprite start_sprite;
@@ -45,6 +46,7 @@ private:
   sf::Sprite keyboardJump_sprite;
   sf::Sprite keyboardMove_sprite;
   sf::Sprite sign_sprite;
+
   sf::Texture spriteSheet_background;
   sf::Texture spriteSheet_player;
   sf::Texture spriteSheet_token;

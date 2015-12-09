@@ -2,7 +2,6 @@
 #ifndef GAMESOUNDS_H
 #define GAMESOUNDS_H
 #include <SFML/Audio.hpp>
-#include <iostream>
 
 class GameSounds
 {
@@ -29,7 +28,7 @@ private:
   GameSounds(const GameSounds&) = delete;
   GameSounds& operator=(const GameSounds&) = delete;
 
-  void loadSounds(); 
+  int loadSounds(); 
 
   sf::SoundBuffer death_soundBuffer_;
   sf::SoundBuffer jump_soundBuffer_;

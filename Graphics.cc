@@ -3,7 +3,6 @@
 #include <SFML/Graphics.hpp>
 #include "Level.h"
 #include <vector>
-
 #include <iostream>
 
 using namespace std;
@@ -11,116 +10,108 @@ using namespace std;
 //---------INITGRAPHICS--------------//
 int Graphics::initGraphics()
 {
-  // Inläsning av texturer
+  // Load textures
   if (!spriteSheet_background.loadFromFile("Sprites/Tiles.png"))
   {
-    cerr << "Kunde inte ladda backgrounds sprites" << endl;
-    //Felhantering
+    cerr << "Kunde inte ladda \"Sprites/Tiles.png\"" << endl;
     return 1;
   }
 
   if (!spriteSheet_player.loadFromFile("Sprites/Tomato_spritesheet.png")) 
   {
-    cerr << "Kunde inte ladda players sprite" << endl;
-    //Felhantering
+    cerr << "Kunde inte ladda \"Sprites/Tomato_spritesheet.png\"" << endl;
     return 1;
   }
 
   if (!spriteSheet_token.loadFromFile("Sprites/Tomato.png")) 
   {
-    cerr << "Kunde inte ladda token sprite" << endl;
-    //Felhantering
+    cerr << "Kunde inte ladda \"Sprites/Tomato.png\"" << endl;
     return 1;
   }
 
   if (!spriteSheet_menu.loadFromFile("Sprites/Menu_pause.png")) 
   {
-    cerr << "Kunde inte ladda Menu sprite" << endl;
-    //Felhantering
+    cerr << "Kunde inte ladda \"Sprites/Menu_pause.png\"" << endl;
     return 1;
   }
 
   if (!spriteSheet_levelSel.loadFromFile("Sprites/Menu_level_select.png")) 
   {
     cerr << "Kunde inte ladda \"Sprites/Menu_level_select.png\"" << endl;
-    //Felhantering
     return 1;
   }
 
   if (!spriteSheet_victory.loadFromFile("Sprites/Menu_victory.png")) 
   {
-    cerr << "Kunde inte ladda Victory sprite" << endl;
-    //Felhantering
+    cerr << "Kunde inte ladda \"Sprites/Menu_victory.png\"" << endl;
     return 1;
   }
 
   if (!spriteSheet_victoryScreen.loadFromFile("Sprites/Victoryscreen.png")) 
   {
-    cerr << "Kunde inte ladda Victoryscreen sprite" << endl;
-    //Felhantering
+    cerr << "Kunde inte ladda \"Sprites/Victoryscreen.png\"" << endl;
     return 1;
   }
 
   if (!spriteSheet_paused.loadFromFile("Sprites/Paused.png")) 
   {
     cerr << "Kunde inte ladda sprite: \"Sprites/Paused.png\"." << endl;
-    //Felhantering
     return 1;
   }
 
   if (!spriteSheet_story.loadFromFile("Sprites/Story.png"))
     {
       cerr << "Kunde inte ladda sprite: \"Sprites/Story.png\"." << endl;
-      //Felhantering
       return 1;
     }
 
-  // Inläsning av sprites
-  // door_sprite
+  // Load sprites
+
+
   door_sprite.setTexture(spriteSheet_background);
   door_sprite.setTextureRect(sf::IntRect(96, 0, TILESIZE, TILESIZE));
-  // block_sprite
+
   block_sprite.setTexture(spriteSheet_background);
   block_sprite.setTextureRect(sf::IntRect(0, 0, TILESIZE, TILESIZE));
-  // start_sprite
+
   start_sprite.setTexture(spriteSheet_background);
   start_sprite.setTextureRect(sf::IntRect(96, 64, TILESIZE, TILESIZE));
-  // goal_sprite
+
   goal_sprite.setTexture(spriteSheet_background);
   goal_sprite.setTextureRect(sf::IntRect(96, 32, TILESIZE, TILESIZE));
-  // token_sprite
+
   token_sprite.setTexture(spriteSheet_token);
   token_sprite.setTextureRect(sf::IntRect(96, 0, TILESIZE, TILESIZE));
-  // sign_sprite
+
   sign_sprite.setTexture(spriteSheet_story);
-  // keyboardMove_sprite
+
   keyboardMove_sprite.setTexture(spriteSheet_story);
   keyboardMove_sprite.setTextureRect(sf::IntRect(32, 96, TILESIZE, TILESIZE));
-  // keyboardJump_sprite
+
   keyboardJump_sprite.setTexture(spriteSheet_story);
   keyboardJump_sprite.setTextureRect(sf::IntRect(64, 96, TILESIZE, TILESIZE));
-  // menu_sprite
+
   menu_sprite.setTexture(spriteSheet_menu);
   menu_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
-  // levelSel_sprite
+
   levelSel_sprite.setTexture(spriteSheet_levelSel);
   levelSel_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
-  // victoryScreen_sprite
+
   victoryScreen_sprite.setTexture(spriteSheet_victoryScreen);
   victoryScreen_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
-  // victory_sprite
+
   victory_sprite.setTexture(spriteSheet_victory);
   victory_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
-  // paused_sprite
+
   paused_sprite.setTexture(spriteSheet_paused);
   paused_sprite.setTextureRect(sf::IntRect(0, 0, 768, 576));
-  // player_sprite
+
   player_sprite.setTexture(spriteSheet_player);
-  // tomato2_sprite
+
   tomato2_sprite.setTexture(spriteSheet_story);
 
   // Ground
-  // Innehåller vilka positioner som varje unik sprite har
+  // Vector with the texture coordinates for the different kinds of ground object 
   std::vector<std::pair<int, int>> groundCoordinates = {
     {32, 0},
     {0, 128},
@@ -139,15 +130,14 @@ int Graphics::initGraphics()
     {96, 96},
     {96, 128}};
 
-  // Map från 10-25 som innhåller grounds olika värden
-  //std::map<int, sf::Sprite> ground_sprite;
+  // Map connecting the id numbers for different ground objects with their sprite
   int groundValue = 10;
   for(auto it = groundCoordinates.begin(); it != groundCoordinates.end(); ++it)
   {
     sf::Sprite temp_sprite;
     temp_sprite.setTexture(spriteSheet_background);
-    temp_sprite.setTextureRect(sf::IntRect(it->first, it->second,
-					   TILESIZE, TILESIZE));
+    temp_sprite.setTextureRect(
+      sf::IntRect(it->first, it->second, TILESIZE, TILESIZE));
     ground_sprite[groundValue] = temp_sprite;
     ++groundValue;
   }
@@ -185,7 +175,7 @@ void Graphics::drawLevel(Level & current, sf::RenderWindow& window)
 
   Player* player{dynamic_cast<Player*>(levelVec.at(0))};
 
-  // Rita ut allt utom Player
+  // Draw everything but Player
   for(unsigned int i{1}; i < levelVec.size(); i++)
   {
     string tempID = levelVec.at(i)->getElementID();
@@ -214,7 +204,8 @@ void Graphics::drawLevel(Level & current, sf::RenderWindow& window)
     else if (tempID == "Tomato2") 
     {
       tomato2_sprite.setPosition(tempPos.x-32, tempPos.y);
-      tomato2_sprite.setTextureRect(sf::IntRect(player->getStoryAnimation()*32, 0, TILESIZE, TILESIZE));
+      tomato2_sprite.setTextureRect(
+	sf::IntRect(player->getStoryAnimation()*32, 0, TILESIZE, TILESIZE));
       window.draw(tomato2_sprite);
     }
     else if (tempID == "Sign") 
@@ -236,7 +227,7 @@ void Graphics::drawLevel(Level & current, sf::RenderWindow& window)
       keyboardJump_sprite.setPosition(tempPos.x, tempPos.y);
       window.draw(keyboardJump_sprite);
     }
-    // Kollar om första tecknet är G (för Ground)
+    //Check if the first character is 'G' for Ground
     else if (tempID[0] == 'G')
     {
       int position = stoi(tempID.substr(1));
@@ -245,12 +236,13 @@ void Graphics::drawLevel(Level & current, sf::RenderWindow& window)
     }
   }
 
-  // Utritning av Player
+  //Draw Player
   sf::Vector2f tempPos = levelVec.at(0)->getPosition();
   sf::Vector2f sprite_position = player->getAnimation();
   if (player->getDeath() == true)
   {
-    player_sprite.setTextureRect(sf::IntRect(getDeathCounter()*32, sprite_position.y, TILESIZE, TILESIZE));
+    player_sprite.setTextureRect(
+      sf::IntRect(getDeathCounter()*32, sprite_position.y, TILESIZE, TILESIZE));
     setDeathCounter(getDeathCounter()+1);
   }
   else
@@ -260,9 +252,9 @@ void Graphics::drawLevel(Level & current, sf::RenderWindow& window)
   player_sprite.setPosition(tempPos.x, tempPos.y);
   if (player->getFacingRight() == false)
   {
-    //Ändrar origin för korrekt spegling
+    //Set new origin for correct mirroring
     player_sprite.setOrigin(TILESIZE, 0); 
-    //speglar spriten
+    //Mirror the sprite
     player_sprite.setScale(-1.0, 1); 
   }
   else

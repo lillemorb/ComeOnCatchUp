@@ -27,8 +27,6 @@ private:
   Logic& operator=(const Logic&) = delete;
   Logic& operator=(Logic&&) = delete;
 
-//Lillemor: flyttas till game som del av försök till att göra allt tidsberoende
-//  sf::Clock clock;
   bool trigger{false};
   int xPix_{};
   int yPix_{};

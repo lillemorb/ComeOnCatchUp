@@ -13,21 +13,21 @@ using namespace std;
 //---------RUN--------------// 
 int Game::run()
 {
+  // Init
+
   Logic::Action action{Logic::JumpReleased};
   Logic::Move move{Logic::Idle};    
 
-  // Init
-  // Skapa fönster som är 768x576 pixlar (är delbart på 32), går ej att resizea
+  //Create non resizeable window 768x576 pixels large
   sf::RenderWindow window(sf::VideoMode(xPix_, yPix_), "Come on, catch up!", 
 			  sf::Style::Titlebar | sf::Style::Close);
  
   window.setVerticalSyncEnabled(true);
-  //Lillemor: del av försök till att göra allt tidsberoende, låt stå
-//  window.setFramerateLimit(60);
+
   GameSounds gamesounds;
   gamesounds.startBackgroundMusic();
 
-  // För över Level.txt till vektorn curLevel.
+  // Transfer contents in Level.txt to vector curLevel
   ifstream is("Level.txt");
   if(!is)
   {
@@ -36,13 +36,11 @@ int Game::run()
   }
   istream_iterator<int> start(is), end;
   vector<int> lvl(start, end);
-  // Lillemor: använd load_level
-  vector<int> curLevel(lvl.begin() + vector_size*(current_level - 1), 
-		       lvl.begin() + vector_size*current_level);
-  currLevelPtr_ = new Level(TILESIZE, TILES_PER_ROW, curLevel);
+
+  load_level(lvl, current_level);
 
   //LOOP
-  // run the program as long as the window is open
+  //Run the program as long as the window is open
   while (window.isOpen())
   {
     sf::Event event;
@@ -55,7 +53,6 @@ int Game::run()
       load_level(lvl, current_level);
     }
     //Victory
-    // Slutskärm ska fixas här
     else if (actionResult_ == Logic::LevelCompleted &&
 	     (current_level) >= (lvl.size()/vector_size) &&
 	     gamestate_ == Playing )
@@ -77,7 +74,9 @@ int Game::run()
       }
     }
 
+    // INPUT
 
+    //Non-event based input
     if (gamestate_ == Playing)
     {	      
       //Reset
@@ -120,12 +119,11 @@ int Game::run()
     }
 
 
-    // check all the window's events that were triggered since the last iteration
+    // Check all the window's events that were triggered since the last iteration
     // of the loop
-    // INPUT
     while (window.pollEvent(event))
     { 
-      // "close requested" event: we close the window
+      // "Close requested" event: we close the window
       if (event.type == sf::Event::Closed || 
 	  sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
       {
@@ -142,7 +140,7 @@ int Game::run()
       {
 	gamestate_ = oldgamestate_;
       }
-      // Pause/continue with 'P'-key
+      // Pause/continue by pressing 'P'-key
       else if (event.type == sf::Event::KeyReleased && 
 	       (event.key.code == sf::Keyboard::P)) 
       {
@@ -156,6 +154,7 @@ int Game::run()
 	  gamestate_ = oldgamestate_;
 	}
       }
+
       if (gamestate_ == Playing)
       {
 	if (event.type == sf::Event::KeyPressed && 
@@ -190,12 +189,10 @@ int Game::run()
 	}
     }
 
-    // clear the window with black color
     window.clear(sf::Color(200, 255, 255, 255));
     if (gamestate_ == Playing)
     {
-      //TODO Lillemor: gör ev en funktion av detta (används även nedan ännu en gång)
-      //if music not playing (paused), play
+      //If music not playing (paused), play
       if(!gamesounds.isBackgroundMusicPlaying())
       {
 	while(gamesounds.isPauseSoundPlaying())
@@ -205,10 +202,11 @@ int Game::run()
 	{ }
 	gamesounds.resumeBackgroundMusic();
       }
-      // update logic
+
+      // Update logic
       actionResult_ = logic_.update((*currLevelPtr_), action, move, gamesounds, clock);
       logicClock_.restart();
-      // draw
+      // Draw level
       graphics_.drawLevel((*currLevelPtr_), window);
     }
     else if (gamestate_ == Pause)
@@ -219,7 +217,7 @@ int Game::run()
 	gamesounds.pauseBackgroundMusic();
 	gamesounds.getPauseSound();
       }
-      // Draw
+      // Draw level/menu
       if(oldgamestate_ == Playing)
 	graphics_.drawLevel((*currLevelPtr_), window);
       else if(oldgamestate_ == Menu || oldgamestate_ == Victory ||
@@ -231,6 +229,7 @@ int Game::run()
       // Draw 'Paused' over current graphics in window
       graphics_.drawPaused(window);
     }
+    //Do not continue until death animation is done 
     else if (gamestate_ == Dead)
     {
       graphics_.drawLevel((*currLevelPtr_), window);
@@ -241,7 +240,7 @@ int Game::run()
 	actionResult_ = Logic::Continue;
       }
     }
-    // Drawing VictoryScreen
+    // Draw VictoryScreen
     else if (gamestate_ == VictoryScreen)
       {
 	if(!gamesounds.isBackgroundMusicPlaying())
@@ -255,7 +254,7 @@ int Game::run()
 	  }
 	graphics_.drawVictoryScreen(window);
       }
-    // Drawing menus
+    // Draw menus
     else if (gamestate_ == Menu || gamestate_ == Victory
 	     || gamestate_ == LevelSel)
     {
@@ -271,10 +270,11 @@ int Game::run()
       }
       graphics_.drawMenu(menu_player_pos, window, currentmenu_);
     }
-    // end the current frame
+
+    // End the current frame
     window.display();
 
-    //Lillemor: del av försök till att göra allt tidsberoende, låt stå
+    // Is frame has completed too quickly, wait
     while(logicClock_.getElapsedTime().asMicroseconds() < 16667)
     { }
   }
@@ -284,8 +284,6 @@ int Game::run()
 //---------MENU--------------//
 void Game::menu(const vector<int> & lvl)
 {  
-  // "OBS! du är i menu tryck upp en gång och sen enter för att spela,
-  // ner och enter för att avsluta"
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && current_menu_row > 1)
   {
     if (currentmenu_ == Graphics::MainMenu)
@@ -298,7 +296,8 @@ void Game::menu(const vector<int> & lvl)
     current_menu_row = current_menu_row - 1;
   }
 		  
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && current_menu_row < menu_row_count)
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) &&
+      current_menu_row < menu_row_count)
   { 	
     if (currentmenu_ == Graphics::MainMenu)
       menu_player_pos = menu_player_pos + 46; 
@@ -311,9 +310,9 @@ void Game::menu(const vector<int> & lvl)
   }
 
   // Main menu
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && currentmenu_ == Graphics::MainMenu)
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) &&
+      currentmenu_ == Graphics::MainMenu)
   {
-
     switch (current_menu_row)
     {
     case 1:
@@ -337,15 +336,14 @@ void Game::menu(const vector<int> & lvl)
   }
 
   // Victory_menu
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && currentmenu_ == Graphics::VictoryMenu)
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) &&
+      currentmenu_ == Graphics::VictoryMenu)
   {
     switch (current_menu_row)
     {
     case 1:
       current_level = 1;
       load_level(lvl, current_level);
-      // Rasmus: Osäker på om man kommer hit
-      // Lillemor: hade bara glömt break, så att man alltid hamnade i Exit
       break;
     case 2:
       menu_player_pos = token_pos_menu_;
@@ -360,7 +358,8 @@ void Game::menu(const vector<int> & lvl)
     }
   } 
   // Level menu
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) && currentmenu_ == Graphics::LevelMenu)
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) &&
+      currentmenu_ == Graphics::LevelMenu)
   {	
 
     switch (current_menu_row)

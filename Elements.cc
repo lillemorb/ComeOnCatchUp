@@ -1,7 +1,6 @@
 //Elements.cc
 #include "Elements.h"
 #include <SFML/Graphics.hpp>
-#include <iostream>
 
 using namespace std;
 //---------DRAWABLE--------------//
@@ -18,7 +17,7 @@ Player::Player(int TILESIZE, float x, float y)
   rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
 }
 
-//Returns a smaller bounding box for player then tilesize
+//Returns a smaller bounding box than tilesize
 sf::FloatRect Player::getGlobalBounds() const {
   sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
   sf::FloatRect smallerBounds(largeBounds.left+4.0, largeBounds.top,
@@ -68,6 +67,17 @@ sf::Vector2f Player::getAnimation()
   return currentSprite_;
 }
 
+void Player::setStoryAnimation(int x)
+{
+  if (x == 0)
+    if (storyAnimation_ == 0)
+      storyAnimation_ = 1;
+    else
+      storyAnimation_ = 0;
+  else if (storyAnimation_ < 4)
+    storyAnimation_++;
+}
+
 //---------BLOCK--------------//
 Block::Block(int TILESIZE, int x, int y) 
   : PhysicalElement("Block")
@@ -94,7 +104,7 @@ Door::Door(int TILESIZE, int x, int y)
   rectangle_.setSize(sf::Vector2f(TILESIZE,TILESIZE));
 }
 
-//returns a small bounding box so that you can see Player "entering" the door
+//Returns a small bounding box so that you can see Player "entering" the door
 sf::FloatRect Door::getGlobalBounds() const {
   sf::FloatRect largeBounds{rectangle_.getGlobalBounds()};
   sf::FloatRect smallerBounds(largeBounds.left+15.0, largeBounds.top+26.0,						largeBounds.width-30.0, largeBounds.height-26.0);

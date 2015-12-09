@@ -1,8 +1,6 @@
 #include <vector>
 #include "Elements.h"
 #include "Level.h"
-//TODO: ta bort efter spårutskrift tagits bort
-#include <iostream>
 
 using namespace std;
 
@@ -14,14 +12,15 @@ Level::Level(int TILESIZE, int TILES_PER_ROW, const vector<int> & level_vector)
     int x = i%TILES_PER_ROW;
     int y = i/TILES_PER_ROW;
 	  
-    // Check the ground-objects
+    // Create Ground objects
     if(level_vector.at(i) >= 10 && level_vector.at(i) <= 25)
     {	    
       int num{level_vector.at(i)};
       string name = "G" + to_string(num);
 
+      // Set which borders should be collision handled for each type
+      // of Ground object
       PhysicalElement::CollisionBorders collBorders{};
-
       if(num == 12 || num == 13 || num == 15 || num == 16 ||
 	 num == 18 || num == 19 || num == 21 || num == 25)
 	collBorders.left = false;
@@ -38,14 +37,13 @@ Level::Level(int TILESIZE, int TILES_PER_ROW, const vector<int> & level_vector)
 
       //Ground without borders will not be handled by Logic (no collision)
       if(level_vector.at(i) != 15)
-      {
 	physicalElementVector_.push_back(groundPtrVector_.back());
-      }
     }
 
     switch(level_vector.at(i))
     {
     case 01:
+      // Player is put in the first position of the element vectors
       playerPtr_ = new Player(TILESIZE, x, y);
       if(drawableElementVector_.size() == 0 )
       {
@@ -102,7 +100,7 @@ Level::Level(int TILESIZE, int TILES_PER_ROW, const vector<int> & level_vector)
   }
 }
 
-//Release memory by deleting pointers to all objects in Level
+// Release memory by deleting pointers to all objects in Level
 Level::~Level()
 {
   delete playerPtr_;

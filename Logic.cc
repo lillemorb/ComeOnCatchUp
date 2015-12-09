@@ -4,7 +4,6 @@
 #include "Level.h"
 #include "GameSounds.h"
 #include <vector>
-#include <iomanip>
 
 using namespace std;
 
@@ -21,34 +20,20 @@ Logic::ActionResult Logic::update(
   Player* playerPtr{dynamic_cast<Player*>(levelVec.at(0))};
   playerPtr->setDeath(false);
 
-  //Lillemor: del av försök till att göra allt tidsberoende 
-  //Clock flyttas ut till Game för att enkelt kunna kolla att 
-  //framet tagit tillräckligt lång tid
   dt = clock.getElapsedTime();
 
-  //Gamla:
-//  sf::Time dt{clock.getElapsedTime()};
-//  clock.restart();
-
-  //Lillemor: del av försök till att göra allt tidsberoende
   if(dt.asMicroseconds() > 20000)
-  {
-    //Gamla:
-    //dt = sf::microseconds(16667) + clock.getElapsedTime();
-
-    //Nya:
     dt = sf::microseconds(16667);
-  }
+
   at += dt.asMicroseconds();
 
   if (at > 200000.0)
   {
     if (trigger == true)
-      {
       playerPtr->setStoryAnimation(1);
-      }
     else
       playerPtr->setStoryAnimation(0);
+
     playerPtr->setAnimationcycle();
     at = 0;
   }
@@ -116,12 +101,13 @@ Logic::ActionResult Logic::update(
   float y = velY*(dt.asMicroseconds()/gravityBalance);
   if (y > 14)
     y = 14;
+
   // Movement on x-axis is static, not with acceleration.
   playerPtr->move(sf::Vector2f(distX, y));
 
   playerPtr->setVelocity(sf::Vector2f(distX, velY));
 
-  // collisionhandling player
+  // Collisionhandling player
   playerPtr->setOnGround(false);
   result = collisionHandlingPlayer(levelVec, gamesounds);
  
@@ -148,29 +134,19 @@ Logic::ActionResult Logic::update(
 	if (y > 14)
 	  y = 14;
 
-	//Lillemor: del av försök till att göra allt tidsberoende 
 	float distXBlock{levelVec.at(i)->getVelocity().x*dt.asMicroseconds()/gravityBalance};
-/* // Lillemor: Låt stå ett tag	
-	if(distXBlock != 0)
-	  cout << "dt: " << setw(5) << dt.asMicroseconds() << " distX: " << setw(10) << distX << " distXBlock: " << setw(10) << distXBlock << " block vel: " << levelVec.at(i)->getVelocity().x << endl;
-
-
-//	cout << "dt block: " << setw(7) << dt.asMicroseconds() << endl;
-//	levelVec.at(i)->move(sf::Vector2f(levelVec.at(i)->getVelocity().x, y));  
-*/
 	int oldBlockVelocity = levelVec.at(i)->getVelocity().x;
 
 	levelVec.at(i)->move(sf::Vector2f(distXBlock, y));  
 	levelVec.at(i)->setVelocity(sf::Vector2f(0, velYBlock));
 	  
-	// collisionhandling
+	// Collisionhandling block
 	levelVec.at(i)->setOnGround(false);
 	collisionBlock(levelVec, i, oldBlockVelocity, gamesounds);
       }
     }
   }
 
-// Returnera actionResult;
   return result;
 }
 
@@ -219,7 +195,7 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	gamesounds.getLevelClearedSound();
 	trigger = false;
 
-	//Delay the duration of level cleared sound
+	//Delay loading next level until sound is played
 	while(gamesounds.isLevelClearedSoundPlaying())
 	{ }
 	result = LevelCompleted;
@@ -256,16 +232,13 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	// If Player collided with a Block on the x-axis, that Block
 	// will get a velocity and Player will not be moved back
 
-	// Lillemor:
-	// Check if there is a block on top on this block or if this
-	// block is falling => then this block shall not be moved				
 	bool blockCanBeMoved{true};
 	if(offset.x != 0)
 	{
 	  // Check if block is on ground
 	  if(!levelVec.at(i)->getOnGround())
 	    blockCanBeMoved = false;
-	  // Check if block has another block on top of it
+	  // Check if block has another block on top of it => will not be moved
 	  else
 	  {
 	    for(unsigned int j{1}; j < levelVec.size(); ++j)
@@ -284,7 +257,6 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	  }  
 	}
 
-	//Lillemor: del av försök till att göra allt tidsberoende  
 	float boxX = 2 * dt.asMicroseconds() / gravityBalance;
 	if (boxX > 2.0)
 	  boxX = 2.0;
@@ -293,11 +265,6 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	// Move block to the right
 	if(blockCanBeMoved && offset.x < 0)
 	{
-/*
-  // Lillemor: låt stå ett tag
-	  cout << "offset.x: " << setw(8) << offset.x 
-	       << " boxX (right): " << setw(8) << boxX << endl;
-*/
 	  levelVec.at(i)->setVelocity(
 	    sf::Vector2f(boxX,levelVec.at(i)->getVelocity().y));
 	  gamesounds.getBoxSound();
@@ -305,11 +272,6 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	// Move block to the left
 	else if(blockCanBeMoved && offset.x > 0)
 	{
-/*
-  // Lillemor: låt stå ett tag
-	  cout << "offset.x: " << setw(8) << offset.x
-	       << " boxX (left): " << setw(8) << -boxX << endl;
-*/
 	  levelVec.at(i)->setVelocity(
 	    sf::Vector2f(-boxX, levelVec.at(i)->getVelocity().y));
 	  gamesounds.getBoxSound();
@@ -350,7 +312,7 @@ void Logic::collisionBlock(
   sf::Vector2f offset {0,0};
   for(unsigned int i{1}; i < levelVec.size(); ++i)
   {
-    // Check so that you're not trying to do a collision with oneself
+    // Check so that one is not trying to do a collision with oneself
     if( levelVec.at(vecLoc) != levelVec.at(i) && 
 	levelVec.at(vecLoc)->getGlobalBounds().intersects(
 	  levelVec.at(i)->getGlobalBounds(), area))
@@ -391,7 +353,6 @@ void Logic::collisionBlock(
 	    int tilesize{static_cast<int>(levelVec.at(vecLoc)->getSize().x)};	    
 	    float xCorrection{getNearestTilePosXDiff_(blockPos.x, tilesize)};
 
-	    //TODO Lillemor: gör så att detta villkor beror av tid
 	    if((xCorrection > 0 && xCorrection <= 4 &&
 		(collBorders.right == false  || (collBorders.right == true && oldVelocity < 0))) ||
 	       (xCorrection < 0 && xCorrection >= -4 &&
@@ -431,7 +392,6 @@ void Logic::collisionBlock(
   {
     sf::Vector2f offset {0,0};
 
-    // Lillemor: Obs, kollar i både x- och y-led, behöver kanske  bara kolla x-led...
     offset = collisionDisplacement(playerPtr, levelVec.at(vecLoc), area);
     if(offset.y < 0)
       playerPtr->setOnGround(true);
@@ -478,33 +438,12 @@ sf::Vector2f Logic::collisionDisplacement(
       //Right side crash
       if(left)
 	offset.x = -area.width;
-
-/*
-    // Lillemor: låt stå ett tag
-      if(collidingElement->getElementID() == "Block")
-      {
-	cout << "Right crash, area top: " << area.top << " left: " << area.left
-	     << " bottom: " << area.top + area.height << " right: " << area.left + area.width << endl;
-	cout << "x: " << element->getGlobalBounds().left + element->getGlobalBounds().width - 0.001
-	     << " y: " << area.top + 0.001 << endl;
-      }
-*/
     }
     else
     {
       //Left side crash
       if(right)
 	offset.x = area.width;
-/*
-  // Lillemor: låt stå ett tag
-      if(collidingElement->getElementID() == "Block")
-      {
-	cout << "Left crash, area top: " << area.top << " left: " << area.left
-	     << " bottom: " << area.top + area.height << " right: " << area.left + area.width << endl;
-	cout << "x: " << element->getGlobalBounds().left + element->getGlobalBounds().width - 0.001
-	     << " y: " << area.top + 0.001 << endl;
-      }
-*/
     }
   }  
   return offset;
@@ -520,13 +459,9 @@ float Logic::getNearestTilePosXDiff_(float currentXPos, int tilesize)
   // Workaround to get the same result as currentXPos%tilesize,
   // which is not a legal operation for float%integer
   if((currentXPos - integerDivResult * tilesize) <= tilesize/2) 
-  {
     xCorrection = -(currentXPos - integerDivResult * tilesize);
-  }
   else
-  {
     xCorrection = tilesize - (currentXPos - integerDivResult * tilesize);
-  }
 
   return xCorrection;
 }
