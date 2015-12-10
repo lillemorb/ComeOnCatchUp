@@ -60,7 +60,6 @@ private:
   bool jumping_{false};
 
   sf::Clock clock;
-  sf::Clock logicClock_;
 };
 
 #endif

@@ -24,8 +24,7 @@ Logic::ActionResult Logic::update(
 
   //Adjust high clock values to prevent faulty movement
   if(dt.asMicroseconds() > 20000)
-    dt = sf::microseconds(16667);
-
+    dt = sf::seconds(1/60);
   at += dt.asMicroseconds();
 
   //Update sprite animation according to animation rate at

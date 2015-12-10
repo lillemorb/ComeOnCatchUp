@@ -213,7 +213,7 @@ int Game::run()
 
       // Update logic
       actionResult_ = logic_.update((*currLevelPtr_), action, move, gamesounds, clock);
-      logicClock_.restart();
+      clock.restart();
       // Draw level
       graphics_.drawLevel((*currLevelPtr_), window);
     }
@@ -282,8 +282,8 @@ int Game::run()
     // End the current frame
     window.display();
 
-    // If frame has completed too quickly, wait
-    while(logicClock_.getElapsedTime().asMicroseconds() < 16667)
+    // If frame has completed too quickly, wait - Should be 60 FPS
+    while(clock.getElapsedTime().asSeconds() < (1/60))
     { }
   }
   return 0;
