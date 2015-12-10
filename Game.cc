@@ -282,8 +282,8 @@ int Game::run()
     // End the current frame
     window.display();
 
-    // If frame has completed too quickly, wait - Should be 60 FPS
-    while(clock.getElapsedTime().asSeconds() < (1/60))
+    // If frame has completed too quickly, wait
+    while(clock.getElapsedTime().asMicroseconds() < 16667)
     { }
   }
   return 0;
