@@ -3,6 +3,14 @@
 #define GAMESOUNDS_H
 #include <SFML/Audio.hpp>
 
+/*************************************************
+GameSounds:
+GameSounds keep track of the sounds that are played in the game. 
+The main functions are an initializer and start-, pause- and play-functions
+for different sound scenarios.
+
+*************************************************/
+
 class GameSounds
 {
 public:
