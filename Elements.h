@@ -4,6 +4,25 @@
 
 #include <SFML/Graphics.hpp>
 
+/*************************************************
+Drawable:
+Implements a base type for a
+
+Physical:
+
+Player:
+
+Block:
+
+Ground: 
+
+Door:
+
+Background:
+
+Trigger:
+
+*************************************************/
 //---------DRAWABLE--------------//
 class DrawableElement
 {

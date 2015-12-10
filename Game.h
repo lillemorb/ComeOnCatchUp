@@ -10,11 +10,11 @@
 
 /*************************************************
 Game:
-Controlls the game by taking in input, 
+Controls the game by taking in user input, 
 updating current level/menu through calls to 
-metod in Logic, and drawing the current level/menu 
-through calls to Grahics dependant on 
-current gamestates. 
+methods in Logic, and drawing the current
+level/menu through calls to Graphics dependant
+on current gamestates. 
 *************************************************/
 
 class Game
