@@ -6,6 +6,16 @@
 #include "GameSounds.h"
 #include <vector>
 
+/*************************************************
+Logic:
+Logic takes care of everything that has to do with the game logic. 
+This includes moving elements, collision detection and handling.
+The main function is update, which updates all elements accordingly
+ and returns an ActionResult to Game. Two functions helps with this:
+ collisionHandlingPlayer and collisionBlock.
+
+*************************************************/
+
 class Logic
 {
 public:
