@@ -5,25 +5,54 @@
 #include <SFML/Graphics.hpp>
 
 /*************************************************
-Drawable:
-Implements a base type for a
+DrawableElement:
+Implements an abstract class for a drawable element,
+one tile in size. Has functionality to allow
+Graphics to draw it on it's correct position in the
+game window.
 
-Physical:
+PhysicalElement:
+Implements an abstract class for a physical element,
+one tile in size. Has functionality to create
+movement and detect collision, which is useb by
+Logic. Inherits from DrawableElement.
 
 Player:
+Implements a class for the main character in the
+game. Has functionality for controlling animations
+used by Graphics, plus additional functionality for 
+in game physics and game logic. Inherits from 
+PhysicalElement.
 
 Block:
+Implements a class for a movable block. Has 
+additional functionality for in game physics and
+game logic. Inherits from PhysicalElement.
 
 Ground: 
+Implements a class for ground elements. Can not be
+moved in the game window after its creation.
+There are several types with different collision
+borders. Inherits from PhysicalElement.
 
 Door:
+Implements a class for the goal of each level.
+Can not be moved in the game window after its
+creation. Inherits from PhysicalElement.
 
 Background:
+Implements a class to be able to make different 
+graphical elements in a level. Inherits from
+DrawableElement.
 
 Trigger:
+Implements a class for invisible elements that are
+used for triggers for animations. Inherits from
+PhysicalElement.
 
 *************************************************/
-//---------DRAWABLE--------------//
+
+//---------DRAWABLE ELEMENT--------------//
 class DrawableElement
 {
 public:
@@ -41,7 +70,7 @@ private:
   DrawableElement& operator=(const DrawableElement&) = delete;
 };
 
-//---------PHYSICAL--------------//
+//---------PHYSICAL ELEMENT--------------//
 class PhysicalElement : public DrawableElement
 {
 public:

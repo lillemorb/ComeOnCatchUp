@@ -3,10 +3,10 @@
 #include <SFML/Graphics.hpp>
 
 using namespace std;
-//---------DRAWABLE--------------//
+//---------DRAWABLE ELEMENT--------------//
 DrawableElement::~DrawableElement() = default;
 
-//---------PHYSICAL--------------//
+//---------PHYSICAL ELEMENT--------------//
 PhysicalElement::~PhysicalElement() = default;
 
 //---------PLAYER--------------//
