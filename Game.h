@@ -8,14 +8,14 @@
 #include "GameSounds.h"
 #include <vector>
 
-/*************************************************
+/*********************************************************
 Game:
-Controls the game by taking in user input, 
-updating current level/menu through calls to 
-methods in Logic, and drawing the current
-level/menu through calls to Graphics dependant
+Controls the game by taking in input, updating current 
+level/menu through calls to method in Logic, and drawing 
+the current level/menu through calls to Graphics dependant 
 on current gamestates. 
-*************************************************/
+
+**********************************************************/
 
 class Game
 {
@@ -64,7 +64,6 @@ private:
   bool jumping_{false};
 
   sf::Clock clock;
-  sf::Clock logicClock_;
 };
 
 #endif
