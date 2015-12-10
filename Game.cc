@@ -227,7 +227,7 @@ int Game::run()
       if(oldgamestate_ == Playing)
 	graphics_.drawLevel((*currLevelPtr_), window);
       else if(oldgamestate_ == Menu || oldgamestate_ == Victory ||
-	      gamestate_ == LevelSel)
+	      oldgamestate_ == LevelSel)
 	graphics_.drawMenu(menu_player_pos, window, currentmenu_);
       else if(oldgamestate_ == VictoryScreen)
 	graphics_.drawVictoryScreen(window);
@@ -401,7 +401,7 @@ void Game::menu(const vector<int> & lvl)
     case 7:
       menu_player_pos = token_pos_menu_;
       current_menu_row = 1;
-      if(oldgamestate_== Victory)
+      if(oldgamestate_== Victory || oldgamestate_ == LevelSel)
       {
 	currentmenu_ = Graphics::VictoryMenu;
 	gamestate_ = Victory;
