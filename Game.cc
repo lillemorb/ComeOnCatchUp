@@ -163,12 +163,13 @@ int Game::run()
 
       if (gamestate_ == Playing)
       {
+	//Jump
 	if (event.type == sf::Event::KeyPressed && 
 	    ((event.key.code == sf::Keyboard::Up) || 
 	     (event.key.code == sf::Keyboard::W) || 
 	     (event.key.code == sf::Keyboard::Space)) && jumping_ == false)
 	{ 
-	  //Jump
+
 	  jumping_ = true;
 	  action = Logic::Jump;
 	}
@@ -182,20 +183,21 @@ int Game::run()
 	}
       }
       else if (gamestate_ == VictoryScreen)
-	{
+      {
 	if (event.type == sf::Event::KeyReleased && 
 	    (event.key.code == sf::Keyboard::Return))
-	  {
-	    gamestate_ = Victory;
-	    menu_row_count = 3;
-	    current_menu_row = 1;
-	    currentmenu_ = Graphics::VictoryMenu;
-	    menu_player_pos = token_pos_victory_;
-	  }
+	{
+	  gamestate_ = Victory;
+	  menu_row_count = 3;
+	  current_menu_row = 1;
+	  currentmenu_ = Graphics::VictoryMenu;
+	  menu_player_pos = token_pos_victory_;
 	}
+      }
     }
 
     window.clear(sf::Color(200, 255, 255, 255));
+
     if (gamestate_ == Playing)
     {
       //If music not playing (paused), play
@@ -248,18 +250,18 @@ int Game::run()
     }
     // Draw VictoryScreen
     else if (gamestate_ == VictoryScreen)
+    {
+      if(!gamesounds.isBackgroundMusicPlaying())
       {
-	if(!gamesounds.isBackgroundMusicPlaying())
-	  {
-	    while(gamesounds.isPauseSoundPlaying())
-	      { }
-	    gamesounds.getPauseSound();
-	    while(gamesounds.isPauseSoundPlaying())
-	      { }
-	    gamesounds.resumeBackgroundMusic();
-	  }
-	graphics_.drawVictoryScreen(window);
+	while(gamesounds.isPauseSoundPlaying())
+	{ }
+	gamesounds.getPauseSound();
+	while(gamesounds.isPauseSoundPlaying())
+	{ }
+	gamesounds.resumeBackgroundMusic();
       }
+      graphics_.drawVictoryScreen(window);
+    }
     // Draw menus
     else if (gamestate_ == Menu || gamestate_ == Victory
 	     || gamestate_ == LevelSel)
@@ -280,7 +282,7 @@ int Game::run()
     // End the current frame
     window.display();
 
-    // Is frame has completed too quickly, wait
+    // If frame has completed too quickly, wait
     while(logicClock_.getElapsedTime().asMicroseconds() < 16667)
     { }
   }
@@ -323,10 +325,10 @@ void Game::menu(const vector<int> & lvl)
     {
     case 1:
       if (gamestate_ == Victory)
-	{
-	  current_level = 1;
-	  load_level(lvl, current_level);
-	}
+      {
+	current_level = 1;
+	load_level(lvl, current_level);
+      }
       gamestate_ = Playing;
       break;	     
     case 2:
@@ -343,7 +345,7 @@ void Game::menu(const vector<int> & lvl)
     }       
   }
 
-  // Victory_menu
+  // Start/Victory_menu
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) &&
       currentmenu_ == Graphics::VictoryMenu)
   {
@@ -367,7 +369,7 @@ void Game::menu(const vector<int> & lvl)
       break;
     }
   } 
-  // Level menu
+  // Level_menu
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return) &&
       currentmenu_ == Graphics::LevelMenu)
   {	
@@ -429,7 +431,6 @@ void Game::delayTime()
 }
   
 //---------LOAD_LEVEL--------------//
-//Load current_level
 void Game::load_level(const vector<int> & lvl, int current_level)
 {
   delete currLevelPtr_;

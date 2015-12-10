@@ -4,7 +4,7 @@
 #include <iostream>
 using namespace std;
 
-//---------LOADSOUNDS--------------//
+//---------LOAD SOUNDS--------------//
 int GameSounds::loadSounds()
 {
   // Load sound files
@@ -51,7 +51,7 @@ int GameSounds::loadSounds()
   music_.setVolume(42);
   music_.setLoop(true);
 
-  // Connect sounds with sound buffers
+  // Connect sounds to sound buffers
   death_sound_.setBuffer(death_soundBuffer_);
   jump_sound_.setBuffer(jump_soundBuffer_);
   box_sound_.setBuffer(box_soundBuffer_);
@@ -59,7 +59,7 @@ int GameSounds::loadSounds()
   pause_sound_.setBuffer(pause_soundBuffer_);
 }
 
-//---------GETBOXSOUND--------------//
+//---------GET BOX SOUND--------------//
 void GameSounds::getBoxSound() 
 { 
   if(delay_ == 10)
@@ -71,18 +71,19 @@ void GameSounds::getBoxSound()
     delay_++;
 }
 
-//---------ISLEVELCLEAREDSOUNDPLAYING----------//
+//---------IS "LEVEL CLEARED" SOUND PLAYING----------//
 bool GameSounds::isLevelClearedSoundPlaying()
 {
   return levelCleared_sound_.getStatus() == sf::SoundSource::Playing;
 }  
 
+//---------IS PAUSE SOUND PLAYING----------//
 bool GameSounds::isPauseSoundPlaying()
 {
   return pause_sound_.getStatus() == sf::SoundSource::Playing;
 }
 
-//---------STARTBACKGROUNDMUSIC--------------//
+//---------START BACKGROUND MUSIC--------------//
 void GameSounds::startBackgroundMusic()
 {
   if(music_.getStatus() == sf::SoundSource::Playing ||
@@ -93,21 +94,21 @@ void GameSounds::startBackgroundMusic()
   music_.play();
 }
 
-//---------PAUSEBACKGROUNDMUSIC--------------//
+//---------PAUSE BACKGROUND MUSIC--------------//
 void GameSounds::pauseBackgroundMusic()
 {
   if(music_.getStatus() == sf::SoundSource::Playing)
     music_.pause();
 }
 
-//---------RESUMEBACKGROUNDMUSIC--------------//
+//---------RESUME BACKGROUND MUSIC--------------//
 void GameSounds::resumeBackgroundMusic()
 {
   if(music_.getStatus() == sf::SoundSource::Paused)
     music_.play();
 }
 
-//---------ISBACKGROUNDMUSICPLAYING--------------//
+//---------IS BACKGROUND MUSIC PLAYING--------------//
 bool GameSounds::isBackgroundMusicPlaying()
 {
   return music_.getStatus() == sf::SoundSource::Playing;

@@ -78,7 +78,7 @@ public:
   sf::FloatRect getGlobalBounds() const override;
   sf::Vector2f getSize() const override;
 
-  //Funktioner unika för Player
+  //Unique functions for Player
   float getGravity() const { return gravity_; }
   bool getFacingRight() const { return facingRight_; }
   void setFacingRight( bool facingRight ) { facingRight_ = facingRight; }

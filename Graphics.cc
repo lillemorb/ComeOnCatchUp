@@ -67,16 +67,19 @@ int Graphics::initGraphics()
 
   // Load sprites
 
-
+  // Door sprite
   door_sprite.setTexture(spriteSheet_background);
   door_sprite.setTextureRect(sf::IntRect(96, 0, TILESIZE, TILESIZE));
 
+  // Block sprite
   block_sprite.setTexture(spriteSheet_background);
   block_sprite.setTextureRect(sf::IntRect(0, 0, TILESIZE, TILESIZE));
 
+  // Start sprite
   start_sprite.setTexture(spriteSheet_background);
   start_sprite.setTextureRect(sf::IntRect(96, 64, TILESIZE, TILESIZE));
 
+  // FORTSÄTT
   goal_sprite.setTexture(spriteSheet_background);
   goal_sprite.setTextureRect(sf::IntRect(96, 32, TILESIZE, TILESIZE));
 
@@ -143,13 +146,13 @@ int Graphics::initGraphics()
   }
 }
 
-//---------DRAWVICTORYSCREEN-----//
+//---------DRAW VICTORY SCREEN-----//
 void Graphics::drawVictoryScreen(sf::RenderWindow& window)
 {
   window.draw(victoryScreen_sprite);
 }
 
-//---------DRAWMENU--------------//
+//---------DRAW MENU--------------//
 void Graphics::drawMenu(int posY, sf::RenderWindow& window, CurrentMenu currentMenu)
 {
   token_sprite.setPosition(sf::Vector2f(280, posY));
@@ -168,7 +171,7 @@ void Graphics::drawMenu(int posY, sf::RenderWindow& window, CurrentMenu currentM
   window.draw(token_sprite);
 }
 
-//---------DRAWLEVEL--------------//
+//---------DRAW LEVEL--------------//
 void Graphics::drawLevel(Level & current, sf::RenderWindow& window)
 {
   vector<DrawableElement*> levelVec(current.getLevelDrawableLayout());

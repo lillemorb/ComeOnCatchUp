@@ -22,11 +22,13 @@ Logic::ActionResult Logic::update(
 
   dt = clock.getElapsedTime();
 
+  //Adjust high clock values to prevent faulty movement
   if(dt.asMicroseconds() > 20000)
     dt = sf::microseconds(16667);
 
   at += dt.asMicroseconds();
 
+  //Update sprite animation according to animation rate at
   if (at > 200000.0)
   {
     if (trigger == true)
@@ -42,6 +44,7 @@ Logic::ActionResult Logic::update(
   float velY{playerPtr->getVelocity().y};
   float distX{0};
 
+  // Jump if on ground and jump key pressed
   if (action == Jump && playerPtr->getOnGround() == true &&
       playerPtr->getJumpAllowed() == true)
   {
@@ -61,12 +64,14 @@ Logic::ActionResult Logic::update(
     playerPtr->setJumpAllowed(true);
   }
 
+  // Move left
   if (move == Left)
   {
     distX = -4;
     playerPtr->setFacingRight(false);
     playerPtr->setWalk(true);
   }
+  // Move right
   if (move == Right)
   {
     distX = 4;
@@ -74,6 +79,7 @@ Logic::ActionResult Logic::update(
     playerPtr->setWalk(true);
   }
 
+  // Set velocity on y axis with gravity
   if (playerPtr->getOnGround() == false)
   {
     velY += gravity * (dt.asMicroseconds()/gravityBalance);
@@ -86,25 +92,26 @@ Logic::ActionResult Logic::update(
     velY = gravity;
   }
 
+  // Set animation to idle
   if (!(move == Left || move == Right))
   {
     playerPtr->setWalk(false);
   }
 
+  // Set animation to falling 
   if (velY > 0)
   {
     playerPtr->setJump(false);
     playerPtr->setFalling(true);
   }
-  distX = distX*dt.asMicroseconds()/gravityBalance;
 
+  distX = distX*dt.asMicroseconds()/gravityBalance;
   float y = velY*(dt.asMicroseconds()/gravityBalance);
   if (y > 14)
     y = 14;
 
   // Movement on x-axis is static, not with acceleration.
   playerPtr->move(sf::Vector2f(distX, y));
-
   playerPtr->setVelocity(sf::Vector2f(distX, velY));
 
   // Collisionhandling player
@@ -134,7 +141,8 @@ Logic::ActionResult Logic::update(
 	if (y > 14)
 	  y = 14;
 
-	float distXBlock{levelVec.at(i)->getVelocity().x*dt.asMicroseconds()/gravityBalance};
+	float distXBlock{
+	  levelVec.at(i)->getVelocity().x*dt.asMicroseconds()/gravityBalance};
 	int oldBlockVelocity = levelVec.at(i)->getVelocity().x;
 
 	levelVec.at(i)->move(sf::Vector2f(distXBlock, y));  
@@ -184,11 +192,13 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
     return Dead;
   }
    
+  // Check and handle collision against all other level elements
   for(unsigned int i{1}; i < levelVec.size(); ++i)
   {
     sf::FloatRect area;
     if(playerPtr->getGlobalBounds().intersects(levelVec.at(i)->getGlobalBounds(), area))
     {
+      // Collision with door
       if(levelVec.at(i)->getElementID() == "Door")
       {
 	gamesounds.pauseBackgroundMusic();
@@ -201,10 +211,12 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	result = LevelCompleted;
 	gamesounds.startBackgroundMusic();
       }
+      // Check for collision aginst this to trigger cutscenes
       else if(levelVec.at(i)->getElementID() == "Trigger")
       {
 	trigger = true;
       }
+      // Collision with ground
       else if(dynamic_cast<Ground*>(levelVec.at(i)))
       {
 	sf::Vector2f offset {0,0};
@@ -217,6 +229,7 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	}
 	playerPtr->move(offset);
       }
+      // Collision with block
       else if(levelVec.at(i)->getElementID() == "Block")
       {
 	// Collision in y-axis, player is moved, block is not moved
@@ -231,7 +244,6 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 
 	// If Player collided with a Block on the x-axis, that Block
 	// will get a velocity and Player will not be moved back
-
 	bool blockCanBeMoved{true};
 	if(offset.x != 0)
 	{
@@ -243,7 +255,8 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	  {
 	    for(unsigned int j{1}; j < levelVec.size(); ++j)
 	    {
-	      // Make rectangle like this block but two pixels up
+	      // Create a rectangle like the current block moved two pixels up,
+	      // check this for collision with other block
 	      sf::FloatRect thisBlock(levelVec.at(i)->getGlobalBounds());		
 	      sf::FloatRect thisBlockMovedUp(thisBlock.left, thisBlock.top-2,
 					     thisBlock.width, thisBlock.height);
@@ -257,23 +270,24 @@ Logic::ActionResult Logic::collisionHandlingPlayer (
 	  }  
 	}
 
-	float boxX = 2 * dt.asMicroseconds() / gravityBalance;
-	if (boxX > 2.0)
-	  boxX = 2.0;
+	// Set block velocity on the x axis
+	float blockX = 2 * dt.asMicroseconds() / gravityBalance;
+	if (blockX > 2.0)
+	  blockX = 2.0;
 
 	// Move block if no block on top
 	// Move block to the right
 	if(blockCanBeMoved && offset.x < 0)
 	{
 	  levelVec.at(i)->setVelocity(
-	    sf::Vector2f(boxX,levelVec.at(i)->getVelocity().y));
+	    sf::Vector2f(blockX,levelVec.at(i)->getVelocity().y));
 	  gamesounds.getBoxSound();
 	}
 	// Move block to the left
 	else if(blockCanBeMoved && offset.x > 0)
 	{
 	  levelVec.at(i)->setVelocity(
-	    sf::Vector2f(-boxX, levelVec.at(i)->getVelocity().y));
+	    sf::Vector2f(-blockX, levelVec.at(i)->getVelocity().y));
 	  gamesounds.getBoxSound();
 	}		  
 	offset.x = 0;
@@ -318,10 +332,10 @@ void Logic::collisionBlock(
 	  levelVec.at(i)->getGlobalBounds(), area))
     {
       // Triggers an event when a block falls through a trigger element
-      // (last level)
       if(levelVec.at(i)->getElementID() == "Trigger")
 	trigger = true;
 
+      // Collision with block
       if(levelVec.at(i)->getElementID() == "Block")
       {
 	offset = sf::Vector2f(0,0);
@@ -333,6 +347,7 @@ void Logic::collisionBlock(
 
 	levelVec.at(vecLoc)->move(offset);	  
       }
+      // Collision with ground
       else if(levelVec.at(i)->getElementID().at(0) == 'G')	 
       {
 	offset = sf::Vector2f(0,0);
@@ -354,9 +369,11 @@ void Logic::collisionBlock(
 	    float xCorrection{getNearestTilePosXDiff_(blockPos.x, tilesize)};
 
 	    if((xCorrection > 0 && xCorrection <= 4 &&
-		(collBorders.right == false  || (collBorders.right == true && oldVelocity < 0))) ||
+		(collBorders.right == false  ||
+		 (collBorders.right == true && oldVelocity < 0))) ||
 	       (xCorrection < 0 && xCorrection >= -4 &&
-		(collBorders.left == false || (collBorders.left == true && oldVelocity > 0))))
+		(collBorders.left == false ||
+		 (collBorders.left == true && oldVelocity > 0))))
 	    {
 	      xCorrection = 0;
 	    }
@@ -366,7 +383,8 @@ void Logic::collisionBlock(
 	    }
 	    
 	    offset.x = xCorrection;
-	    levelVec.at(vecLoc)->setVelocity(sf::Vector2f(0,levelVec.at(vecLoc)->getVelocity().y));
+	    levelVec.at(vecLoc)->setVelocity(
+	      sf::Vector2f(0,levelVec.at(vecLoc)->getVelocity().y));
 	  }
 	}
 	levelVec.at(vecLoc)->move(offset);
@@ -384,11 +402,13 @@ void Logic::collisionBlock(
 
     xCorrection = getNearestTilePosXDiff_(blockPos.x, tilesize);
     levelVec.at(vecLoc)->move(sf::Vector2f(xCorrection,0));
-    levelVec.at(vecLoc)->setVelocity(sf::Vector2f(0,levelVec.at(vecLoc)->getVelocity().y));
+    levelVec.at(vecLoc)->setVelocity(
+      sf::Vector2f(0,levelVec.at(vecLoc)->getVelocity().y));
   }
      
   // Move back player if the block couldn't be moved
-  if(playerPtr->getGlobalBounds().intersects(levelVec.at(vecLoc)->getGlobalBounds(), area))
+  if(playerPtr->getGlobalBounds().intersects(
+       levelVec.at(vecLoc)->getGlobalBounds(), area))
   {
     sf::Vector2f offset {0,0};
 
@@ -449,7 +469,7 @@ sf::Vector2f Logic::collisionDisplacement(
   return offset;
 }  
 
-//---------GETNERARESTTILEPOSXDIFF--------------//
+//---------GET NEAREST TILEPOS X DIFF--------------//
 float Logic::getNearestTilePosXDiff_(float currentXPos, int tilesize)
 {
   float xCorrection{};

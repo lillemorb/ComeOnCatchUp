@@ -40,6 +40,7 @@ Level::Level(int TILESIZE, int TILES_PER_ROW, const vector<int> & level_vector)
 	physicalElementVector_.push_back(groundPtrVector_.back());
     }
 
+    // Create level elements
     switch(level_vector.at(i))
     {
     case 01:
