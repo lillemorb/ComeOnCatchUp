@@ -5,6 +5,16 @@
 #include "Level.h"
 #include <vector>
 
+/*************************************************
+Graphics:
+Graphics draw everything in the window. It keeps track of what texture
+each sprite is supposed to have. It gets information where everything is 
+supposed to be drawn. 
+The main functions are an initializer, a menu screen, a victory screen 
+and drawing the level. 
+
+*************************************************/
+
 class Graphics
 {
 public:
